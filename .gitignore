@@ -1,0 +1,14 @@
+*/build/
+*/bin/
+*/depends
+
+engine/android/libs/
+engine/android/obj/
+engine/android/jni/src
+engine/android/jni/include
+
+test/test
+test/test.exe
+test/driving-engine.so
+
+tools/addDependPath
