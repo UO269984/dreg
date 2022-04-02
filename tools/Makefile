@@ -1,7 +1,7 @@
 CC := gcc
 CXX := gcc
 
-BINARIES := addDependPath
+BINARIES := addDependPath rm
 
 all: $(BINARIES)
 

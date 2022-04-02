@@ -1,13 +1,9 @@
-CXX := gcc
 CFLAGS = -c -I include -o $@
 LDFLAGS := -lstdc++
 
-ifeq ($(shell uname -s),Linux)
-	CFLAGS += "-fPIC"
-endif
+CFLAGS += $(if $(filter-out $(OS),Windows_NT),-fPIC,)
 
-include vars.make
-LIB_EXT := $(if $(filter-out $(OS),Windows_NT),so,dll)
+include ../globalVars.make
 LIBRARY_FILENAME := $(BUILD)/$(LIBRARY_NAME).$(LIB_EXT)
 
 OBJS := $(subst $(SRC),$(BIN), $(SRCS))
@@ -16,7 +12,7 @@ OBJS := $(subst .cpp,.o, $(OBJS))
 $(LIBRARY_FILENAME): $(OBJS)
 	$(CXX) -shared -o $@ $^ $(LDFLAGS)
 
-$(shell $(CXX) -c -I $(INCLUDE) -MM $(SRCS) | ../tools/addDependPath $(BIN)/ > $(DEPENDS_FILE))
+$(shell $(CXX) -c -I $(INCLUDE) -MM $(SRCS) | $(ADD_DEPEND_PATH) $(BIN)/ > $(DEPENDS_FILE))
 include $(DEPENDS_FILE)
 
 $(BIN)/%.o: $(SRC)/%.cpp

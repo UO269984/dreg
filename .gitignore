@@ -11,4 +11,6 @@ test/test
 test/test.exe
 test/driving-engine.so
 
+tools/*.exe
+tools/rm
 tools/addDependPath
