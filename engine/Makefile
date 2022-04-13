@@ -6,6 +6,7 @@ CFLAGS += $(if $(filter-out $(OS),Windows_NT),-fPIC,)
 include ../globalVars.make
 LIBRARY_FILENAME := $(BUILD)/$(LIBRARY_NAME).$(LIB_EXT)
 
+include srcs.make
 OBJS := $(subst $(SRC),$(BIN), $(SRCS))
 OBJS := $(subst .cpp,.o, $(OBJS))
 
