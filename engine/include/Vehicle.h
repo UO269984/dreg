@@ -1,25 +1,6 @@
 #pragma once
 
-#include "Vector3.h"
-
-struct VehicleConfig {
-	//Shafts offset to vehicle center
-	Vector3 frontShaft;
-	Vector3 rearShaft;
-	
-	float maxSteeringAngle;
-};
-
-struct VehicleControls {
-	float throttle;
-	float brake;
-	float steeringWheel;
-};
-
-struct VehicleState {
-	Vector3 pos;
-	Vector3 rotation;
-};
+#include "VehicleApi.h"
 
 class Vehicle {
 public:

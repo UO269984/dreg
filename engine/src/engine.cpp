@@ -1,4 +1,5 @@
 #include "engine.h"
+#include "Vehicle.h"
 
 #include <cstdio>
 
