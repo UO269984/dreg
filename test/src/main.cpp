@@ -15,6 +15,33 @@ void test(Vehicle* vehicle, int iters) {
 	}
 }
 
+void testInputLogger(Vehicle* vehicle) {
+	//setSaveFileFunc([](const char* filename, const char* data) {cout << "Saving file: " << filename << endl;});
+	
+	InputLogger* inputLogger = createInputLogger(vehicle);
+	VehicleControls controls = {0.1, 0, 0};
+	
+	setVehicleInput(vehicle, &controls);
+	logInput(inputLogger, 0.1); //Delta must be ignored in first log
+	logInput(inputLogger, 0.2);
+	
+	setVehicleInput(vehicle, &controls);
+	logInput(inputLogger, 0.2);
+	
+	controls.brake = 0.5;
+	setVehicleInput(vehicle, &controls);
+	logInput(inputLogger, 0.1);
+	
+	controls.throttle = 0;
+	setVehicleInput(vehicle, &controls);
+	logInput(inputLogger, 0.1);
+	
+	controls.steeringWheel = 0.3;
+	setVehicleInput(vehicle, &controls);
+	logInput(inputLogger, 0.1);
+	saveInputLogger(inputLogger, "../../VehicleInputTest.csv");
+}
+
 int main(int argc, char const *argv[]) {
 	int updateItersCount = argc > 1 ? atoi(argv[1]) : 10;
 	
@@ -22,6 +49,7 @@ int main(int argc, char const *argv[]) {
 	Vehicle* vehicle = createVehicle(&config);
 	test(vehicle, updateItersCount);
 	
+	testInputLogger(vehicle);
 	deleteVehicle(vehicle);
 	cout << "End test" << endl;
 }

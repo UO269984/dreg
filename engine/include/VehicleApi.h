@@ -25,10 +25,14 @@ struct VehicleState {
 struct Vehicle;
 typedef struct Vehicle Vehicle;
 
+struct InputLogger;
+typedef struct InputLogger InputLogger;
+
 typedef struct VehicleConfig VehicleConfig;
 typedef struct VehicleControls VehicleControls;
 typedef struct VehicleState VehicleState;
 
 #else
 class Vehicle;
+class InputLogger;
 #endif
