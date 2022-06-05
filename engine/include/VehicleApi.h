@@ -25,6 +25,9 @@ struct VehicleState {
 struct Vehicle;
 typedef struct Vehicle Vehicle;
 
+struct Graph;
+typedef struct Graph Graph;
+
 struct InputLogger;
 typedef struct InputLogger InputLogger;
 
@@ -34,5 +37,6 @@ typedef struct VehicleState VehicleState;
 
 #else
 class Vehicle;
+class Graph;
 class InputLogger;
 #endif

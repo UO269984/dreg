@@ -1,6 +1,9 @@
 #pragma once
 
 #include "VehicleApi.h"
+#include "Vector2.h"
+
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,6 +24,13 @@ extern "C" {
 	void setVehicleInput(Vehicle* vehicle, VehicleControls* input);
 	VehicleState* getVehicleState(Vehicle* vehicle);
 	void update(Vehicle* vehicle, float delta);
+	
+	Graph* createGraph();
+	void deleteGraph(Graph* graph);
+	void loadLinearGraph(Graph* graph, Vector2* refs, size_t refsCount);
+	void loadBezierGraph(Graph* graph, Vector2* refs, size_t refsCount, size_t samplesPerSegment);
+	Vector2* getGraphPoints(Graph* graph, size_t* pointsCount);
+	float getGraphY(Graph* graph, float x);
 	
 	InputLogger* createInputLogger(Vehicle* vehicle);
 	void logInput(InputLogger* inputLogger, float delta);

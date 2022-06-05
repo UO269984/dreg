@@ -1,6 +1,7 @@
 #include "engine.h"
 
 #include "Vehicle.h"
+#include "Graph.h"
 #include "InputLogger.h"
 
 #include <cstdio>
@@ -41,6 +42,32 @@ VehicleState* getVehicleState(Vehicle* vehicle) {
 void update(Vehicle* vehicle, float delta) {
 	vehicle->update(delta);
 }
+
+
+Graph* createGraph() {
+	return new Graph();
+}
+
+void deleteGraph(Graph* graph) {
+	delete graph;
+}
+
+void loadLinearGraph(Graph* graph, Vector2* refs, size_t refsCount) {
+	graph->loadLinear(refs, refsCount);
+}
+
+void loadBezierGraph(Graph* graph, Vector2* refs, size_t refsCount, size_t samplesPerSegment) {
+	graph->loadBezier(refs, refsCount, samplesPerSegment);
+}
+
+Vector2* getGraphPoints(Graph* graph, size_t* pointsCount) {
+	return graph->getPoints(pointsCount);
+}
+
+float getGraphY(Graph* graph, float x) {
+	return graph->getY(x);
+}
+
 
 InputLogger* createInputLogger(Vehicle* vehicle) {
 	return new InputLogger(vehicle);
