@@ -1,0 +1,1 @@
+emcc -I include -o ../web/js/driving-engine/driving-engine.js -std=c++11 -s WASM=1 -s EXPORT_ES6=1 -s MODULARIZE=1 driving-engine.bc --bind drivingEngineApi.cpp

@@ -1,0 +1,20 @@
+body {
+	background: #111111;
+}
+
+canvas {
+	background: white;
+	padding: 0px;
+	margin: 0px;
+}
+
+button {
+	cursor: pointer;
+}
+
+.editable-graph {
+	color: white;
+	
+	border-style: none;
+	margin: 3em;
+}
