@@ -84,8 +84,8 @@ export class EditableGraphUI extends BasicGraphUI {
 		let axisYMinInput = this.container.getElementsByClassName("axis-min-y")[0]
 		let axisYMaxInput = this.container.getElementsByClassName("axis-max-y")[0]
 		
-		let updateXAxis = () => this.graph.setXAxis({min: parseFloat(axisXMinInput.value), max: parseFloat(axisXMaxInput.value)})
-		let updateYAxis = () => this.graph.setYAxis({min: parseFloat(axisYMinInput.value), max: parseFloat(axisYMaxInput.value)})
+		let updateXAxis = () => this.graph.setXAxis({min: Number(axisXMinInput.value), max: Number(axisXMaxInput.value)})
+		let updateYAxis = () => this.graph.setYAxis({min: Number(axisYMinInput.value), max: Number(axisYMaxInput.value)})
 		axisXMinInput.addEventListener("input", updateXAxis)
 		axisXMaxInput.addEventListener("input", updateXAxis)
 		axisYMinInput.addEventListener("input", updateYAxis)

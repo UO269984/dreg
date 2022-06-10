@@ -19,7 +19,7 @@ void InputLogger::log(float delta) {
 }
 
 void InputLogger::save(const char* filename) {
-	std::string str("Time;tThrottle;Brake;SteeringWheel\n");
+	std::string str("Time;Throttle;Brake;SteeringWheel\n");
 	str.reserve((inputs.size() + 2) * 36);
 	
 	std::list<VehicleControls>::iterator inputsIt = inputs.begin();
