@@ -23,12 +23,16 @@ void setSaveFileFunc(SaveFileFunc newSaveFileFunc) {
 	saveFileFunc = newSaveFileFunc;
 }
 
-Vehicle* createVehicle(VehicleConfig* config) {
-	return new Vehicle(*config);
+Vehicle* createVehicle() {
+	return new Vehicle();
 }
 
 void deleteVehicle(Vehicle* vehicle) {
 	delete vehicle;
+}
+
+void resetVehicle(Vehicle* vehicle) {
+	vehicle->reset();
 }
 
 void setVehicleInput(Vehicle* vehicle, VehicleControls* input) {
@@ -37,6 +41,18 @@ void setVehicleInput(Vehicle* vehicle, VehicleControls* input) {
 
 VehicleState* getVehicleState(Vehicle* vehicle) {
 	return &vehicle->state;
+}
+
+VehicleProps* getVehicleProps(Vehicle* vehicle) {
+	return &vehicle->props;
+}
+
+VehicleConfig* getVehicleConfig(Vehicle* vehicle) {
+	return &vehicle->config;
+}
+
+void updateVehicleConfig(Vehicle* vehicle) {
+	vehicle->updateConfig();
 }
 
 void update(Vehicle* vehicle, float delta) {

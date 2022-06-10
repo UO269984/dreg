@@ -18,11 +18,15 @@ extern "C" {
 	extern SaveFileFunc saveFileFunc;
 	void setSaveFileFunc(SaveFileFunc newSaveFileFunc);
 	
-	Vehicle* createVehicle(VehicleConfig* config);
+	Vehicle* createVehicle();
 	void deleteVehicle(Vehicle* vehicle);
+	void resetVehicle(Vehicle* vehicle);
 	
 	void setVehicleInput(Vehicle* vehicle, VehicleControls* input);
 	VehicleState* getVehicleState(Vehicle* vehicle);
+	VehicleProps* getVehicleProps(Vehicle* vehicle);
+	VehicleConfig* getVehicleConfig(Vehicle* vehicle);
+	void updateVehicleConfig(Vehicle* vehicle);
 	void update(Vehicle* vehicle, float delta);
 	
 	Graph* createGraph();

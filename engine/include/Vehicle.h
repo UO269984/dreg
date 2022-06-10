@@ -4,21 +4,20 @@
 
 class Vehicle {
 public:
-	Vehicle(VehicleConfig config);
+	Vehicle();
 	~Vehicle();
 	
+	void reset();
+	void updateConfig();
 	void update(float delta);
 	
-	VehicleControls controls = {0};
-	VehicleState state = {0};
+	VehicleConfig config;
+	VehicleControls controls;
+	VehicleState state;
+	VehicleProps props;
 
 private:
-	Vector3 rearShaftPos = {0};
-	
-	Vector3 speedVector = {1, 0, 0};
-	float speed = 0;
-	float acceleration = 15;
-	
 	float shaftsDist;
-	VehicleConfig config;
+	Vector3 rearShaftPos;
+	Vector3 speedVector;
 };

@@ -3,7 +3,7 @@
 #include "Vector3.h"
 
 struct VehicleConfig {
-	//Shafts offset to vehicle center
+	//Shafts offsets to vehicle center. They are vectors from vehicle center to each shaft
 	Vector3 frontShaft;
 	Vector3 rearShaft;
 	
@@ -21,6 +21,11 @@ struct VehicleState {
 	Vector3 rotation;
 };
 
+struct VehicleProps {
+	float speed;
+	float acceleration;
+};
+
 #ifndef __cplusplus
 struct Vehicle;
 typedef struct Vehicle Vehicle;
@@ -34,6 +39,7 @@ typedef struct InputLogger InputLogger;
 typedef struct VehicleConfig VehicleConfig;
 typedef struct VehicleControls VehicleControls;
 typedef struct VehicleState VehicleState;
+typedef struct VehicleProps VehicleProps;
 
 #else
 class Vehicle;

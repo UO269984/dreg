@@ -1,18 +1,38 @@
 #include "engine.h"
 
+#include <functional>
 #include <iostream>
 using namespace std;
 
-void test(Vehicle* vehicle, int iters) {
+void testVehicle(Vehicle* vehicle, int iters) {
 	VehicleControls controls = {0.5, 0, 1};
 	setVehicleInput(vehicle, &controls);
 	VehicleState* state = getVehicleState(vehicle);
+	VehicleProps* vehicleProps = getVehicleProps(vehicle);
+	
+	function<void()> printVehicle = [state, vehicleProps]() {
+		cout << state->pos.x << ", " << state->pos.y << ", " << state->pos.z << endl;
+		cout << "\trot z: " << state->rotation.z << "º" << " Speed: " << vehicleProps->speed << " m/s" << endl;
+	};
 	
 	for (int i = 0; i < iters; i++) {
 		update(vehicle, 0.1);
-		cout << i + 1 << " " << state->pos.x << ", " << state->pos.y << ", " << state->pos.z << endl;
-		cout << "\trot z: " << state->rotation.z << "º" << endl;
+		cout << i + 1 << " ";
+		printVehicle();
 	}
+	
+	cout << "Resetting vehicle" << endl;
+	resetVehicle(vehicle);
+	setVehicleInput(vehicle, &controls);
+	printVehicle();
+	update(vehicle, 0.1);
+	printVehicle();
+	
+	cout << "Updating vehicle config" << endl;
+	getVehicleConfig(vehicle)->rearShaft.x = 1.5;
+	updateVehicleConfig(vehicle);
+	update(vehicle, 0.1);
+	printVehicle();
 }
 
 void testInputLogger(Vehicle* vehicle) {
@@ -50,7 +70,7 @@ void testGraph() {
 	loadLinearGraph(graph, refs, 4);
 	
 	int i = 0;
-	for (float x = 0; x < 1; x += 0.01) {
+	for (float x = 0; x < 1; x += 0.1) {
 		cout << x << " -> " << getGraphY(graph, x) << "   ";
 		
 		if (i++ % 2 == 0)
@@ -62,7 +82,7 @@ void testGraph() {
 		{0.4, 0.4}, {0.5, 0.5}, {0.6, 0.6}};
 	
 	loadBezierGraph(graph, refs, 7, 20);
-	for (float x = 0; x < 1; x += 0.01) {
+	for (float x = 0; x < 1; x += 0.1) {
 		cout << x << " -> " << getGraphY(graph, x) << "   ";
 		
 		if (i++ % 2 == 0)
@@ -78,9 +98,11 @@ int main(int argc, char const *argv[]) {
 	int updateItersCount = argc > 1 ? atoi(argv[1]) : 10;
 	
 	printTest("Vehicle");
-	VehicleConfig config = {{0, 0, 0}, {1, 0, 0}, 40.0f};
-	Vehicle* vehicle = createVehicle(&config);
-	test(vehicle, updateItersCount);
+	Vehicle* vehicle = createVehicle();
+	*getVehicleConfig(vehicle) = {{0, 0, 0}, {1, 0, 0}, 40.0f};
+	updateVehicleConfig(vehicle);
+	
+	testVehicle(vehicle, updateItersCount);
 	
 	printTest("Input logger");
 	testInputLogger(vehicle);
