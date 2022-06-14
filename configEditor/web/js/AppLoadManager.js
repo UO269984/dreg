@@ -30,3 +30,24 @@ class AppLoadManager {
 }
 
 export const APP_LOAD_MANAGER = new AppLoadManager()
+
+function loadTemplate(url, name) {
+	let loadedCallback = APP_LOAD_MANAGER.addLoadTask()
+	
+	fetch(url).then(resp => {
+		if (resp.status == 200) {
+			resp.text().then(data => {
+				TEMPLATES[name] = data
+				loadedCallback()
+			})
+		}
+		else
+			console.error(`Failed to load template from: ${url}`)
+	})
+}
+
+export const TEMPLATES = {}
+
+loadTemplate("basicGraph.html", "basicGraph")
+loadTemplate("editableGraph.html", "editableGraph")
+loadTemplate("simGraph.html", "simGraph")

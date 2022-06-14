@@ -3,6 +3,56 @@ import initModule from "./driving-engine/driving-engine.js"
 const Module = initModule()
 export const setModuleLoadFunc = func => Module.onRuntimeInitialized = func
 
+export class VehicleAPI {
+	constructor() {
+		this.vehicle = Module.createVehicle()
+		
+		this.controls = new Module.VehicleControls(0, 0, 0)
+		this.state = Module.getVehicleState(this.vehicle)
+		this.props = Module.getVehicleProps(this.vehicle)
+		this.config = Module.getVehicleConfig(this.vehicle)
+	}
+	
+	delete() {
+		Module.deleteVehicle(this.vehicle)
+	}
+	
+	reset() {
+		Module.resetVehicle(this.vehicle)
+	}
+	
+	setInput(input) {
+		this.controls.throttle = input.throttle
+		this.controls.brake = input.brake
+		this.controls.steeringWheel = input.steeringWheel
+		Module.setVehicleInput(this.vehicle, this.controls)
+	}
+	
+	updateConfig() {
+		Module.updateVehicleConfig(this.vehicle)
+	}
+	
+	update(delta) {
+		Module.update(this.vehicle, delta)
+	}
+	
+	getAttrib(path) {
+		let obj = this
+		for (let attribName of path)
+			obj = obj[attribName]
+		
+		return obj
+	}
+	
+	setConfigVal(path, value) {
+		let obj = this.config
+		for (let i = 0; i < path.length - 1; i++)
+			obj = obj[path[i]]
+		
+		obj[path[path.length - 1]] = value
+	}
+}
+
 export class GraphAPI {
 	constructor() {
 		this.graph = Module.createGraph()

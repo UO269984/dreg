@@ -50,6 +50,24 @@ export class Graph {
 		}
 	}
 	
+	setAxisAutoFor(values) {
+		this.config.axisX = this.#getAxisAutoFor(values[0])
+		this.config.axisY = this.#getAxisAutoFor(values[1])
+		this.#updateGraphConfig()
+	}
+	
+	#getAxisAutoFor(axisValues) {
+		let axis = {
+			min: Math.min.apply(null, axisValues),
+			max: Math.max.apply(null, axisValues)
+		}
+		if (axis.min == axis.max)
+			axis.min--
+		
+		this.#computeAxisStep(axis)
+		return axis
+	}
+	
 	#computeAxisStep(axis) {
 		let interval = axis.max - axis.min
 		let minError = interval

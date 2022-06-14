@@ -23,8 +23,9 @@ engine::VehicleControls createVehicleControls(float throttle, float brake, float
 	return {throttle, brake, steeringWheel};
 }
 
-PTR createVehicle(engine::VehicleConfig* config) {return (PTR) engine::createVehicle(config);}
+PTR createVehicle() {return (PTR) engine::createVehicle();}
 void deleteVehicle(PTR vehicle) {engine::deleteVehicle((engine::Vehicle*) vehicle);}
+void resetVehicle(PTR vehicle) {engine::resetVehicle((engine::Vehicle*) vehicle);}
 
 void setVehicleInput(PTR vehicle, engine::VehicleControls* vehicleControls) {
 	engine::setVehicleInput((engine::Vehicle*) vehicle, vehicleControls);
@@ -32,6 +33,18 @@ void setVehicleInput(PTR vehicle, engine::VehicleControls* vehicleControls) {
 
 engine::VehicleState* getVehicleState(PTR vehicle) {
 	return engine::getVehicleState((engine::Vehicle*) vehicle);
+}
+
+engine::VehicleProps* getVehicleProps(PTR vehicle) {
+	return engine::getVehicleProps((engine::Vehicle*) vehicle);
+}
+
+engine::VehicleConfig* getVehicleConfig(PTR vehicle) {
+	return engine::getVehicleConfig((engine::Vehicle*) vehicle);
+}
+
+void updateVehicleConfig(PTR vehicle) {
+	engine::updateVehicleConfig((engine::Vehicle*) vehicle);
 }
 
 void updateVehicle(PTR vehicle, float delta) {
@@ -100,10 +113,21 @@ EMSCRIPTEN_BINDINGS(drivingEngine) {
 		.property("rotation", &engine::VehicleState::rotation)
 		;
 	
+	emscripten::class_<engine::VehicleProps>("VehicleProps")
+		.constructor<>()
+		.property("speed", &engine::VehicleProps::speed)
+		.property("acceleration", &engine::VehicleProps::acceleration)
+		;
+	
 	emscripten::function("createVehicle", &createVehicle, emscripten::allow_raw_pointers());
 	emscripten::function("deleteVehicle", &deleteVehicle, emscripten::allow_raw_pointers());
+	emscripten::function("resetVehicle", &resetVehicle, emscripten::allow_raw_pointers());
+	
 	emscripten::function("setVehicleInput", &setVehicleInput, emscripten::allow_raw_pointers());
 	emscripten::function("getVehicleState", &getVehicleState, emscripten::allow_raw_pointers());
+	emscripten::function("getVehicleProps", &getVehicleProps, emscripten::allow_raw_pointers());
+	emscripten::function("getVehicleConfig", &getVehicleConfig, emscripten::allow_raw_pointers());
+	emscripten::function("updateVehicleConfig", &updateVehicleConfig, emscripten::allow_raw_pointers());
 	emscripten::function("update", &updateVehicle, emscripten::allow_raw_pointers());
 	
 	emscripten::function("createGraph", &createGraph, emscripten::allow_raw_pointers());

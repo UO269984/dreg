@@ -1,25 +1,5 @@
-import {APP_LOAD_MANAGER} from "../AppLoadManager.js"
+import {TEMPLATES} from "../AppLoadManager.js"
 import {EditableGraph, BezierGraph} from "./editableGraphs.js"
-
-function loadTemplate(url, name) {
-	let loadedCallback = APP_LOAD_MANAGER.addLoadTask()
-	
-	fetch(url).then(resp => {
-		if (resp.status == 200) {
-			resp.text().then(data => {
-				GRAPH_TEMPLATES[name] = data
-				loadedCallback()
-			})
-		}
-		else
-			console.error(`Failed to load template from: ${url}`)
-	})
-}
-
-const GRAPH_TEMPLATES = {}
-
-loadTemplate("editableGraph.html", "editableGraph")
-loadTemplate("basicGraph.html", "basicGraph")
 
 export class BasicGraphUI {
 	constructor() {
@@ -45,7 +25,7 @@ export class BasicGraphUI {
 	}
 	
 	getContainerHTML() {
-		return GRAPH_TEMPLATES.basicGraph
+		return TEMPLATES.basicGraph
 	}
 	
 	toggleScale() {
@@ -93,7 +73,7 @@ export class EditableGraphUI extends BasicGraphUI {
 	}
 	
 	getContainerHTML() {
-		return GRAPH_TEMPLATES.editableGraph
+		return TEMPLATES.editableGraph
 	}
 	
 	switchGraphMode() {
