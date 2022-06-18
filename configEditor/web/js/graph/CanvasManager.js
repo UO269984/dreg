@@ -1,9 +1,25 @@
 
 class InputManager {
 	constructor() {
+		this.inputPrecision = 1
 		this.canvasMap = new Map()
-		this.mouseOverCanvasFuncs = null
 		this.activeCanvasFuncs = null
+	}
+	
+	addCanvas(canvas, funcsObj) {
+		this.canvasMap.set(canvas, funcsObj)
+	}
+	
+	addCanvasAction(canvas, actionName, func) {
+		this.canvasMap.get(canvas)[actionName] = func
+	}
+}
+
+class MouseInputManager extends InputManager {
+	constructor() {
+		super()
+		this.inputPrecision = 1
+		this.mouseOverCanvasFuncs = null
 		
 		this.interactActive = false
 		this.scaleActive = false
@@ -43,11 +59,8 @@ class InputManager {
 			if (this.mouseOverCanvasFuncs != null)
 				this.mouseOverCanvasFuncs.scaleCallback(e.wheelDeltaY > 0 ? 1.12 : 0.892857)
 		})
-		this.canvasMap.set(canvas, funcsObj)
-	}
-	
-	addCanvasAction(canvas, actionName, func) {
-		this.canvasMap.get(canvas)[actionName] = func
+		
+		super.addCanvas(canvas, funcsObj)
 	}
 	
 	#mouseMoveHandler(e) {
@@ -68,7 +81,72 @@ class InputManager {
 	}
 }
 
-export const INPUT_MANAGER = new InputManager()
+class TouchInputManager extends InputManager {
+	constructor() {
+		super()
+		this.inputPrecision = 0.4
+		this.touchPos = [0, 0]
+		
+		this.twoTouches = false
+		this.touchesCenter = null
+		this.touchesDist = null
+		
+		document.addEventListener("touchmove", this.#touchMoveHandler.bind(this), {passive: false})
+		document.addEventListener("touchstart", e => {
+			this.activeCanvasFuncs = this.canvasMap.get(e.target)
+			
+			if (this.activeCanvasFuncs != null) {
+				this.touchPos = [e.touches[0].clientX, e.touches[0].clientY]
+				
+				if (e.touches.length > 1) {
+					this.twoTouches = true
+					this.#updateCenterAndDist(e.touches)
+				}
+				else {
+					this.twoTouches = false
+					
+					let touchEvent = e.touches[0]
+					touchEvent.x = touchEvent.clientX
+					touchEvent.y = touchEvent.clientY
+					this.activeCanvasFuncs.mouseDownCallback(touchEvent)
+				}
+			}
+		})
+	}
+	
+	#touchMoveHandler(e) {
+		if (this.activeCanvasFuncs != null) {
+			if (this.twoTouches) {
+				let prevCenter = this.touchesCenter
+				let prevDist = this.touchesDist
+				this.#updateCenterAndDist(e.touches)
+				
+				this.activeCanvasFuncs.moveCallback(this.touchesCenter[0] - prevCenter[0], this.touchesCenter[1] - prevCenter[1])
+				this.activeCanvasFuncs.scaleCallback(this.touchesDist / prevDist)
+			}
+			else {
+				let lastTouchPos = this.touchPos
+				this.touchPos = [e.touches[0].clientX, e.touches[0].clientY]
+				
+				let touchEvent = e.touches[0]
+				touchEvent.movementX = this.touchPos[0] - lastTouchPos[0]
+				touchEvent.movementY = this.touchPos[1] - lastTouchPos[1]
+				this.activeCanvasFuncs.moveInteractCallback(touchEvent)
+			}
+			
+			if (e.cancelable)
+				e.preventDefault()
+		}
+	}
+	
+	#updateCenterAndDist(touches) {
+		this.touchesCenter = [(touches[1].clientX + touches[0].clientX) / 2, (touches[1].clientY + touches[0].clientY) / 2]
+		this.touchesDist = ((touches[1].clientX - touches[0].clientX)**2 + (touches[1].clientY - touches[0].clientY)**2)**0.5
+	}
+}
+
+const isTouchScreen = () => "ontouchstart" in window || navigator.maxTouchPoints > 0
+export const INPUT_MANAGER = isTouchScreen() ? new TouchInputManager() : new MouseInputManager()
 
 export class CanvasManager {
 	constructor(canvas, drawFunc) {

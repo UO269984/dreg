@@ -26,10 +26,11 @@ export class EditableGraph extends Graph {
 			((e.x - boundingRect.left) - this.canvasManager.curPos[0] - width_2) / this.canvasManager.curScale + width_2,
 			((e.y - boundingRect.top) - this.canvasManager.curPos[1] - height_2) / this.canvasManager.curScale + height_2)
 		
+		let targetSizeMul = this.canvasManager.curScale * INPUT_MANAGER.inputPrecision
 		let i = 0
 		for (let ref of this.references) {
-			if (Math.abs(mouseCoords[0] - ref[0]) < 7 / (this.config.mulAxisX * this.canvasManager.curScale) &&
-				Math.abs(mouseCoords[1] - ref[1]) < 7 / (this.config.mulAxisY * this.canvasManager.curScale)) {
+			if (Math.abs(mouseCoords[0] - ref[0]) < 7 / (this.config.mulAxisX * targetSizeMul) &&
+				Math.abs(mouseCoords[1] - ref[1]) < 7 / (this.config.mulAxisY * targetSizeMul)) {
 				
 				this.selectedRef = ref
 				this.selectedRefPos = i
