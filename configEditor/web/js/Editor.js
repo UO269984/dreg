@@ -2,6 +2,7 @@ import {TEMPLATES} from "./AppLoadManager.js"
 import {VehicleAPI} from "./drivingEngineAPI.js"
 import {Graph} from "./graph/Graph.js"
 import {BasicGraphUI} from "./graph/GraphUI.js"
+import {EditorConfigUI, VehicleConfigUI} from "./ConfigUI.js"
 
 const VEHICLE_ATTRIBS = [
 	{name: "Throttle", path: "controls.throttle"},
@@ -94,16 +95,44 @@ class SimGraph {
 	}
 }
 
-export class Editor {
+class EditorConfig {
 	constructor() {
 		this.simInterval = 0.01
-		this.vehicle = new VehicleAPI()
+		this.graphSamples = 20
+		
 		this.inputLog = null
+		this.inputLogTime = 1
+	}
+	
+	get simSamples() {
+		return Math.round(this.inputLogTime / this.simInterval)
+	}
+	
+	set simSamples(samplesCount) {
+		this.simInterval = this.inputLogTime / samplesCount
+	}
+	
+	getAttrib(path) {
+		return this[path[0]]
+	}
+	
+	setConfigAttrib(path, value) {
+		this[path[0]] = value
+	}
+}
+
+export class Editor {
+	constructor() {
+		this.config = new EditorConfig()
+		this.vehicle = new VehicleAPI()
 		new FileLoader("vehicleInputLog-input", this.#loadInputLog.bind(this))
 		
 		this.simGraphs = new Array()
-		this.simGraphsContainer = document.getElementById("simulationGraphs")
-		document.getElementById("addGraphBt").onclick = this.addSimGraph.bind(this)
+		this.simGraphsContainer = document.getElementById("simulation-graphs")
+		document.getElementById("add-graph-bt").onclick = this.addSimGraph.bind(this)
+		
+		this.editorConfigUI = new EditorConfigUI(this)
+		new VehicleConfigUI(this)
 	}
 	
 	addSimGraph() {
@@ -120,7 +149,7 @@ export class Editor {
 	}
 	
 	#loadInputLog(inputLogCSV) {
-		this.inputLog = new Array()
+		let inputLog = new Array()
 		
 		let lines = inputLogCSV.split("\n")
 		lines.splice(0, 1) //Delete first line with column titles
@@ -129,7 +158,7 @@ export class Editor {
 			let splitted = line.split(";").map(Number)
 			
 			if (splitted.length == 4 && splitted.indexOf(NaN) < 0) {
-				this.inputLog.push({
+				inputLog.push({
 					time: splitted[0],
 					throttle: splitted[1],
 					brake: splitted[2],
@@ -138,30 +167,34 @@ export class Editor {
 			}
 			else {
 				console.warn(`Invalid line in input file: ${line}`)
-				this.inputLog = null
+				inputLog = null
 				break
 			}
 		}
+		this.config.inputLog = inputLog
+		this.config.inputLogTime = inputLog[inputLog.length - 1].time - inputLog[0].time
+		
+		this.editorConfigUI.updateInputs()
 		this.runSimulation()
 	}
 	
 	runSimulation() {
-		if (this.inputLog == null)
+		if (this.config.inputLog == null)
 			return
 		
 		this.vehicle.reset()
 		let time = 0
 		
-		for (let i = 0; i < this.inputLog.length - 1; i++) {
-			this.vehicle.setInput(this.inputLog[i])
+		for (let i = 0; i < this.config.inputLog.length - 1; i++) {
+			this.vehicle.setInput(this.config.inputLog[i])
 			
-			while (time < this.inputLog[i + 1].time) {
-				this.vehicle.update(this.simInterval)
+			while (time < this.config.inputLog[i + 1].time) {
+				this.vehicle.update(this.config.simInterval)
 				
 				for (let simGraph of this.simGraphs)
 					simGraph.sample(time)
 				
-				time += this.simInterval
+				time += this.config.simInterval
 			}
 		}
 		

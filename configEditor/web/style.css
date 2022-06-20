@@ -1,5 +1,67 @@
 body {
 	background: #111111;
+	color: white;
+}
+
+@media only screen and (max-width: 900px) {
+	#editor-config + div {
+		flex-direction: column !important;
+	}
+}
+
+#vehicle-config, #simulation {
+	padding: 0.5em 0.5em 0.5em 1.5em;
+	margin: 1.5em 0px;
+}
+
+#editor-config + div {
+	display: flex;
+	flex-direction: row;
+}
+
+#vehicle-config h2, #simulation h2 {
+	padding: 0px;
+	margin: 0px 0px 0.8em;
+}
+
+#vehicle-config {
+	min-width: 400px;
+}
+
+#simulation {
+	border-style: solid;
+	border-width: 0px 0px 0px 1px;
+	border-color: #666666;
+}
+
+#simulation-graphs {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.sim-graph {
+	margin: 0.2em;
+}
+
+.input-block {
+	display: block;
+}
+
+input[type=number] {
+	background: #222222;
+	color: white;
+	text-align: left;
+	
+	display: inline-block;
+	width: 4em;
+	
+	padding: 4px 7px;
+	border-width: 0px;
+	margin: 3px;
+}
+
+input[type=number].long-input {
+	width: 8em;
 }
 
 canvas {

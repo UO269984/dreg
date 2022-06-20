@@ -9,15 +9,59 @@
 	<script type="module" src="js/main.js"></script>
 </head>
 <body>
+	<h1>Vehicle configuration editor</h1>
 	<div>
-		<label for="inputLogFile">Cargar archivo de log</label>
+		<label for="inputLogFile">Load vehicle input log</label>
 		<input id="vehicleInputLog-input" type="file" name="inputLogFile" />
 	</div>
 	<div id="testGraphs"></div>
 	
-	<div id="simulation">
-		<button id="addGraphBt">Add graph</button>
-		<div id="simulationGraphs"></div>
+	<div id="editor-config">
+		<h2>Editor settings</h2>
+		<div class="input-block">
+			<label for="simInterval">Simulation interval (s)</label>
+			<input class="long-input" type="number" name="simInterval" />
+		</div>
+		
+		<div class="input-block">
+			<label for="simSamples">Simulation samples</label>
+			<input type="number" name="simSamples" />
+		</div>
+		
+		<div class="input-block">
+			<label for="graphSamples">Graph samples per segment</label>
+			<input type="number" name="graphSamples" />
+		</div>
+	</div>
+	
+	<div>
+		<div id="vehicle-config">
+			<h2>Vehicle configuration</h2>
+			<div class="input-block">
+				<label for="maxSteeringAngle">Max steering angle (º)</label>
+				<input type="number" name="maxSteeringAngle" />
+			</div>
+			
+			<div class="input-block">
+				<label>Front shaft (vector x-y-z)</label>
+				<input type="number" name="frontShaft-x" />
+				<input type="number" name="frontShaft-y" />
+				<input type="number" name="frontShaft-z" />
+			</div>
+			
+			<div class="input-block">
+				<label>Rear shaft (vector x-y-z)</label>
+				<input type="number" name="rearShaft-x" />
+				<input type="number" name="rearShaft-y" />
+				<input type="number" name="rearShaft-z" />
+			</div>
+		</div>
+		
+		<div id="simulation">
+			<h2>Simulation</h2>
+			<button id="add-graph-bt">Add graph</button>
+			<div id="simulation-graphs"></div>
+		</div>
 	</div>
 </body>
 </html>

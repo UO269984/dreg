@@ -23,6 +23,42 @@ engine::VehicleControls createVehicleControls(float throttle, float brake, float
 	return {throttle, brake, steeringWheel};
 }
 
+
+void updateVector3Struct(engine::Vector3* vector, emscripten::val obj) {
+	vector->x = obj["x"].as<float>();
+	vector->y = obj["y"].as<float>();
+	vector->z = obj["z"].as<float>();
+}
+
+void updateVector3Obj(engine::Vector3* vector, emscripten::val obj) {
+	obj.set("x", emscripten::val(vector->x));
+	obj.set("y", emscripten::val(vector->y));
+	obj.set("z", emscripten::val(vector->z));
+}
+
+void updateVehicleStateObj(engine::VehicleState* state, emscripten::val obj) {
+	updateVector3Obj(&state->pos, obj["pos"]);
+	updateVector3Obj(&state->rotation, obj["rotation"]);
+}
+
+void updateVehiclePropsObj(engine::VehicleProps* props, emscripten::val obj) {
+	obj.set("speed", emscripten::val(props->speed));
+	obj.set("acceleration", emscripten::val(props->acceleration));
+}
+
+void updateVehicleConfigStruct(engine::VehicleConfig* config, emscripten::val obj) {
+	updateVector3Struct(&config->frontShaft, obj["frontShaft"]);
+	updateVector3Struct(&config->rearShaft, obj["rearShaft"]);
+	config->maxSteeringAngle = obj["maxSteeringAngle"].as<float>();
+}
+
+void updateVehicleConfigObj(engine::VehicleConfig* config, emscripten::val obj) {
+	updateVector3Obj(&config->frontShaft, obj["frontShaft"]);
+	updateVector3Obj(&config->rearShaft, obj["rearShaft"]);
+	obj.set("maxSteeringAngle", emscripten::val(config->maxSteeringAngle));
+}
+
+
 PTR createVehicle() {return (PTR) engine::createVehicle();}
 void deleteVehicle(PTR vehicle) {engine::deleteVehicle((engine::Vehicle*) vehicle);}
 void resetVehicle(PTR vehicle) {engine::resetVehicle((engine::Vehicle*) vehicle);}
@@ -118,6 +154,11 @@ EMSCRIPTEN_BINDINGS(drivingEngine) {
 		.property("speed", &engine::VehicleProps::speed)
 		.property("acceleration", &engine::VehicleProps::acceleration)
 		;
+	
+	emscripten::function("updateVehicleStateObj", &updateVehicleStateObj, emscripten::allow_raw_pointers());
+	emscripten::function("updateVehiclePropsObj", &updateVehiclePropsObj, emscripten::allow_raw_pointers());
+	emscripten::function("updateVehicleConfigStruct", &updateVehicleConfigStruct, emscripten::allow_raw_pointers());
+	emscripten::function("updateVehicleConfigObj", &updateVehicleConfigObj, emscripten::allow_raw_pointers());
 	
 	emscripten::function("createVehicle", &createVehicle, emscripten::allow_raw_pointers());
 	emscripten::function("deleteVehicle", &deleteVehicle, emscripten::allow_raw_pointers());

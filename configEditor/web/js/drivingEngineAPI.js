@@ -3,14 +3,55 @@ import initModule from "./driving-engine/driving-engine.js"
 const Module = initModule()
 export const setModuleLoadFunc = func => Module.onRuntimeInitialized = func
 
+class VehicleStruct {
+	constructor(obj, structPtr, updateObjFunc) {
+		this.obj = obj
+		this.structPtr = structPtr
+		this.updateObjFunc = updateObjFunc
+		
+		this.updated = false
+	}
+	
+	getObj() {
+		if (! this.updated) {
+			this.updateObjFunc(this.structPtr, this.obj)
+			this.updated = true
+		}
+		return this.obj
+	}
+	
+	invalidate() {
+		this.updated = false
+	}
+}
+
+class UpdatedVehicleStruct {
+	constructor(struct) {
+		this.struct = struct
+	}
+	getObj() {
+		return this.struct
+	}
+	invalidate() {}
+}
+
 export class VehicleAPI {
 	constructor() {
 		this.vehicle = Module.createVehicle()
 		
-		this.controls = new Module.VehicleControls(0, 0, 0)
-		this.state = Module.getVehicleState(this.vehicle)
-		this.props = Module.getVehicleProps(this.vehicle)
-		this.config = Module.getVehicleConfig(this.vehicle)
+		this.controlsPtr = new Module.VehicleControls(0, 0, 0)
+		this.statePtr = Module.getVehicleState(this.vehicle)
+		this.propsPtr = Module.getVehicleProps(this.vehicle)
+		this.configPtr = Module.getVehicleConfig(this.vehicle)
+		
+		//controls do not have struct type attributes, so it can be edited directly
+		this.controls = new UpdatedVehicleStruct(this.controlsPtr)
+		this.state = new VehicleStruct({pos: {}, rotation: {}}, this.statePtr, Module.updateVehicleStateObj)
+		this.props = new VehicleStruct({}, this.propsPtr, Module.updateVehiclePropsObj)
+		
+		this.configObj = {frontShaft: {}, rearShaft: {}}
+		Module.updateVehicleConfigObj(this.configPtr, this.configObj)
+		this.config = new UpdatedVehicleStruct(this.configObj)
 	}
 	
 	delete() {
@@ -22,10 +63,10 @@ export class VehicleAPI {
 	}
 	
 	setInput(input) {
-		this.controls.throttle = input.throttle
-		this.controls.brake = input.brake
-		this.controls.steeringWheel = input.steeringWheel
-		Module.setVehicleInput(this.vehicle, this.controls)
+		this.controlsPtr.throttle = input.throttle
+		this.controlsPtr.brake = input.brake
+		this.controlsPtr.steeringWheel = input.steeringWheel
+		Module.setVehicleInput(this.vehicle, this.controlsPtr)
 	}
 	
 	updateConfig() {
@@ -33,23 +74,27 @@ export class VehicleAPI {
 	}
 	
 	update(delta) {
+		this.state.invalidate()
+		this.props.invalidate()
 		Module.update(this.vehicle, delta)
 	}
 	
 	getAttrib(path) {
-		let obj = this
-		for (let attribName of path)
-			obj = obj[attribName]
+		let obj = this[path[0]].getObj()
+		
+		for (let i = 1; i < path.length; i++)
+			obj = obj[path[i]]
 		
 		return obj
 	}
 	
-	setConfigVal(path, value) {
-		let obj = this.config
-		for (let i = 0; i < path.length - 1; i++)
+	setConfigAttrib(path, value) {
+		let obj = this.configObj
+		for (let i = 1; i < path.length - 1; i++) //Skip the first element in path ("config")
 			obj = obj[path[i]]
 		
 		obj[path[path.length - 1]] = value
+		Module.updateVehicleConfigStruct(this.configPtr, this.configObj);
 	}
 }
 
