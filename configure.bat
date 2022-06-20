@@ -8,5 +8,6 @@ mklink configEditor\wasmEngineApi\driving-engine.bc ..\..\engine\build\driving-e
 mkdir engine\build
 mkdir engine\bin
 mkdir test\bin
+mkdir configEditor\web\js\driving-engine
 
 make --no-print-directory -C tools
