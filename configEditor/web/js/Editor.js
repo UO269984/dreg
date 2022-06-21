@@ -20,6 +20,16 @@ const VEHICLE_ATTRIBS = [
 	{name: "Acceleration", path: "props.acceleration"}
 ]
 
+const COMPUTED_VEHICLE_ATTRIBS = {
+	originDist: {
+		name: "Origin dist",
+		func: vehicle => {
+			let pos = vehicle.getAttrib(["state", "pos"])
+			return (pos.x**2 + pos.y**2 + pos.z**2)**0.5
+		}
+	}
+}
+
 class FileLoader {
 	constructor(fileInputID, fileLoadedFunc) {
 		this.fileLoadedFunc = fileLoadedFunc
@@ -72,13 +82,23 @@ class SimGraph {
 			this.attribSelector.appendChild(option)
 		}
 		
+		for (let id in COMPUTED_VEHICLE_ATTRIBS) {
+			let option = document.createElement("option")
+			option.innerText = COMPUTED_VEHICLE_ATTRIBS[id].name
+			option.value = "COMPUTED." + id
+			
+			this.attribSelector.appendChild(option)
+		}
+		
 		this.attribSelector.children[VEHICLE_ATTRIBS.map(attrib => attrib.path).indexOf("props.speed")].selected = true
 		this.path = this.attribSelector.value.split(".")
 	}
 	
 	sample(time) {
 		this.xValues.push(time)
-		this.yValues.push(this.editor.vehicle.getAttrib(this.path))
+		this.yValues.push(this.path[0] == "COMPUTED" ?
+			COMPUTED_VEHICLE_ATTRIBS[this.path[1]].func(this.editor.vehicle) :
+			this.editor.vehicle.getAttrib(this.path))
 	}
 	
 	#clearArrays() {
