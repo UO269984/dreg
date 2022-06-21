@@ -71,10 +71,15 @@ class SimGraph {
 	}
 	
 	#loadAttribSelector() {
+		this.attribChanged = false
+		
 		this.attribSelector = this.container.getElementsByClassName("attrib-selector")[0]
 		this.attribSelector.onchange = e => {
 			this.path = this.attribSelector.value.split(".")
+			
+			this.attribChanged = true
 			this.editor.runSimulation()
+			this.attribChanged = false
 		}
 		
 		for (let attrib of VEHICLE_ATTRIBS) {
@@ -112,7 +117,7 @@ class SimGraph {
 	endSampling() {
 		let values = [this.xValues, this.yValues]
 		
-		this.graphUI.graph.setAxisAutoFor(values)
+		this.graphUI.graph.setAxisAutoFor(values, this.attribChanged)
 		this.graphUI.graph.updateValues(values)
 		this.#clearArrays()
 	}

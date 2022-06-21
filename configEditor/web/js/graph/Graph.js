@@ -1,4 +1,5 @@
 import {CanvasManager} from "./CanvasManager.js"
+import UTIL from "./Util.js"
 
 export class Graph {
 	constructor(canvas, axisX, axisY) {
@@ -50,22 +51,33 @@ export class Graph {
 		}
 	}
 	
-	setAxisAutoFor(values) {
-		this.config.axisX = this.#getAxisAutoFor(values[0])
-		this.config.axisY = this.#getAxisAutoFor(values[1])
-		this.#updateGraphConfig()
+	setAxisAutoFor(values, forceUpdate = false) {
+		let axisXUpdated = this.#updateAxisAuto(this.config.axisX, values[0], forceUpdate, 0)
+		let axisYUpdated = this.#updateAxisAuto(this.config.axisY, values[1], forceUpdate)
+		
+		if (axisXUpdated || axisYUpdated)
+			this.#updateGraphConfig()
 	}
 	
-	#getAxisAutoFor(axisValues) {
-		let axis = {
-			min: Math.min.apply(null, axisValues),
-			max: Math.max.apply(null, axisValues)
-		}
-		if (axis.min == axis.max)
-			axis.min--
+	#updateAxisAuto(axis, values, forceUpdate = false, marginPercent = 0.1) {
+		let min = UTIL.min(values)
+		let max = UTIL.max(values)
 		
-		this.#computeAxisStep(axis)
-		return axis
+		if (forceUpdate || min < axis.min || max > axis.max || (axis.max - axis.min) / (max - min) > 3.5) {
+			if (min == max)
+				max++
+			
+			let margin = (max - min) * marginPercent
+			min -= margin
+			max += margin
+			
+			axis.min = min
+			axis.max = max
+			this.#computeAxisStep(axis)
+			return true
+		}
+		else
+			return false
 	}
 	
 	#computeAxisStep(axis) {
