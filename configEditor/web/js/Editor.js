@@ -31,10 +31,10 @@ const COMPUTED_VEHICLE_ATTRIBS = {
 }
 
 class FileLoader {
-	constructor(fileInputID, fileLoadedFunc) {
+	constructor(fileInput, fileLoadedFunc) {
 		this.fileLoadedFunc = fileLoadedFunc
 		
-		this.fileInput = document.getElementById(fileInputID)
+		this.fileInput = fileInput
 		this.fileInput.addEventListener("change", this.loadFile.bind(this))
 	}
 	
@@ -43,7 +43,10 @@ class FileLoader {
 			let reader = new FileReader()
 			reader.readAsText(this.fileInput.files[0], "UTF-8")
 			
-			reader.onload = e => this.fileLoadedFunc(e.target.result)
+			reader.onload = e => {
+				this.fileLoadedFunc(this.fileInput.files[0].name, e.target.result)
+				this.fileInput.value = ""
+			}
 			reader.onerror = e => console.warn(`Error reading ${this.fileInput.files[0].name}`)
 		}
 	}
@@ -145,7 +148,10 @@ export class Editor {
 	constructor() {
 		this.config = new EditorConfig()
 		this.vehicle = new VehicleAPI()
-		new FileLoader("vehicleInputLog-input", this.#loadInputLog.bind(this))
+		
+		let fileInput = document.getElementById("vehicleInputLog-input")
+		new FileLoader(fileInput, this.#loadInputLog.bind(this))
+		document.getElementById("vehicleInputLog-bt").onclick = e => fileInput.click()
 		
 		this.simGraphs = new Array()
 		this.simGraphsContainer = document.getElementById("simulation-graphs")
@@ -168,7 +174,7 @@ export class Editor {
 		this.simGraphs.splice(this.simGraphs.indexOf(simGraph), 1)
 	}
 	
-	#loadInputLog(inputLogCSV) {
+	#loadInputLog(filename, inputLogCSV) {
 		let inputLog = new Array()
 		
 		let lines = inputLogCSV.split("\n")
@@ -191,11 +197,15 @@ export class Editor {
 				break
 			}
 		}
-		this.config.inputLog = inputLog
-		this.config.inputLogTime = inputLog[inputLog.length - 1].time - inputLog[0].time
 		
-		this.editorConfigUI.updateInputs()
-		this.runSimulation()
+		if (inputLog != null) {
+			this.config.inputLog = inputLog
+			this.config.inputLogTime = inputLog[inputLog.length - 1].time - inputLog[0].time
+			
+			document.getElementById("loaded-log-filename").innerText = filename
+			this.editorConfigUI.updateInputs()
+			this.runSimulation()
+		}
 	}
 	
 	runSimulation() {

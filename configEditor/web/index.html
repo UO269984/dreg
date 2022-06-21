@@ -10,9 +10,14 @@
 </head>
 <body>
 	<h1>Vehicle configuration editor</h1>
-	<div>
-		<label for="inputLogFile">Load vehicle input log</label>
-		<input id="vehicleInputLog-input" type="file" name="inputLogFile" />
+	<div id="load-log-file">
+		<div>
+			<span>Loaded input file</span>
+			<span id="loaded-log-filename">-</span>
+		</div>
+		
+		<button id="vehicleInputLog-bt">Load vehicle input log</button>
+		<input id="vehicleInputLog-input" type="file" accept=".csv" name="inputLogFile" />
 	</div>
 	<div id="testGraphs"></div>
 	

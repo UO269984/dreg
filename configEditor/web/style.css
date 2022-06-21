@@ -43,6 +43,29 @@ body {
 	margin: 0.2em;
 }
 
+#load-log-file {
+	margin: 1.5em;
+}
+
+#load-log-file > div:first-child {
+	font-size: 1.4em;
+	display: block;
+	
+	margin-bottom: 0.6em;
+}
+
+#loaded-log-filename {
+	background: #4e4e4e;
+	
+	padding: 0.2em 0.5em;
+	border-radius: 0.1em;
+	margin: 0.5em;
+}
+
+#vehicleInputLog-input {
+	display: none;
+}
+
 .input-block {
 	display: block;
 }
