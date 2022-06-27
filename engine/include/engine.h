@@ -18,6 +18,9 @@ extern "C" {
 	extern SaveFileFunc saveFileFunc;
 	void setSaveFileFunc(SaveFileFunc newSaveFileFunc);
 	
+	float* createFloatArray(size_t size);
+	void deleteFloatArray(float* array);
+	
 	Vehicle* createVehicle();
 	void deleteVehicle(Vehicle* vehicle);
 	void resetVehicle(Vehicle* vehicle);

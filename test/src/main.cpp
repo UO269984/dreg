@@ -4,6 +4,32 @@
 #include <iostream>
 using namespace std;
 
+void loadConfig(Vehicle* vehicle) {
+	VehicleConfig* config = getVehicleConfig(vehicle);
+	config->frontShaft = {0, 0, 0};
+	config->rearShaft = {1, 0, 0};
+	config->maxSteeringAngle = 40.0f;
+	updateVehicleConfig(vehicle);
+	
+	Vector2 refs[] = {{0, 0}, {1, 1}};
+	loadLinearGraph(config->power.throttleCurve, refs, 2);
+	
+	refs[1].y = 3000;
+	loadLinearGraph(config->power.looseEngineRpmCurve, refs, 2);
+	
+	refs[0] = {0, 80};
+	refs[1] = {1000, 1500};
+	loadLinearGraph(config->power.engineCurve, refs, 2);
+	
+	refs[0] = {200, 0};
+	refs[1] = {1000, -100};
+	loadLinearGraph(config->power.engineBrakeCurve, refs, 2);
+	
+	refs[0] = {0, 5000};
+	refs[1] = {0, 0};
+	loadLinearGraph(config->power.clutchCurve, refs, 2);
+}
+
 void testVehicle(Vehicle* vehicle, int iters) {
 	VehicleControls controls = {0.5, 0, 1};
 	setVehicleInput(vehicle, &controls);
@@ -99,9 +125,7 @@ int main(int argc, char const *argv[]) {
 	
 	printTest("Vehicle");
 	Vehicle* vehicle = createVehicle();
-	*getVehicleConfig(vehicle) = {{0, 0, 0}, {1, 0, 0}, 40.0f};
-	updateVehicleConfig(vehicle);
-	
+	loadConfig(vehicle);
 	testVehicle(vehicle, updateItersCount);
 	
 	printTest("Input logger");

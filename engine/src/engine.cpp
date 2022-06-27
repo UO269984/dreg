@@ -23,6 +23,14 @@ void setSaveFileFunc(SaveFileFunc newSaveFileFunc) {
 	saveFileFunc = newSaveFileFunc;
 }
 
+float* createFloatArray(size_t size) {
+	return new float[size];
+}
+
+void deleteFloatArray(float* array) {
+	delete[] array;
+}
+
 Vehicle* createVehicle() {
 	return new Vehicle();
 }

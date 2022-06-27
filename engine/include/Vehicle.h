@@ -17,7 +17,12 @@ public:
 	VehicleProps props;
 
 private:
+	void updatePower(float delta);
+	
 	float shaftsDist;
 	Vector3 rearShaftPos;
 	Vector3 speedVector;
+	
+	float wheelPerimeter;
+	bool connectedClutch; //If the clutch is fully engaged
 };
