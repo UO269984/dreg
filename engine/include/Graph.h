@@ -6,7 +6,7 @@
 
 class Graph {
 public:
-	Graph() {};
+	Graph() {}
 	~Graph();
 	
 	void loadLinear(Vector2* refs, size_t refsCount);

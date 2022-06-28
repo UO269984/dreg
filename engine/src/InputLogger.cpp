@@ -43,5 +43,7 @@ void InputLogger::save(const char* filename) {
 bool InputLogger::sameInput(VehicleControls& c1, VehicleControls& c2) const {
 	return c1.throttle == c2.throttle &&
 		c1.brake == c2.brake &&
-		c1.steeringWheel == c2.steeringWheel;
+		c1.steeringWheel == c2.steeringWheel &&
+		c1.clutch == c2.clutch &&
+		c1.gear == c2.gear;
 }
