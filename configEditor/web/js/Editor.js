@@ -188,12 +188,14 @@ export class Editor {
 		for (let line of lines.filter(line => line.length > 0)) {
 			let splitted = line.split(";").map(Number)
 			
-			if (splitted.length == 4 && splitted.indexOf(NaN) < 0) {
+			if (splitted.length == 6 && splitted.indexOf(NaN) < 0) {
 				inputLog.push({
 					time: splitted[0],
 					throttle: splitted[1],
 					brake: splitted[2],
-					steeringWheel: splitted[3]
+					steeringWheel: splitted[3],
+					clutch: splitted[4],
+					gear: splitted[5]
 				})
 			}
 			else {
