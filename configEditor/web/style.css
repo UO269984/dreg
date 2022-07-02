@@ -97,9 +97,19 @@ button {
 	cursor: pointer;
 }
 
+details {
+	margin: 0.8em 0em;
+}
+
+summary {
+	cursor: pointer;
+	-webkit-user-select: none;
+	font-size: 1em;
+}
+
 .editable-graph {
 	color: white;
 	
 	border-style: none;
-	margin: 3em;
+	margin: 0em;
 }

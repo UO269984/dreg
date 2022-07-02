@@ -1,11 +1,5 @@
-#include <emscripten.h>
-#include <emscripten/bind.h>
-
-namespace engine {
-	#include "engine.h"
-}
-
-#define PTR intptr_t
+#include "drivingEngineApi.h"
+#include "updateObj.h"
 
 engine::Vector2 createVector2(float x, float y) {
 	return {x, y};
@@ -15,47 +9,8 @@ engine::Vector3 createVector3(float x, float y, float z) {
 	return {x, y, z};
 }
 
-engine::VehicleConfig createVehicleConfig(engine::Vector3 frontShaft, engine::Vector3 rearShaft, float maxSteeringAngle) {
-	return {frontShaft, rearShaft, maxSteeringAngle};
-}
-
-engine::VehicleControls createVehicleControls(float throttle, float brake, float steeringWheel) {
-	return {throttle, brake, steeringWheel};
-}
-
-
-void updateVector3Struct(engine::Vector3* vector, emscripten::val obj) {
-	vector->x = obj["x"].as<float>();
-	vector->y = obj["y"].as<float>();
-	vector->z = obj["z"].as<float>();
-}
-
-void updateVector3Obj(engine::Vector3* vector, emscripten::val obj) {
-	obj.set("x", emscripten::val(vector->x));
-	obj.set("y", emscripten::val(vector->y));
-	obj.set("z", emscripten::val(vector->z));
-}
-
-void updateVehicleStateObj(engine::VehicleState* state, emscripten::val obj) {
-	updateVector3Obj(&state->pos, obj["pos"]);
-	updateVector3Obj(&state->rotation, obj["rotation"]);
-}
-
-void updateVehiclePropsObj(engine::VehicleProps* props, emscripten::val obj) {
-	obj.set("speed", emscripten::val(props->speed));
-	obj.set("acceleration", emscripten::val(props->acceleration));
-}
-
-void updateVehicleConfigStruct(engine::VehicleConfig* config, emscripten::val obj) {
-	updateVector3Struct(&config->frontShaft, obj["frontShaft"]);
-	updateVector3Struct(&config->rearShaft, obj["rearShaft"]);
-	config->maxSteeringAngle = obj["maxSteeringAngle"].as<float>();
-}
-
-void updateVehicleConfigObj(engine::VehicleConfig* config, emscripten::val obj) {
-	updateVector3Obj(&config->frontShaft, obj["frontShaft"]);
-	updateVector3Obj(&config->rearShaft, obj["rearShaft"]);
-	obj.set("maxSteeringAngle", emscripten::val(config->maxSteeringAngle));
+engine::VehicleControls createVehicleControls(float throttle, float brake, float steeringWheel, float clutch, int gear) {
+	return {throttle, brake, steeringWheel, clutch, gear};
 }
 
 
@@ -67,16 +22,16 @@ void setVehicleInput(PTR vehicle, engine::VehicleControls* vehicleControls) {
 	engine::setVehicleInput((engine::Vehicle*) vehicle, vehicleControls);
 }
 
-engine::VehicleState* getVehicleState(PTR vehicle) {
-	return engine::getVehicleState((engine::Vehicle*) vehicle);
+PTR getVehicleState(PTR vehicle) {
+	return (PTR) engine::getVehicleState((engine::Vehicle*) vehicle);
 }
 
-engine::VehicleProps* getVehicleProps(PTR vehicle) {
-	return engine::getVehicleProps((engine::Vehicle*) vehicle);
+PTR getVehicleProps(PTR vehicle) {
+	return (PTR) engine::getVehicleProps((engine::Vehicle*) vehicle);
 }
 
-engine::VehicleConfig* getVehicleConfig(PTR vehicle) {
-	return engine::getVehicleConfig((engine::Vehicle*) vehicle);
+PTR getVehicleConfig(PTR vehicle) {
+	return (PTR) engine::getVehicleConfig((engine::Vehicle*) vehicle);
 }
 
 void updateVehicleConfig(PTR vehicle) {
@@ -91,16 +46,57 @@ void updateVehicle(PTR vehicle, float delta) {
 PTR createGraph() {return (PTR) engine::createGraph();}
 void deleteGraph(PTR graph) {engine::deleteGraph((engine::Graph*) graph);}
 
-void loadLinearGraph(PTR graph, PTR refs, size_t refsCount, size_t samplesPerSegment) {
-	engine::loadLinearGraph((engine::Graph*) graph, (engine::Vector2*) refs, refsCount);
+static engine::Vector2* refsToVector2Array(emscripten::val refs) {
+	size_t length = refs["length"].as<size_t>();
+	engine::Vector2* vector2Array = new engine::Vector2[length];
+	
+	for (size_t i = 0; i < length; i++)
+		vector2Array[i] = {refs[i][0].as<float>(), refs[i][1].as<float>()};
+	
+	return vector2Array;
 }
 
-void loadBezierGraph(PTR graph, PTR refs, size_t refsCount, size_t samplesPerSegment) {
-	engine::loadBezierGraph((engine::Graph*) graph, (engine::Vector2*) refs, refsCount, samplesPerSegment);
+void loadLinearGraph(PTR graph, emscripten::val refs) {
+	engine::Vector2* refsArray = refsToVector2Array(refs);
+	engine::loadLinearGraph((engine::Graph*) graph, refsArray, refs["length"].as<size_t>());
+	delete[] refsArray;
 }
 
-engine::Vector2* getGraphPoints(PTR graph, PTR pointsCount) {
-	return engine::getGraphPoints((engine::Graph*) graph, (size_t*) pointsCount);
+void loadBezierGraph(PTR graph, emscripten::val refs, size_t samplesPerSegment) {
+	engine::Vector2* refsArray = refsToVector2Array(refs);
+	engine::loadBezierGraph((engine::Graph*) graph, refsArray, refs["length"].as<size_t>(), samplesPerSegment);
+	delete[] refsArray;
+}
+
+emscripten::val getGraphPoints(PTR graph) {
+	size_t pointsCount;
+	engine::Vector2* pointsArray = engine::getGraphPoints((engine::Graph*) graph, &pointsCount);
+	
+	emscripten::val xValues = emscripten::val::array();
+	emscripten::val yValues = emscripten::val::array();
+	
+	size_t objArrayPos = 1;
+	for (size_t i = 0; i <= pointsCount; i++) {
+		xValues.set(objArrayPos, emscripten::val(pointsArray[i].x));
+		yValues.set(objArrayPos++, emscripten::val(pointsArray[i].y));
+	}
+	
+	//Add extreme points
+	float minX = pointsArray[0].x;
+	float maxX = pointsArray[pointsCount - 1].x;
+	float interv = (maxX - minX) * 100;
+	
+	xValues.set(0, emscripten::val(minX - interv));
+	yValues.set(0, emscripten::val(engine::getGraphY((engine::Graph*) graph, minX - interv)));
+	
+	xValues.set(pointsCount + 1, emscripten::val(maxX + interv));
+	yValues.set(pointsCount + 1, emscripten::val(engine::getGraphY((engine::Graph*) graph, maxX + interv)));
+	
+	emscripten::val ret = emscripten::val::array();
+	ret.set(0, xValues);
+	ret.set(1, yValues);
+	
+	return ret;
 }
 
 float getGraphY(PTR graph, float x) {
@@ -126,33 +122,14 @@ EMSCRIPTEN_BINDINGS(drivingEngine) {
 		.property("z", &engine::Vector3::z)
 		;
 	
-	emscripten::class_<engine::VehicleConfig>("VehicleConfig")
-		.constructor<>()
-		.constructor(&createVehicleConfig)
-		
-		.property("frontShaft", &engine::VehicleConfig::frontShaft)
-		.property("rearShaft", &engine::VehicleConfig::rearShaft)
-		.property("maxSteeringAngle", &engine::VehicleConfig::maxSteeringAngle)
-		;
-	
 	emscripten::class_<engine::VehicleControls>("VehicleControls")
 		.constructor<>()
 		.constructor(&createVehicleControls)
 		.property("throttle", &engine::VehicleControls::throttle)
 		.property("brake", &engine::VehicleControls::brake)
 		.property("steeringWheel", &engine::VehicleControls::steeringWheel)
-		;
-	
-	emscripten::class_<engine::VehicleState>("VehicleState")
-		.constructor<>()
-		.property("pos", &engine::VehicleState::pos)
-		.property("rotation", &engine::VehicleState::rotation)
-		;
-	
-	emscripten::class_<engine::VehicleProps>("VehicleProps")
-		.constructor<>()
-		.property("speed", &engine::VehicleProps::speed)
-		.property("acceleration", &engine::VehicleProps::acceleration)
+		.property("clutch", &engine::VehicleControls::clutch)
+		.property("gear", &engine::VehicleControls::gear)
 		;
 	
 	emscripten::function("updateVehicleStateObj", &updateVehicleStateObj, emscripten::allow_raw_pointers());

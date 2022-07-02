@@ -44,8 +44,10 @@ class MouseInputManager extends InputManager {
 			}
 		}
 		document.onmouseup = e => {
-			if (e.button == 0 || e.button == 1)
+			if ((e.button == 0 || e.button == 1) && this.activeCanvasFuncs != null) {
+				this.activeCanvasFuncs.mouseUpCallback(e)
 				this.activeCanvasFuncs = null
+			}
 		}
 	}
 	
@@ -112,6 +114,10 @@ class TouchInputManager extends InputManager {
 				}
 			}
 		})
+		document.addEventListener("touchend", e => {
+			if (this.activeCanvasFuncs != null)
+				this.activeCanvasFuncs.mouseUpCallback(e)
+		})
 	}
 	
 	#touchMoveHandler(e) {
@@ -161,6 +167,7 @@ export class CanvasManager {
 			moveCallback: this.#move.bind(this),
 			scaleCallback: this.#scale.bind(this),
 			mouseDownCallback: e => {},
+			mouseUpCallback: e => {},
 			moveInteractCallback: e => {}
 		})
 	}

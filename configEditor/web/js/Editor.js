@@ -8,6 +8,8 @@ const VEHICLE_ATTRIBS = [
 	{name: "Throttle", path: "controls.throttle"},
 	{name: "Brake", path: "controls.brake"},
 	{name: "Steering wheel", path: "controls.steeringWheel"},
+	{name: "Clutch", path: "controls.clutch"},
+	{name: "Gear", path: "controls.gear"},
 	
 	{name: "Pos x", path: "state.pos.x"},
 	{name: "Pos y", path: "state.pos.y"},
@@ -17,7 +19,13 @@ const VEHICLE_ATTRIBS = [
 	{name: "Rot z", path: "state.rotation.z"},
 	
 	{name: "Speed", path: "props.speed"},
-	{name: "Acceleration", path: "props.acceleration"}
+	{name: "Acceleration", path: "props.acceleration"},
+	
+	{name: "Wheel rpm", path: "props.wheelRpm"},
+	{name: "Engine rpm", path: "props.engineRpm"},
+	{name: "Engine torque", path: "props.engineTorque"},
+	{name: "Clutch torque", path: "props.clutchTorque"},
+	{name: "Axle shaft torque", path: "props.axleShaftTorque"}
 ]
 
 const COMPUTED_VEHICLE_ATTRIBS = {
@@ -162,8 +170,8 @@ export class Editor {
 		this.simGraphsContainer = document.getElementById("simulation-graphs")
 		document.getElementById("add-graph-bt").onclick = this.addSimGraph.bind(this)
 		
-		this.editorConfigUI = new EditorConfigUI(this)
-		new VehicleConfigUI(this)
+		this.vehicleConfigUI = new VehicleConfigUI(this)
+		this.editorConfigUI = new EditorConfigUI(this, this.vehicleConfigUI.updateGraphs.bind(this.vehicleConfigUI))
 	}
 	
 	addSimGraph() {

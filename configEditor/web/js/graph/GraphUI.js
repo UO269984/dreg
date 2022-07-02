@@ -39,14 +39,15 @@ export class BasicGraphUI {
 }
 
 export class EditableGraphUI extends BasicGraphUI {
-	constructor(linearRefsToGraphFunc, bezierRefsToGraphFunc) {
+	constructor(linearRefsToGraphFunc, bezierRefsToGraphFunc, updateGraphCallback) {
 		super()
 		this.linearRefsToGraphFunc = linearRefsToGraphFunc
 		this.bezierRefsToGraphFunc = bezierRefsToGraphFunc
+		this.updateGraphCallback = updateGraphCallback
 		
 		this.bezierMode = true
 		this.#initControls()
-		this.resetGraph()
+		this.#createGraph()
 	}
 	
 	#initControls() {
@@ -86,7 +87,13 @@ export class EditableGraphUI extends BasicGraphUI {
 	}
 	
 	resetGraph() {
+		this.#createGraph()
+		this.updateGraphCallback()
+	}
+	
+	#createGraph() {
 		this.graph = new (this.bezierMode ? BezierGraph : EditableGraph)(this.canvas,
-			this.bezierMode ? this.bezierRefsToGraphFunc : this.linearRefsToGraphFunc, {min: 0, max: 1}, {min: 0, max: 1})
+			this.bezierMode ? this.bezierRefsToGraphFunc : this.linearRefsToGraphFunc,
+			this.updateGraphCallback, {min: 0, max: 1}, {min: 0, max: 1})
 	}
 }

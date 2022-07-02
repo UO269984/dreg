@@ -2,13 +2,20 @@ import {INPUT_MANAGER} from "./CanvasManager.js"
 import {Graph} from "./Graph.js"
 
 export class EditableGraph extends Graph {
-	constructor(canvas, refsToGraphFunc, axisX, axisY, defaultRefs = [[0, 0], [0.5, 0.5], [1, 1]]) {
+	constructor(canvas, refsToGraphFunc, updateCallback,
+		axisX, axisY, defaultRefs = [[0, 0], [1, 1]]) {
+		
 		super(canvas, axisX, axisY)
 		this.refsToGraphFunc = refsToGraphFunc
+		this.updateCallback = updateCallback
 		this.references = defaultRefs
 		this.selectedRef = null
 		this.selectedRefPos = -1
 		
+		INPUT_MANAGER.addCanvasAction(canvas, "mouseUpCallback", e => {
+			if (this.selectedRef != null)
+				this.updateCallback()
+		})
 		INPUT_MANAGER.addCanvasAction(canvas, "mouseDownCallback", this.mouseDown.bind(this))
 		INPUT_MANAGER.addCanvasAction(canvas, "moveInteractCallback", this.mouseMove.bind(this))
 		this.updateRefValues()
@@ -78,6 +85,7 @@ export class EditableGraph extends Graph {
 			this.references.splice(this.selectedRefPos, 1)
 			this.selectedRef = this.references[this.selectedRefPos - 1]
 			this.updateRefValues()
+			this.updateCallback()
 		}
 	}
 	
@@ -100,10 +108,10 @@ export class EditableGraph extends Graph {
 }
 
 export class BezierGraph extends EditableGraph {
-	constructor(canvas, refsToGraphFunc, axisX, axisY,
+	constructor(canvas, refsToGraphFunc, updateCallback, axisX, axisY,
 		defaultRefs = [[0, 0], [0.2, 0.2], [0.2, 0.4], [0.4, 0.6], [0.6, 0.8], [0.8, 0.8], [1, 1]]) {
 		
-		super(canvas, refsToGraphFunc, axisX, axisY, defaultRefs)
+		super(canvas, refsToGraphFunc, updateCallback, axisX, axisY, defaultRefs)
 		this.refsAlignEnabled = true
 	}
 	
@@ -162,7 +170,7 @@ export class BezierGraph extends EditableGraph {
 			if (this.selectedRefPos >= this.references.length - 2)
 				return
 			
-			let indexToAdd =  this.selectedRefPos + (3 - (this.selectedRefPos + 1) % 3)
+			let indexToAdd = this.selectedRefPos + (3 - (this.selectedRefPos + 1) % 3)
 			let ref1 = this.references[indexToAdd - 2]
 			let ref2 = this.references[indexToAdd + 1]
 			
@@ -172,6 +180,7 @@ export class BezierGraph extends EditableGraph {
 			this.selectedRefPos = indexToAdd - 2
 			this.selectedRef = this.references[this.selectedRefPos]
 			this.updateRefValues()
+			this.updateCallback()
 		}
 	}
 	
@@ -186,6 +195,7 @@ export class BezierGraph extends EditableGraph {
 			this.selectedRefPos = firstToDeletePos - 2
 			this.selectedRef = this.references[this.selectedRefPos]
 			this.updateRefValues()
+			this.updateCallback()
 		}
 	}
 	

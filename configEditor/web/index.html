@@ -19,7 +19,6 @@
 		<button id="vehicleInputLog-bt">Load vehicle input log</button>
 		<input id="vehicleInputLog-input" type="file" accept=".csv" name="inputLogFile" />
 	</div>
-	<div id="testGraphs"></div>
 	
 	<div id="editor-config">
 		<h2>Editor settings</h2>
@@ -48,6 +47,11 @@
 			</div>
 			
 			<div class="input-block">
+				<label for="mass">Vehicle mass (Kg)</label>
+				<input type="number" name="mass" />
+			</div>
+			
+			<div class="input-block">
 				<label>Front shaft (vector x-y-z)</label>
 				<input type="number" name="frontShaft-x" />
 				<input type="number" name="frontShaft-y" />
@@ -60,6 +64,54 @@
 				<input type="number" name="rearShaft-y" />
 				<input type="number" name="rearShaft-z" />
 			</div>
+			
+			<h3>Power</h3>
+				<div class="input-block">
+					<label for="torqueToRpmAccel">Torque to rpm accel</label>
+					<input type="number" name="torqueToRpmAccel" />
+				</div>
+				<div class="input-block">
+					<label for="driveRatio">Drive ratio</label>
+					<input type="number" name="driveRatio" />
+				</div>
+				
+				<details open>
+					<summary>Gear ratios</summary>
+					<button id="add-gear-bt">Add gear</button>
+					<button id="delete-gear-bt">Delete gear</button>
+					<div id="gear-ratios"></div>
+				</details>
+				
+				<details>
+					<summary>Throttle curve</summary>
+					<div id="throttleCurve"></div>
+				</details>
+				
+				<details open>
+					<summary>Engine curve</summary>
+					<div id="engineCurve"></div>
+				</details>
+				
+				<details>
+					<summary>Loose engine curve</summary>
+					<div id="looseEngineRpmCurve"></div>
+				</details>
+				
+				<details>
+					<summary>Engine brake curve</summary>
+					<div id="engineBrakeCurve"></div>
+				</details>
+				
+				<details>
+					<summary>Clutch curve</summary>
+					<div id="clutchCurve"></div>
+				</details>
+			
+			<h3>Wheels</h3>
+				<div class="input-block">
+					<label for="wheelDiameter">Diameter (m)</label>
+					<input type="number" name="wheelDiameter" />
+				</div>
 		</div>
 		
 		<div id="simulation">
