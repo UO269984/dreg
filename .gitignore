@@ -7,13 +7,14 @@ engine/android/obj/
 engine/android/jni/src
 engine/android/jni/include
 
-configEditor/web/js/driving-engine/
+configEditor/web/js/dreg/
 configEditor/wasmEngineApi/include
-configEditor/wasmEngineApi/driving-engine.bc
+configEditor/wasmEngineApi/dreg.bc
 
 test/test
 test/test.exe
-test/driving-engine.so
+test/dreg.so
+test/include/dreg
 
 tools/*.exe
 tools/rm

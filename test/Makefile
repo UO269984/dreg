@@ -1,10 +1,9 @@
 include ../globalVars.make
-ENGINE_INCLUDE := ../engine/include
 
 LIBRARY_FILENAME := $(LIBRARY_NAME).$(LIB_EXT)
 TARGET := test$(EXEC_EXT)
 
-CFLAGS = -c -I $(ENGINE_INCLUDE) -o $@
+CFLAGS = -c -I $(INCLUDE) -o $@
 LDFLAGS := $(LIBRARY_FILENAME) -lstdc++
 
 ifneq ($(OS),Windows_NT)
@@ -21,7 +20,7 @@ all: $(LIBRARY_FILENAME) $(TARGET)
 $(TARGET): $(OBJS)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
-$(shell $(CXX) -c -I $(ENGINE_INCLUDE) -MM $(SRCS) | $(ADD_DEPEND_PATH) $(BIN)/ > $(DEPENDS_FILE))
+$(shell $(CXX) -c -I $(INCLUDE) -MM $(SRCS) | $(ADD_DEPEND_PATH) $(BIN)/ > $(DEPENDS_FILE))
 include $(DEPENDS_FILE)
 
 $(BIN)/%.o: $(SRC)/%.cpp

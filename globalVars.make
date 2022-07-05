@@ -7,7 +7,7 @@ BUILD := build
 ANDROID := android
 DEPENDS_FILE := depends
 
-LIBRARY_NAME := driving-engine
+LIBRARY_NAME := dreg
 
 LIB_EXT := $(if $(filter-out $(OS),Windows_NT),so,dll)
 EXEC_EXT = $(if $(filter-out $(OS),Windows_NT),,.exe)

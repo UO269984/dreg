@@ -1,4 +1,4 @@
-import initModule from "./driving-engine/driving-engine.js"
+import initModule from "./dreg/dreg.js"
 
 const Module = initModule()
 export const setModuleLoadFunc = func => Module.onRuntimeInitialized = func

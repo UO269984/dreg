@@ -1,5 +1,5 @@
 
-SRCS := $(SRC)/engine.cpp\
+SRCS := $(SRC)/dreg.cpp\
 	$(SRC)/Vehicle.cpp\
 	$(SRC)/InputLogger.cpp\
 	$(SRC)/Graph.cpp\

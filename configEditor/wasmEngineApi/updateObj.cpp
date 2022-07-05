@@ -1,26 +1,26 @@
 #include "updateObj.h"
 
-static void updateVector3Struct(engine::Vector3* vector, emscripten::val obj) {
+static void updateVector3Struct(dreg::Vector3* vector, emscripten::val obj) {
 	vector->x = obj["x"].as<float>();
 	vector->y = obj["y"].as<float>();
 	vector->z = obj["z"].as<float>();
 }
 
-static void updateVector3Obj(engine::Vector3* vector, emscripten::val obj) {
+static void updateVector3Obj(dreg::Vector3* vector, emscripten::val obj) {
 	obj.set("x", emscripten::val(vector->x));
 	obj.set("y", emscripten::val(vector->y));
 	obj.set("z", emscripten::val(vector->z));
 }
 
 void updateVehicleStateObj(PTR statePtr, emscripten::val obj) {
-	engine::VehicleState* state = (engine::VehicleState*) statePtr;
+	dreg::VehicleState* state = (dreg::VehicleState*) statePtr;
 	
 	updateVector3Obj(&state->pos, obj["pos"]);
 	updateVector3Obj(&state->rotation, obj["rotation"]);
 }
 
 void updateVehiclePropsObj(PTR propsPtr, emscripten::val obj) {
-	engine::VehicleProps* props = (engine::VehicleProps*) propsPtr;
+	dreg::VehicleProps* props = (dreg::VehicleProps*) propsPtr;
 	
 	obj.set("speed", emscripten::val(props->speed));
 	obj.set("acceleration", emscripten::val(props->acceleration));
@@ -42,7 +42,7 @@ static void updateFloatArrayPtr(float* array, emscripten::val obj, int length) {
 		array[i] = obj[i].as<float>();
 }
 
-static void updatePowerConfigObj(engine::PowerConfig* powerConfig, emscripten::val obj) {
+static void updatePowerConfigObj(dreg::PowerConfig* powerConfig, emscripten::val obj) {
 	obj.set("throttleCurve", emscripten::val((PTR) powerConfig->throttleCurve));
 	obj.set("engineCurve", emscripten::val((PTR) powerConfig->engineCurve));
 	obj.set("looseEngineRpmCurve", emscripten::val((PTR) powerConfig->looseEngineRpmCurve));
@@ -58,33 +58,33 @@ static void updatePowerConfigObj(engine::PowerConfig* powerConfig, emscripten::v
 	obj.set("gearRatios", gearsObj);
 }
 
-static void updatePowerConfigStruct(engine::PowerConfig* powerConfig, emscripten::val obj) {
-	powerConfig->throttleCurve = (engine::Graph*) obj["throttleCurve"].as<PTR>();
-	powerConfig->engineCurve = (engine::Graph*) obj["engineCurve"].as<PTR>();
-	powerConfig->looseEngineRpmCurve = (engine::Graph*) obj["looseEngineRpmCurve"].as<PTR>();
-	powerConfig->engineBrakeCurve = (engine::Graph*) obj["engineBrakeCurve"].as<PTR>();
-	powerConfig->clutchCurve = (engine::Graph*) obj["clutchCurve"].as<PTR>();
+static void updatePowerConfigStruct(dreg::PowerConfig* powerConfig, emscripten::val obj) {
+	powerConfig->throttleCurve = (dreg::Graph*) obj["throttleCurve"].as<PTR>();
+	powerConfig->engineCurve = (dreg::Graph*) obj["engineCurve"].as<PTR>();
+	powerConfig->looseEngineRpmCurve = (dreg::Graph*) obj["looseEngineRpmCurve"].as<PTR>();
+	powerConfig->engineBrakeCurve = (dreg::Graph*) obj["engineBrakeCurve"].as<PTR>();
+	powerConfig->clutchCurve = (dreg::Graph*) obj["clutchCurve"].as<PTR>();
 	
 	powerConfig->torqueToRpmAccel = obj["torqueToRpmAccel"].as<float>();
 	powerConfig->driveRatio = obj["driveRatio"].as<float>();
 	powerConfig->gearsCount = obj["gearsCount"].as<int>();
 	
-	engine::deleteFloatArray(powerConfig->gearRatios);
+	dreg::deleteFloatArray(powerConfig->gearRatios);
 	powerConfig->gearsCount = obj["gearRatios"]["length"].as<int>();
-	powerConfig->gearRatios = engine::createFloatArray(powerConfig->gearsCount);
+	powerConfig->gearRatios = dreg::createFloatArray(powerConfig->gearsCount);
 	updateFloatArrayPtr(powerConfig->gearRatios, obj["gearRatios"], powerConfig->gearsCount);
 }
 
-static void updateWheelConfigObj(engine::WheelConfig* wheelConfig, emscripten::val obj) {
+static void updateWheelConfigObj(dreg::WheelConfig* wheelConfig, emscripten::val obj) {
 	obj.set("diameter", emscripten::val(wheelConfig->diameter));
 }
 
-static void updateWheelConfigStruct(engine::WheelConfig* wheelConfig, emscripten::val obj) {
+static void updateWheelConfigStruct(dreg::WheelConfig* wheelConfig, emscripten::val obj) {
 	wheelConfig->diameter = obj["diameter"].as<float>();
 }
 
 void updateVehicleConfigStruct(PTR configPtr, emscripten::val obj) {
-	engine::VehicleConfig* config = (engine::VehicleConfig*) configPtr;
+	dreg::VehicleConfig* config = (dreg::VehicleConfig*) configPtr;
 	
 	updateVector3Struct(&config->frontShaft, obj["frontShaft"]);
 	updateVector3Struct(&config->rearShaft, obj["rearShaft"]);
@@ -96,7 +96,7 @@ void updateVehicleConfigStruct(PTR configPtr, emscripten::val obj) {
 }
 
 void updateVehicleConfigObj(PTR configPtr, emscripten::val obj) {
-	engine::VehicleConfig* config = (engine::VehicleConfig*) configPtr;
+	dreg::VehicleConfig* config = (dreg::VehicleConfig*) configPtr;
 	
 	updateVector3Obj(&config->frontShaft, obj["frontShaft"]);
 	updateVector3Obj(&config->rearShaft, obj["rearShaft"]);

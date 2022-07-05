@@ -1,54 +1,54 @@
 #include "drivingEngineApi.h"
 #include "updateObj.h"
 
-engine::Vector2 createVector2(float x, float y) {
+dreg::Vector2 createVector2(float x, float y) {
 	return {x, y};
 }
 
-engine::Vector3 createVector3(float x, float y, float z) {
+dreg::Vector3 createVector3(float x, float y, float z) {
 	return {x, y, z};
 }
 
-engine::VehicleControls createVehicleControls(float throttle, float brake, float steeringWheel, float clutch, int gear) {
+dreg::VehicleControls createVehicleControls(float throttle, float brake, float steeringWheel, float clutch, int gear) {
 	return {throttle, brake, steeringWheel, clutch, gear};
 }
 
 
-PTR createVehicle() {return (PTR) engine::createVehicle();}
-void deleteVehicle(PTR vehicle) {engine::deleteVehicle((engine::Vehicle*) vehicle);}
-void resetVehicle(PTR vehicle) {engine::resetVehicle((engine::Vehicle*) vehicle);}
+PTR createVehicle() {return (PTR) dreg::createVehicle();}
+void deleteVehicle(PTR vehicle) {dreg::deleteVehicle((dreg::Vehicle*) vehicle);}
+void resetVehicle(PTR vehicle) {dreg::resetVehicle((dreg::Vehicle*) vehicle);}
 
-void setVehicleInput(PTR vehicle, engine::VehicleControls* vehicleControls) {
-	engine::setVehicleInput((engine::Vehicle*) vehicle, vehicleControls);
+void setVehicleInput(PTR vehicle, dreg::VehicleControls* vehicleControls) {
+	dreg::setVehicleInput((dreg::Vehicle*) vehicle, vehicleControls);
 }
 
 PTR getVehicleState(PTR vehicle) {
-	return (PTR) engine::getVehicleState((engine::Vehicle*) vehicle);
+	return (PTR) dreg::getVehicleState((dreg::Vehicle*) vehicle);
 }
 
 PTR getVehicleProps(PTR vehicle) {
-	return (PTR) engine::getVehicleProps((engine::Vehicle*) vehicle);
+	return (PTR) dreg::getVehicleProps((dreg::Vehicle*) vehicle);
 }
 
 PTR getVehicleConfig(PTR vehicle) {
-	return (PTR) engine::getVehicleConfig((engine::Vehicle*) vehicle);
+	return (PTR) dreg::getVehicleConfig((dreg::Vehicle*) vehicle);
 }
 
 void updateVehicleConfig(PTR vehicle) {
-	engine::updateVehicleConfig((engine::Vehicle*) vehicle);
+	dreg::updateVehicleConfig((dreg::Vehicle*) vehicle);
 }
 
 void updateVehicle(PTR vehicle, float delta) {
-	engine::update((engine::Vehicle*) vehicle, delta);
+	dreg::update((dreg::Vehicle*) vehicle, delta);
 }
 
 
-PTR createGraph() {return (PTR) engine::createGraph();}
-void deleteGraph(PTR graph) {engine::deleteGraph((engine::Graph*) graph);}
+PTR createGraph() {return (PTR) dreg::createGraph();}
+void deleteGraph(PTR graph) {dreg::deleteGraph((dreg::Graph*) graph);}
 
-static engine::Vector2* refsToVector2Array(emscripten::val refs) {
+static dreg::Vector2* refsToVector2Array(emscripten::val refs) {
 	size_t length = refs["length"].as<size_t>();
-	engine::Vector2* vector2Array = new engine::Vector2[length];
+	dreg::Vector2* vector2Array = new dreg::Vector2[length];
 	
 	for (size_t i = 0; i < length; i++)
 		vector2Array[i] = {refs[i][0].as<float>(), refs[i][1].as<float>()};
@@ -57,20 +57,20 @@ static engine::Vector2* refsToVector2Array(emscripten::val refs) {
 }
 
 void loadLinearGraph(PTR graph, emscripten::val refs) {
-	engine::Vector2* refsArray = refsToVector2Array(refs);
-	engine::loadLinearGraph((engine::Graph*) graph, refsArray, refs["length"].as<size_t>());
+	dreg::Vector2* refsArray = refsToVector2Array(refs);
+	dreg::loadLinearGraph((dreg::Graph*) graph, refsArray, refs["length"].as<size_t>());
 	delete[] refsArray;
 }
 
 void loadBezierGraph(PTR graph, emscripten::val refs, size_t samplesPerSegment) {
-	engine::Vector2* refsArray = refsToVector2Array(refs);
-	engine::loadBezierGraph((engine::Graph*) graph, refsArray, refs["length"].as<size_t>(), samplesPerSegment);
+	dreg::Vector2* refsArray = refsToVector2Array(refs);
+	dreg::loadBezierGraph((dreg::Graph*) graph, refsArray, refs["length"].as<size_t>(), samplesPerSegment);
 	delete[] refsArray;
 }
 
 emscripten::val getGraphPoints(PTR graph) {
 	size_t pointsCount;
-	engine::Vector2* pointsArray = engine::getGraphPoints((engine::Graph*) graph, &pointsCount);
+	dreg::Vector2* pointsArray = dreg::getGraphPoints((dreg::Graph*) graph, &pointsCount);
 	
 	emscripten::val xValues = emscripten::val::array();
 	emscripten::val yValues = emscripten::val::array();
@@ -87,10 +87,10 @@ emscripten::val getGraphPoints(PTR graph) {
 	float interv = (maxX - minX) * 100;
 	
 	xValues.set(0, emscripten::val(minX - interv));
-	yValues.set(0, emscripten::val(engine::getGraphY((engine::Graph*) graph, minX - interv)));
+	yValues.set(0, emscripten::val(dreg::getGraphY((dreg::Graph*) graph, minX - interv)));
 	
 	xValues.set(pointsCount + 1, emscripten::val(maxX + interv));
-	yValues.set(pointsCount + 1, emscripten::val(engine::getGraphY((engine::Graph*) graph, maxX + interv)));
+	yValues.set(pointsCount + 1, emscripten::val(dreg::getGraphY((dreg::Graph*) graph, maxX + interv)));
 	
 	emscripten::val ret = emscripten::val::array();
 	ret.set(0, xValues);
@@ -100,36 +100,36 @@ emscripten::val getGraphPoints(PTR graph) {
 }
 
 float getGraphY(PTR graph, float x) {
-	return engine::getGraphY((engine::Graph*) graph, x);
+	return dreg::getGraphY((dreg::Graph*) graph, x);
 }
 
 EMSCRIPTEN_BINDINGS(drivingEngine) {
 	
-	emscripten::class_<engine::Vector2>("Vector2")
+	emscripten::class_<dreg::Vector2>("Vector2")
 		.constructor<>()
 		.constructor(&createVector2)
 		
-		.property("x", &engine::Vector2::x)
-		.property("y", &engine::Vector2::y)
+		.property("x", &dreg::Vector2::x)
+		.property("y", &dreg::Vector2::y)
 		;
 	
-	emscripten::class_<engine::Vector3>("Vector3")
+	emscripten::class_<dreg::Vector3>("Vector3")
 		.constructor<>()
 		.constructor(&createVector3)
 		
-		.property("x", &engine::Vector3::x)
-		.property("y", &engine::Vector3::y)
-		.property("z", &engine::Vector3::z)
+		.property("x", &dreg::Vector3::x)
+		.property("y", &dreg::Vector3::y)
+		.property("z", &dreg::Vector3::z)
 		;
 	
-	emscripten::class_<engine::VehicleControls>("VehicleControls")
+	emscripten::class_<dreg::VehicleControls>("VehicleControls")
 		.constructor<>()
 		.constructor(&createVehicleControls)
-		.property("throttle", &engine::VehicleControls::throttle)
-		.property("brake", &engine::VehicleControls::brake)
-		.property("steeringWheel", &engine::VehicleControls::steeringWheel)
-		.property("clutch", &engine::VehicleControls::clutch)
-		.property("gear", &engine::VehicleControls::gear)
+		.property("throttle", &dreg::VehicleControls::throttle)
+		.property("brake", &dreg::VehicleControls::brake)
+		.property("steeringWheel", &dreg::VehicleControls::steeringWheel)
+		.property("clutch", &dreg::VehicleControls::clutch)
+		.property("gear", &dreg::VehicleControls::gear)
 		;
 	
 	emscripten::function("updateVehicleStateObj", &updateVehicleStateObj, emscripten::allow_raw_pointers());

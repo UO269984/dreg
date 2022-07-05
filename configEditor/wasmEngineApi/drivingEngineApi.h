@@ -3,8 +3,8 @@
 #include <emscripten.h>
 #include <emscripten/bind.h>
 
-namespace engine {
-	#include "engine.h"
+namespace dreg {
+	#include "dreg.h"
 }
 
 #define PTR intptr_t
