@@ -8,6 +8,7 @@ ln -s ../../engine/build/dreg.bc configEditor/wasmEngineApi
 
 mkdir engine/build
 mkdir engine/bin
+mkdir engine/bin-win
 mkdir test/bin
 mkdir configEditor/web/js/dreg
 
