@@ -155,7 +155,9 @@ const isTouchScreen = () => "ontouchstart" in window || navigator.maxTouchPoints
 export const INPUT_MANAGER = isTouchScreen() ? new TouchInputManager() : new MouseInputManager()
 
 export class CanvasManager {
-	constructor(canvas, drawFunc) {
+	constructor(canvas, drawFunc, resolutionMul = 2) {
+		this.resolutionMul = resolutionMul
+		
 		this.canvas = canvas
 		this.context = this.canvas.getContext("2d")
 		this.draw = drawFunc
@@ -198,8 +200,8 @@ export class CanvasManager {
 	}
 	
 	#move(xMove, yMove) {
-		this.curPos[0] += xMove
-		this.curPos[1] += yMove
+		this.curPos[0] += xMove * this.resolutionMul
+		this.curPos[1] += yMove * this.resolutionMul
 		
 		this.#updateTransformMat()
 		this.redraw()
@@ -219,5 +221,21 @@ export class CanvasManager {
 		this.curPos = [0, 0]
 		
 		this.#updateTransformMat()
+	}
+	
+	getLineScale() {
+		return this.curScale / this.resolutionMul
+	}
+	
+	containerPosToCanvas(x, y) {
+		return [x * this.resolutionMul, y * this.resolutionMul]
+	}
+	
+	setSize(width, height) {
+		this.canvas.width = width * this.resolutionMul
+		this.canvas.height = height * this.resolutionMul
+		
+		this.canvas.style.width = width + "px"
+		this.canvas.style.height = height + "px"
 	}
 }

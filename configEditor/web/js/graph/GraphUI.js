@@ -1,24 +1,19 @@
 import {TEMPLATES} from "../AppLoadManager.js"
+import {Graph} from "./Graph.js"
 import {EditableGraph, BezierGraph} from "./editableGraphs.js"
 
-export class BasicGraphUI {
+class GraphUI {
 	constructor() {
-		this.scaleActive = false
+		this.scaleActive = true
 		this.#initControls()
-	}
-	
-	setGraph(graph) {
-		this.graph = graph
+		
+		this.canvas = this.container.getElementsByTagName("canvas")[0]
 	}
 	
 	#initControls() {
 		this.container = document.createElement("div")
 		this.container.innerHTML = this.getContainerHTML()
 		this.container = this.container.children[0]
-		
-		this.canvas = this.container.getElementsByTagName("canvas")[0]
-		this.canvas.width = 400
-		this.canvas.height = 400
 		
 		this.container.getElementsByClassName("home-bt")[0].onclick = () => this.graph.resetView()
 		this.container.getElementsByClassName("scale-bt")[0].onclick = this.toggleScale.bind(this)
@@ -32,13 +27,19 @@ export class BasicGraphUI {
 		this.scaleActive = ! this.scaleActive
 		
 		let size = this.scaleActive ? 600 : 400
-		this.canvas.width = size
-		this.canvas.height = size
-		this.graph.updateSize()
+		this.graph.setSize(size, size)
 	}
 }
 
-export class EditableGraphUI extends BasicGraphUI {
+export class BasicGraphUI extends GraphUI {
+	constructor() {
+		super()
+		this.graph = new Graph(this.canvas, {min: 0, max: 1}, {min: 0, max: 1})
+		this.toggleScale()
+	}
+}
+
+export class EditableGraphUI extends GraphUI {
 	constructor(linearRefsToGraphFunc, bezierRefsToGraphFunc, updateGraphCallback) {
 		super()
 		this.linearRefsToGraphFunc = linearRefsToGraphFunc
@@ -48,6 +49,7 @@ export class EditableGraphUI extends BasicGraphUI {
 		this.bezierMode = true
 		this.#initControls()
 		this.#createGraph()
+		this.toggleScale()
 	}
 	
 	#initControls() {

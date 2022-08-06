@@ -1,6 +1,5 @@
 import {TEMPLATES} from "./AppLoadManager.js"
 import {VehicleAPI} from "./drivingEngineAPI.js"
-import {Graph} from "./graph/Graph.js"
 import {BasicGraphUI} from "./graph/GraphUI.js"
 import {EditorConfigUI, VehicleConfigUI} from "./ConfigUI.js"
 
@@ -66,8 +65,6 @@ class SimGraph {
 		this.#clearArrays()
 		
 		this.graphUI = new BasicGraphUI()
-		let graph = new Graph(this.graphUI.canvas, {min: 0, max: 1}, {min: 0, max: 1})
-		this.graphUI.setGraph(graph)
 		
 		this.container = document.createElement("div")
 		this.container.innerHTML = TEMPLATES.simGraph

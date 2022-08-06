@@ -29,12 +29,15 @@ export class EditableGraph extends Graph {
 		let height_2 = this.canvas.height / 2
 		
 		let boundingRect = this.canvas.getBoundingClientRect()
+		let canvasCoords = this.canvasManager.containerPosToCanvas(e.x - boundingRect.left, e.y - boundingRect.top)
+		
 		let mouseCoords = this.canvasToCoords(
-			((e.x - boundingRect.left) - this.canvasManager.curPos[0] - width_2) / this.canvasManager.curScale + width_2,
-			((e.y - boundingRect.top) - this.canvasManager.curPos[1] - height_2) / this.canvasManager.curScale + height_2)
+			(canvasCoords[0] - this.canvasManager.curPos[0] - width_2) / this.canvasManager.curScale + width_2,
+			(canvasCoords[1] - this.canvasManager.curPos[1] - height_2) / this.canvasManager.curScale + height_2)
 		
 		let targetSizeMul = this.canvasManager.curScale * INPUT_MANAGER.inputPrecision
 		let i = 0
+		
 		for (let ref of this.references) {
 			if (Math.abs(mouseCoords[0] - ref[0]) < 7 / (this.config.mulAxisX * targetSizeMul) &&
 				Math.abs(mouseCoords[1] - ref[1]) < 7 / (this.config.mulAxisY * targetSizeMul)) {
@@ -56,8 +59,10 @@ export class EditableGraph extends Graph {
 	}
 	
 	dragRef(e) {
-		this.selectedRef[0] += e.movementX / (this.config.mulAxisX * this.canvasManager.curScale)
-		this.selectedRef[1] += -e.movementY / (this.config.mulAxisY * this.canvasManager.curScale)
+		let canvasMov = this.canvasManager.containerPosToCanvas(e.movementX, -e.movementY)
+		
+		this.selectedRef[0] += canvasMov[0] / (this.config.mulAxisX * this.canvasManager.curScale)
+		this.selectedRef[1] += canvasMov[1] / (this.config.mulAxisY * this.canvasManager.curScale)
 	}
 	
 	addRef() {
@@ -95,7 +100,7 @@ export class EditableGraph extends Graph {
 	
 	drawGraph() {
 		super.drawGraph()
-		let handleSize = 2 / this.canvasManager.curScale
+		let handleSize = 2 / this.canvasManager.getLineScale()
 		
 		for (let curRef of this.references) {
 			this.context.beginPath()
@@ -201,7 +206,7 @@ export class BezierGraph extends EditableGraph {
 	
 	drawGraph() {
 		super.drawGraph()
-		this.context.lineWidth = 0.7 / this.canvasManager.curScale
+		this.context.lineWidth = 0.7 / this.canvasManager.getLineScale()
 		
 		for (let i = 0; i < this.references.length - 3; i += 3) {
 			this.context.beginPath()

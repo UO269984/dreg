@@ -99,7 +99,8 @@ export class Graph {
 		axis.textStep = axis.step * 2
 	}
 	
-	updateSize() {
+	setSize(width, height) {
+		this.canvasManager.setSize(width, height)
 		this.#updateGraphConfig()
 		this.resetView()
 	}
@@ -111,7 +112,7 @@ export class Graph {
 	
 	drawGraph() {
 		//Draw axis
-		this.context.lineWidth = 1.5 / this.canvasManager.curScale
+		this.context.lineWidth = 1.5 / this.canvasManager.getLineScale()
 		this.context.strokeStyle = "black"
 		
 		let originPos = this.coordsToCanvas(0, 0)
@@ -137,9 +138,9 @@ export class Graph {
 		this.context.stroke()
 		
 		//Draw grid
-		this.context.lineWidth = 0.5 / this.canvasManager.curScale
+		this.context.lineWidth = 0.5 / this.canvasManager.getLineScale()
 		this.context.strokeStyle = "#666666"
-		this.context.font = "12px Arial"
+		this.context.font = "20px Arial"
 		
 		this.#drawGrid(this.config.axisX, val => {
 			let xPos = this.coordsToCanvas(val, 0)[0]
