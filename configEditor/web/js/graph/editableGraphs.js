@@ -35,7 +35,7 @@ export class EditableGraph extends Graph {
 			(canvasCoords[0] - this.canvasManager.curPos[0] - width_2) / this.canvasManager.curScale + width_2,
 			(canvasCoords[1] - this.canvasManager.curPos[1] - height_2) / this.canvasManager.curScale + height_2)
 		
-		let targetSizeMul = this.canvasManager.curScale * INPUT_MANAGER.inputPrecision
+		let targetSizeMul = this.canvasManager.getLineScale() * INPUT_MANAGER.inputPrecision
 		let i = 0
 		
 		for (let ref of this.references) {

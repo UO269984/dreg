@@ -48,6 +48,6 @@ function loadTemplate(url, name) {
 
 export const TEMPLATES = {}
 
-loadTemplate("basicGraph.html", "basicGraph")
-loadTemplate("editableGraph.html", "editableGraph")
-loadTemplate("simGraph.html", "simGraph")
+loadTemplate("templates/basicGraph.html", "basicGraph")
+loadTemplate("templates/editableGraph.html", "editableGraph")
+loadTemplate("templates/simGraph.html", "simGraph")

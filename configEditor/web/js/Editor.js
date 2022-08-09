@@ -169,6 +169,20 @@ export class Editor {
 		
 		this.vehicleConfigUI = new VehicleConfigUI(this)
 		this.editorConfigUI = new EditorConfigUI(this, this.vehicleConfigUI.updateGraphs.bind(this.vehicleConfigUI))
+		this.configureSliders()
+	}
+	
+	configureSliders() {
+		for (let slider of document.querySelectorAll("input[type=range]")) {
+			let valueTx = slider.nextElementSibling
+			slider.value = valueTx.value
+			
+			valueTx.addEventListener("input", () => slider.value = valueTx.value)
+			slider.addEventListener("input", () => {
+				valueTx.value = slider.value
+				valueTx.dispatchEvent(new Event("input", {bubbles: true, cancelable: true}))
+			})
+		}
 	}
 	
 	addSimGraph() {

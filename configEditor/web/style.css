@@ -70,6 +70,11 @@ body {
 	display: block;
 }
 
+button, summary {
+	cursor: pointer;
+	-webkit-user-select: none;
+}
+
 input[type=number] {
 	background: #222222;
 	color: white;
@@ -93,17 +98,11 @@ canvas {
 	margin: 0px;
 }
 
-button {
-	cursor: pointer;
-}
-
 details {
 	margin: 0.8em 0em;
 }
 
 summary {
-	cursor: pointer;
-	-webkit-user-select: none;
 	font-size: 1em;
 }
 

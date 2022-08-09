@@ -138,7 +138,7 @@ export class Graph {
 		this.context.stroke()
 		
 		//Draw grid
-		this.context.lineWidth = 0.5 / this.canvasManager.getLineScale()
+		this.context.lineWidth = 0.4 / this.canvasManager.getLineScale()
 		this.context.strokeStyle = "#666666"
 		this.context.font = "20px Arial"
 		

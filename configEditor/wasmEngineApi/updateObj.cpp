@@ -89,7 +89,7 @@ void updateVehicleConfigStruct(PTR configPtr, emscripten::val obj) {
 	updateVector3Struct(&config->frontShaft, obj["frontShaft"]);
 	updateVector3Struct(&config->rearShaft, obj["rearShaft"]);
 	config->maxSteeringAngle = obj["maxSteeringAngle"].as<float>();
-	config->maxSteeringAngle = obj["mass"].as<float>();
+	config->mass = obj["mass"].as<float>();
 	
 	updatePowerConfigStruct(&config->power, obj["power"]);
 	updateWheelConfigStruct(&config->wheels, obj["wheels"]);
