@@ -40,6 +40,10 @@ struct PowerConfig {
 
 struct WheelConfig {
 	float diameter;
+	
+	float brakeDiameter;
+	float brakeStaticFrictionCoef;
+	float brakeKineticFrictionCoef;
 };
 
 struct VehicleConfig {
@@ -50,6 +54,7 @@ struct VehicleConfig {
 	float maxSteeringAngle;
 	float mass;
 	
+	Graph* brakeCurve; //brake percent - brake force
 	PowerConfig power;
 	WheelConfig wheels;
 };
@@ -76,5 +81,8 @@ struct VehicleProps {
 	float engineRpm;
 	float engineTorque;
 	float clutchTorque;
-	float axleShaftTorque;
+	
+	float powerTorque;
+	float brakeTorque;
+	float wheelTorque;
 };

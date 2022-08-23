@@ -18,11 +18,11 @@ public:
 
 private:
 	void updatePower(float delta);
+	void updateBreaks();
 	
 	float shaftsDist;
 	Vector3 rearShaftPos;
 	Vector3 speedVector;
 	
 	float wheelPerimeter;
-	bool connectedClutch; //If the clutch is fully engaged
 };
