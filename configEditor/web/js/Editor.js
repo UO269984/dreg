@@ -24,7 +24,10 @@ const VEHICLE_ATTRIBS = [
 	{name: "Engine rpm", path: "props.engineRpm"},
 	{name: "Engine torque", path: "props.engineTorque"},
 	{name: "Clutch torque", path: "props.clutchTorque"},
-	{name: "Axle shaft torque", path: "props.axleShaftTorque"}
+	
+	{name: "Power torque", path: "props.powerTorque"},
+	{name: "Brake torque", path: "props.brakeTorque"},
+	{name: "Wheel torque", path: "props.wheelTorque"}
 ]
 
 const COMPUTED_VEHICLE_ATTRIBS = {

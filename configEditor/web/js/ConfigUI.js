@@ -12,7 +12,10 @@ const VEHICLE_CONFIG_ATTRIBS = [
 	{name: "mass", path: "config.mass"},
 	{name: "torqueToRpmAccel", path: "config.power.torqueToRpmAccel"},
 	{name: "driveRatio", path: "config.power.driveRatio"},
-	{name: "wheelDiameter", path: "config.wheels.diameter"}
+	{name: "wheelDiameter", path: "config.wheels.diameter"},
+	{name: "brakeDiameter", path: "config.wheels.brakeDiameter"},
+	{name: "brakeStaticFrictionCoef", path: "config.wheels.brakeStaticFrictionCoef"},
+	{name: "brakeKineticFrictionCoef", path: "config.wheels.brakeKineticFrictionCoef"}
 ]
 
 const VEHICLE_CONFIG_GRAPHS = [
@@ -21,6 +24,7 @@ const VEHICLE_CONFIG_GRAPHS = [
 	{name: "looseEngineRpmCurve", path: "config.power.looseEngineRpmCurve"},
 	{name: "engineBrakeCurve", path: "config.power.engineBrakeCurve"},
 	{name: "clutchCurve", path: "config.power.clutchCurve"},
+	{name: "brakeCurve", path: "config.brakeCurve"}
 ]
 
 class ConfigInput {

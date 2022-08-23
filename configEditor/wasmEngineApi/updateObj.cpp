@@ -29,7 +29,10 @@ void updateVehiclePropsObj(PTR propsPtr, emscripten::val obj) {
 	obj.set("engineRpm", emscripten::val(props->engineRpm));
 	obj.set("engineTorque", emscripten::val(props->engineTorque));
 	obj.set("clutchTorque", emscripten::val(props->clutchTorque));
-	obj.set("axleShaftTorque", emscripten::val(props->axleShaftTorque));
+	
+	obj.set("powerTorque", emscripten::val(props->powerTorque));
+	obj.set("brakeTorque", emscripten::val(props->brakeTorque));
+	obj.set("wheelTorque", emscripten::val(props->wheelTorque));
 }
 
 static void updateFloatArrayObj(float* array, emscripten::val obj, int length) {
@@ -77,10 +80,18 @@ static void updatePowerConfigStruct(dreg::PowerConfig* powerConfig, emscripten::
 
 static void updateWheelConfigObj(dreg::WheelConfig* wheelConfig, emscripten::val obj) {
 	obj.set("diameter", emscripten::val(wheelConfig->diameter));
+	
+	obj.set("brakeDiameter", emscripten::val(wheelConfig->brakeDiameter));
+	obj.set("brakeStaticFrictionCoef", emscripten::val(wheelConfig->brakeStaticFrictionCoef));
+	obj.set("brakeKineticFrictionCoef", emscripten::val(wheelConfig->brakeKineticFrictionCoef));
 }
 
 static void updateWheelConfigStruct(dreg::WheelConfig* wheelConfig, emscripten::val obj) {
 	wheelConfig->diameter = obj["diameter"].as<float>();
+	
+	wheelConfig->brakeDiameter = obj["brakeDiameter"].as<float>();
+	wheelConfig->brakeStaticFrictionCoef = obj["brakeStaticFrictionCoef"].as<float>();
+	wheelConfig->brakeKineticFrictionCoef = obj["brakeKineticFrictionCoef"].as<float>();
 }
 
 void updateVehicleConfigStruct(PTR configPtr, emscripten::val obj) {
@@ -91,6 +102,7 @@ void updateVehicleConfigStruct(PTR configPtr, emscripten::val obj) {
 	config->maxSteeringAngle = obj["maxSteeringAngle"].as<float>();
 	config->mass = obj["mass"].as<float>();
 	
+	config->brakeCurve = (dreg::Graph*) obj["brakeCurve"].as<PTR>();
 	updatePowerConfigStruct(&config->power, obj["power"]);
 	updateWheelConfigStruct(&config->wheels, obj["wheels"]);
 }
@@ -103,6 +115,7 @@ void updateVehicleConfigObj(PTR configPtr, emscripten::val obj) {
 	obj.set("maxSteeringAngle", emscripten::val(config->maxSteeringAngle));
 	obj.set("mass", emscripten::val(config->mass));
 	
+	obj.set("brakeCurve", emscripten::val((PTR) config->brakeCurve));
 	updatePowerConfigObj(&config->power, obj["power"]);
 	updateWheelConfigObj(&config->wheels, obj["wheels"]);
 }
