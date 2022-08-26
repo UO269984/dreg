@@ -3,7 +3,7 @@ include ../globalVars.make
 LIBRARY_FILENAME := $(LIBRARY_NAME).$(LIB_EXT)
 TARGET := test$(EXEC_EXT)
 
-CFLAGS = -c -I $(INCLUDE) -o $@
+CFLAGS = -Wall -std=c++17 -c -I $(INCLUDE) -o $@
 LDFLAGS := $(LIBRARY_FILENAME) -lstdc++
 
 ifneq ($(OS),Windows_NT)

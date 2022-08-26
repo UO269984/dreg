@@ -1,5 +1,6 @@
 #include "Vector3.h"
 
+#define _USE_MATH_DEFINES
 #include <cmath>
 
 Vector3 Vector3::operator +(Vector3 vec) const {

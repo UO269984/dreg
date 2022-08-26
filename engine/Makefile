@@ -1,4 +1,4 @@
-CFLAGS = -c -I include -o $@
+CFLAGS = -Wall -std=c++17 -c -I include -o $@
 LDFLAGS := -lstdc++
 
 CFLAGS += $(if $(filter-out $(OS),Windows_NT),-fPIC,)

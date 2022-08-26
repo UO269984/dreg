@@ -2,7 +2,8 @@
 
 #include "Vector2.h"
 
-#include <math.h>
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 class Graph {
 public:

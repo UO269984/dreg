@@ -41,7 +41,7 @@ Vehicle::~Vehicle() {
 void Vehicle::reset() {
 	controls = {0, 0, 0, 0, 0};
 	state = {{0, 0, 0}, {0, 0, 0}};
-	props = {0, 0, 0, 0, 0, 0, 0};
+	props = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 	
 	speedVector = {1, 0, 0};
 	updateConfig();
@@ -57,7 +57,7 @@ void Vehicle::update(float delta) {
 	float prevSpeed = props.speed;
 	props.speed += props.acceleration * delta;
 	
-	if (prevSpeed > 0 != props.speed > 0 && abs(props.brakeTorque) > abs(props.powerTorque))
+	if ((prevSpeed > 0) != (props.speed > 0) && abs(props.brakeTorque) > abs(props.powerTorque))
 		props.speed = 0;
 	
 	props.wheelRpm = (props.speed / wheelPerimeter) * 60;
@@ -130,5 +130,5 @@ void Vehicle::updateBreaks() {
 		props.brakeTorque += fmin(brakeTorque, abs(props.powerTorque)) * (props.powerTorque < 0 ? 1 : -1);
 	
 	else
-		props.brakeTorque +=  props.wheelRpm > 0 ? -brakeTorque : brakeTorque;
+		props.brakeTorque += props.wheelRpm > 0 ? -brakeTorque : brakeTorque;
 }

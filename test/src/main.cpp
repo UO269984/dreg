@@ -107,7 +107,7 @@ void testGraph() {
 	Vector2 bezierRefs[] = {{0, 0}, {0.1, 0.1}, {0.2, 0.2}, {0.3, 0.3},
 		{0.4, 0.4}, {0.5, 0.5}, {0.6, 0.6}};
 	
-	loadBezierGraph(graph, refs, 7, 20);
+	loadBezierGraph(graph, bezierRefs, 7, 20);
 	for (float x = 0; x < 1; x += 0.1) {
 		cout << x << " -> " << getGraphY(graph, x) << "   ";
 		
