@@ -20,19 +20,22 @@ void InputLogger::log(float delta) {
 
 void InputLogger::save(const char* filename) {
 	std::string str("Time;Throttle;Brake;SteeringWheel;Clutch;Gear\n");
-	str.reserve((inputs.size() + 2) * 36);
+	str.reserve((inputs.size() + 2) * 47);
+	char aux[55];
 	
 	std::list<VehicleControls>::iterator inputsIt = inputs.begin();
 	std::list<float>::iterator timesIt = times.begin();
 	
 	while (inputsIt != inputs.end()) {
-		str += std::to_string(*timesIt) + ";"+
-			std::to_string(inputsIt->throttle) + ";" +
-			std::to_string(inputsIt->brake) + ";" +
-			std::to_string(inputsIt->steeringWheel) + ";" +
-			std::to_string(inputsIt->clutch) + ";" +
-			std::to_string(inputsIt->gear) + "\n";
+		snprintf(aux, 55, "%f;%f;%f;%f;%f;%d\n",
+			*timesIt,
+			inputsIt->throttle,
+			inputsIt->brake,
+			inputsIt->steeringWheel,
+			inputsIt->clutch,
+			inputsIt->gear);
 		
+		str.append(aux);
 		timesIt++;
 		inputsIt++;
 	}
