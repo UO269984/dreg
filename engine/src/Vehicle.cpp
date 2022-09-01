@@ -1,40 +1,16 @@
 #include "Vehicle.h"
 
 #include "dreg.h"
+#include "ConfigManager.h"
 #include "Graph.h"
 
-Vehicle::Vehicle() : config({{0, 0, 0}, {2, 0, 0}, 20, 500, new Graph(),
-		{new Graph(), new Graph(), new Graph(), new Graph(), new Graph(), 1, 1, 1, new float[1] {1}},
-		{0.5, 0.3, 0.7, 0.56}}) {
-	
-	Vector2 refs[] = {{0, 0}, {1, 1}};
-	config.power.throttleCurve->loadLinear(refs, 2);
-	config.power.engineCurve->loadLinear(refs, 2);
-	config.brakeCurve->loadLinear(refs, 2);
-	
-	refs[1].y = 0;
-	config.power.looseEngineRpmCurve->loadLinear(refs, 2);
-	config.power.engineBrakeCurve->loadLinear(refs, 2);
-	
-	refs[0] = {0, 1};
-	refs[1] = {1, 0};
-	config.power.clutchCurve->loadLinear(refs, 2);
-	
-	
+Vehicle::Vehicle() {
 	reset();
 	printFunc("Creating vehicle");
 }
 
 Vehicle::~Vehicle() {
-	delete config.power.throttleCurve;
-	delete config.power.engineCurve;
-	delete config.power.looseEngineRpmCurve;
-	delete config.power.engineBrakeCurve;
-	delete config.power.clutchCurve;
-	delete config.brakeCurve;
-	
-	delete[] config.power.gearRatios;
-	
+	removeVehicleFromConfig();
 	printFunc("Destroying vehicle");
 }
 
@@ -44,13 +20,29 @@ void Vehicle::reset() {
 	props = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 	
 	speedVector = {1, 0, 0};
-	updateConfig();
+	if (configManager != NULL)
+		updateConfig();
+}
+
+void Vehicle::removeVehicleFromConfig() {
+	if (configManager != NULL) {
+		configManager->removeVehicle(this);
+		configManager = NULL;
+	}
+}
+
+void Vehicle::setConfig(ConfigManager* newConfigManager) {
+	removeVehicleFromConfig();
+	config = &newConfigManager->config;
+	configManager = newConfigManager;
+	
+	newConfigManager->addVehicle(this);
 }
 
 void Vehicle::updateConfig() {
-	shaftsDist = (config.frontShaft - config.rearShaft).length();
-	rearShaftPos = state.pos + config.rearShaft;
-	wheelPerimeter = M_PI * config.wheels.diameter;
+	shaftsDist = (config->frontShaft - config->rearShaft).length();
+	rearShaftPos = state.pos + config->rearShaft;
+	wheelPerimeter = M_PI * config->wheels.diameter;
 }
 
 void Vehicle::update(float delta) {
@@ -68,23 +60,23 @@ void Vehicle::update(float delta) {
 	updateBreaks();
 	
 	props.wheelTorque = props.powerTorque + props.brakeTorque;
-	props.acceleration = (props.wheelTorque / (config.wheels.diameter / 2)) / config.mass;
+	props.acceleration = (props.wheelTorque / (config->wheels.diameter / 2)) / config->mass;
 	
 	if ((controls.steeringWheel > 0.1 || controls.steeringWheel < 0.1) && props.speed != 0) {
 		float rotTime = shaftsDist / props.speed;
-		float rotateDegrees = config.maxSteeringAngle * controls.steeringWheel * (delta / rotTime);
+		float rotateDegrees = config->maxSteeringAngle * controls.steeringWheel * (delta / rotTime);
 		
 		speedVector = speedVector.rotateEuler(0, 0, -rotateDegrees);
 		state.rotation.z += rotateDegrees;
 	}
 	
 	rearShaftPos += speedVector * (props.speed * delta);
-	state.pos = rearShaftPos - config.rearShaft.rotateEuler(0, 0, -state.rotation.z);
+	state.pos = rearShaftPos - config->rearShaft.rotateEuler(0, 0, -state.rotation.z);
 }
 
 void Vehicle::updatePower(float delta) {
 	//Update engine rpm
-	float transmissionRatio = config.power.gearRatios[controls.gear] * config.power.driveRatio;
+	float transmissionRatio = (*config->power.gearRatios)[controls.gear] * config->power.driveRatio;
 	
 	float clutchRatio;
 	if (transmissionRatio == 0) {
@@ -96,20 +88,20 @@ void Vehicle::updatePower(float delta) {
 			props.clutchTorque / props.engineTorque;
 	}
 	float looseEngineRpm = props.engineRpm +
-		(props.engineTorque - props.clutchTorque) * config.power.torqueToRpmAccel * delta;
+		(props.engineTorque - props.clutchTorque) * config->power.torqueToRpmAccel * delta;
 	
 	props.engineRpm = clutchRatio * props.wheelRpm * transmissionRatio + (1 - clutchRatio) * looseEngineRpm;
 	
 	//Compute the new torque of the axle shaft
-	float throttle = config.power.throttleCurve->getY(controls.throttle);
-	float expectedLooseRpm = config.power.looseEngineRpmCurve->getY(throttle);
+	float throttle = config->power.throttleCurve->getY(controls.throttle);
+	float expectedLooseRpm = config->power.looseEngineRpmCurve->getY(throttle);
 	bool engineBrakeActive = props.engineRpm > expectedLooseRpm;
 	
 	props.engineTorque = engineBrakeActive ?
-		-config.power.engineBrakeCurve->getY(props.engineRpm - expectedLooseRpm) :
-		config.power.engineCurve->getY(props.engineRpm) * throttle;
+		-config->power.engineBrakeCurve->getY(props.engineRpm - expectedLooseRpm) :
+		config->power.engineCurve->getY(props.engineRpm) * throttle;
 	
-	float clutchMaxTorque = config.power.clutchCurve->getY(controls.clutch);
+	float clutchMaxTorque = config->power.clutchCurve->getY(controls.clutch);
 	props.clutchTorque = fmin(abs(props.engineTorque), clutchMaxTorque);
 	if (props.engineTorque < 0)
 		props.clutchTorque = -props.clutchTorque;
@@ -121,10 +113,10 @@ void Vehicle::updateBreaks() {
 	bool wheelStopped = props.wheelRpm == 0;
 	
 	float frictionCoef = wheelStopped ?
-		config.wheels.brakeStaticFrictionCoef : config.wheels.brakeKineticFrictionCoef;
+		config->wheels.brakeStaticFrictionCoef : config->wheels.brakeKineticFrictionCoef;
 	
-	float brakeTorque = config.brakeCurve->getY(controls.brake) *
-		frictionCoef * (config.wheels.brakeDiameter / 2);
+	float brakeTorque = config->brakeCurve->getY(controls.brake) *
+		frictionCoef * (config->wheels.brakeDiameter / 2);
 	
 	if (wheelStopped)
 		props.brakeTorque += fmin(brakeTorque, abs(props.powerTorque)) * (props.powerTorque < 0 ? 1 : -1);

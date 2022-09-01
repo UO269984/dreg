@@ -4,23 +4,38 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <vector>
+
+enum class GraphType {
+	LINEAR=0, BEZIER
+};
+
+struct GraphInitData {
+	GraphType type;
+	std::vector<Vector2> refs;
+};
 
 class Graph {
 public:
-	Graph() {}
+	Graph();
+	Graph(const Graph& original);
 	~Graph();
 	
-	void loadLinear(Vector2* refs, size_t refsCount);
-	void loadBezier(Vector2* refs, size_t refsCount, size_t samplesPerSegment);
+	void loadLinear(const Vector2* refs, size_t refsCount);
+	void loadBezier(const Vector2* refs, size_t refsCount, size_t samplesPerSegment);
 	
-	Vector2* getPoints(size_t* pointsCount) const;
+	const GraphInitData* getInitData() const;
+	const Vector2* getPoints(size_t* pointsCount) const;
 	float getY(float x) const;
+	
+	static bool saveInitDataEnabled;
+	static size_t defaultBezierSamples;
 
 private:
-	void deletePoints();
+	void saveInitData(GraphType graphType, const Vector2* refs, size_t refsCount);
 	
-	Vector2* graphPoints = NULL;
-	size_t graphPointsCount = 0;
+	std::vector<Vector2> graphPoints;
+	GraphInitData* initData = NULL;
 	
 	mutable Vector2 lastAccess = {INFINITY, 0};
 };

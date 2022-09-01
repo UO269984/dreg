@@ -6,11 +6,16 @@
 struct Vehicle;
 typedef struct Vehicle Vehicle;
 
+struct ConfigManager;
+typedef struct ConfigManager ConfigManager;
+
 struct Graph;
 typedef struct Graph Graph;
 
 struct InputLogger;
 typedef struct InputLogger InputLogger;
+
+typedef void* FloatList;
 
 typedef struct PowerConfig PowerConfig;
 typedef struct WheelConfig WheelConfig;
@@ -21,8 +26,12 @@ typedef struct VehicleProps VehicleProps;
 
 #else
 class Vehicle;
+class ConfigManager;
 class Graph;
 class InputLogger;
+
+#include <vector>
+typedef std::vector<float> FloatList;
 #endif
 
 struct PowerConfig {
@@ -34,8 +43,7 @@ struct PowerConfig {
 	
 	float torqueToRpmAccel; //Multiplier to convert torque in loose engine to rpm acceleration
 	float driveRatio;
-	int gearsCount;
-	float* gearRatios;
+	FloatList* gearRatios;
 };
 
 struct WheelConfig {

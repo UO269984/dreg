@@ -5,16 +5,11 @@
 using namespace std;
 
 void loadConfig(Vehicle* vehicle) {
-	VehicleConfig* config = getVehicleConfig(vehicle);
-	config->frontShaft = {0, 0, 0};
-	config->rearShaft = {1, 0, 0};
+	VehicleConfig* config = getVehicleConfig(getConfigManager(vehicle));
 	config->maxSteeringAngle = 40.0f;
-	updateVehicleConfig(vehicle);
+	updateConfig(getConfigManager(vehicle));
 	
-	Vector2 refs[] = {{0, 0}, {1, 1}};
-	loadLinearGraph(config->power.throttleCurve, refs, 2);
-	
-	refs[1].y = 3000;
+	Vector2 refs[] = {{0, 0}, {1, 3000}};
 	loadLinearGraph(config->power.looseEngineRpmCurve, refs, 2);
 	
 	refs[0] = {0, 80};
@@ -31,10 +26,10 @@ void loadConfig(Vehicle* vehicle) {
 }
 
 void testVehicle(Vehicle* vehicle, int iters) {
-	VehicleControls controls = {0.5, 0, 1};
+	VehicleControls controls = {0.5, 0, 1, 0, 2};
 	setVehicleInput(vehicle, &controls);
-	VehicleState* state = getVehicleState(vehicle);
-	VehicleProps* vehicleProps = getVehicleProps(vehicle);
+	const VehicleState* state = getVehicleState(vehicle);
+	const VehicleProps* vehicleProps = getVehicleProps(vehicle);
 	
 	function<void()> printVehicle = [state, vehicleProps]() {
 		cout << state->pos.x << ", " << state->pos.y << ", " << state->pos.z << endl;
@@ -55,17 +50,32 @@ void testVehicle(Vehicle* vehicle, int iters) {
 	printVehicle();
 	
 	cout << "Updating vehicle config" << endl;
-	getVehicleConfig(vehicle)->rearShaft.x = 1.5;
-	updateVehicleConfig(vehicle);
+	getVehicleConfig(getConfigManager(vehicle))->rearShaft.x = 1.5;
+	updateConfig(getConfigManager(vehicle));
 	update(vehicle, 0.1);
 	printVehicle();
+}
+
+void testConfigManager(ConfigManager* configManager) {
+	char* serialized = serializeConfig(getVehicleConfig(configManager));
+	cout << "Serialized config:" << endl << serialized << endl;
+	
+	ConfigManager* configManager2 = createConfigManager(1);
+	loadSerializedConfig(getVehicleConfig(configManager2), serialized);
+	deleteCharArray(serialized);
+	
+	serialized = serializeConfig(getVehicleConfig(configManager2));
+	cout << "Deserialized - Serialized config:" << endl << serialized << endl;
+	
+	deleteConfigManager(configManager2);
+	deleteCharArray(serialized);
 }
 
 void testInputLogger(Vehicle* vehicle) {
 	//setSaveFileFunc([](const char* filename, const char* data) {cout << "Saving file: " << filename << endl;});
 	
 	InputLogger* inputLogger = createInputLogger(vehicle);
-	VehicleControls controls = {0.1, 0, 0};
+	VehicleControls controls = {0.1, 0, 0, 0, 2};
 	
 	setVehicleInput(vehicle, &controls);
 	logInput(inputLogger, 0.1); //Delta must be ignored in first log
@@ -123,14 +133,23 @@ void (*printTest)(const char* testName) = [](const char* testName) {cout << endl
 int main(int argc, char const *argv[]) {
 	int updateItersCount = argc > 1 ? atoi(argv[1]) : 10;
 	
+	setGraphSaveInitData(1);
 	printTest("Vehicle");
 	Vehicle* vehicle = createVehicle();
+	ConfigManager* configManager = createConfigManager(1);
+	
+	loadDefaultConfig(configManager);
+	setVehicleConfig(vehicle, configManager);
 	loadConfig(vehicle);
 	testVehicle(vehicle, updateItersCount);
+	
+	printTest("Input ConfigManager");
+	testConfigManager(configManager);
 	
 	printTest("Input logger");
 	testInputLogger(vehicle);
 	deleteVehicle(vehicle);
+	deleteConfigManager(configManager);
 	
 	printTest("Graph");
 	testGraph();

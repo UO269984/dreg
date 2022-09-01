@@ -1,10 +1,10 @@
 #include "dreg.h"
 
-#include "Vehicle.h"
 #include "Graph.h"
+#include "ConfigManager.h"
+#include "ConfigParser.h"
 #include "InputLogger.h"
 
-#include <cstdio>
 #include <fstream>
 
 PrintFunc printFunc = [](const char* toPrint) {printf("- %s\n", toPrint);};
@@ -23,13 +23,32 @@ void setSaveFileFunc(SaveFileFunc newSaveFileFunc) {
 	saveFileFunc = newSaveFileFunc;
 }
 
-float* createFloatArray(size_t size) {
-	return new float[size];
+
+FloatList* createFloatList() {
+	return new std::vector<float>();
 }
 
-void deleteFloatArray(float* array) {
+const float* getFloatList(const FloatList* list, size_t* size) {
+	*size = list->size();
+	return list->data();
+}
+
+void setFloatList(FloatList* list, const float* values, size_t valuesCount) {
+	list->clear();
+	list->reserve(valuesCount);
+	
+	for (size_t i = 0; i < valuesCount; i++)
+		list->push_back(values[i]);
+}
+
+void deleteFloatList(FloatList* list) {
+	delete list;
+}
+
+void deleteCharArray(char* array) {
 	delete[] array;
 }
+
 
 Vehicle* createVehicle() {
 	return new Vehicle();
@@ -43,28 +62,72 @@ void resetVehicle(Vehicle* vehicle) {
 	vehicle->reset();
 }
 
-void setVehicleInput(Vehicle* vehicle, VehicleControls* input) {
+void setVehicleInput(Vehicle* vehicle, const VehicleControls* input) {
 	vehicle->controls = *input;
 }
 
-VehicleState* getVehicleState(Vehicle* vehicle) {
+const VehicleState* getVehicleState(const Vehicle* vehicle) {
 	return &vehicle->state;
 }
 
-VehicleProps* getVehicleProps(Vehicle* vehicle) {
+const VehicleProps* getVehicleProps(const Vehicle* vehicle) {
 	return &vehicle->props;
 }
 
-VehicleConfig* getVehicleConfig(Vehicle* vehicle) {
-	return &vehicle->config;
+ConfigManager* getConfigManager(Vehicle* vehicle) {
+	return vehicle->configManager;
 }
 
-void updateVehicleConfig(Vehicle* vehicle) {
-	vehicle->updateConfig();
+void setVehicleConfig(Vehicle* vehicle, ConfigManager* configManager) {
+	vehicle->setConfig(configManager);
 }
 
 void update(Vehicle* vehicle, float delta) {
 	vehicle->update(delta);
+}
+
+
+ConfigManager* createConfigManager(char createObjects) {
+	return new ConfigManager(createObjects);
+}
+
+void deleteConfigManager(ConfigManager* configManager) {
+	delete configManager;
+}
+
+ConfigManager* cloneConfig(const ConfigManager* configManager, char fullClone) {
+	return new ConfigManager(*configManager, fullClone);
+}
+
+VehicleConfig* getVehicleConfig(ConfigManager* configManager) {
+	return &configManager->config;
+}
+
+void updateConfig(ConfigManager* configManager) {
+	configManager->updateVehiclesConfig();
+}
+
+void loadDefaultConfig(ConfigManager* configManager) {
+	configManager->loadDefaultConfig();
+}
+
+char loadSerializedConfig(VehicleConfig* config, const char* serializedConfig) {
+	ConfigParser parser;
+	return parser.loadSerializedConfig(config, serializedConfig);
+}
+
+char* serializeConfig(const VehicleConfig* config) {
+	ConfigParser parser;
+	return parser.serializeConfig(config);
+}
+
+
+void setGraphSaveInitData(char saveInitData) {
+	Graph::saveInitDataEnabled = saveInitData;
+}
+
+void setDefaultBezierSamples(size_t samplesPerSegment) {
+	Graph::defaultBezierSamples = samplesPerSegment;
 }
 
 
@@ -76,19 +139,35 @@ void deleteGraph(Graph* graph) {
 	delete graph;
 }
 
-void loadLinearGraph(Graph* graph, Vector2* refs, size_t refsCount) {
+Graph* cloneGraph(const Graph* graph) {
+	return new Graph(*graph);
+}
+
+void loadLinearGraph(Graph* graph, const Vector2* refs, size_t refsCount) {
 	graph->loadLinear(refs, refsCount);
 }
 
-void loadBezierGraph(Graph* graph, Vector2* refs, size_t refsCount, size_t samplesPerSegment) {
+void loadBezierGraph(Graph* graph, const Vector2* refs, size_t refsCount, size_t samplesPerSegment) {
 	graph->loadBezier(refs, refsCount, samplesPerSegment);
 }
 
-Vector2* getGraphPoints(Graph* graph, size_t* pointsCount) {
+const Vector2* getGraphInitData(const Graph* graph, char* isBezier, size_t* pointsCount) {
+	const GraphInitData* initData = graph->getInitData();
+	
+	if (initData != NULL) {
+		*isBezier = initData->type == GraphType::BEZIER;
+		*pointsCount = initData->refs.size();
+		return initData->refs.data();
+	}
+	else
+		return NULL;
+}
+
+const Vector2* getGraphPoints(const Graph* graph, size_t* pointsCount) {
 	return graph->getPoints(pointsCount);
 }
 
-float getGraphY(Graph* graph, float x) {
+float getGraphY(const Graph* graph, float x) {
 	return graph->getY(x);
 }
 

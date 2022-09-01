@@ -1,47 +1,61 @@
 #include "Graph.h"
 
-Graph::~Graph() {
-	deletePoints();
+bool Graph::saveInitDataEnabled = false;
+size_t Graph::defaultBezierSamples = 25;
+
+Graph::Graph() {
+	if (saveInitDataEnabled)
+		initData = new GraphInitData();
 }
 
-void Graph::deletePoints() {
-	if (graphPoints != NULL) {
-		delete[] graphPoints;
+Graph::Graph(const Graph& original) : graphPoints(original.graphPoints) {
+	if (original.initData != NULL)
+		initData = new GraphInitData {original.initData->type, original.initData->refs};
+}
+
+Graph::~Graph() {
+	if (initData != NULL)
+		delete initData;
+}
+
+void Graph::saveInitData(GraphType graphType, const Vector2* refs, size_t refsCount) {
+	if (initData != NULL) {	
+		initData->type = graphType;
 		
-		graphPoints = NULL;
-		graphPointsCount = 0;
+		initData->refs.clear();
+		initData->refs.resize(refsCount);
+		for (size_t i = 0; i < refsCount; i++)
+			initData->refs[i] = refs[i];
 	}
 }
 
-void Graph::loadLinear(Vector2* refs, size_t refsCount) {
+void Graph::loadLinear(const Vector2* refs, size_t refsCount) {
+	saveInitData(GraphType::LINEAR, refs, refsCount);
 	lastAccess = {INFINITY, 0};
 	
-	if (refsCount > graphPointsCount) {
-		deletePoints();
-		graphPoints = new Vector2[refsCount];
-	}
+	graphPoints.clear();
+	graphPoints.resize(refsCount);
 	
 	graphPoints[0] = refs[0];
-	Vector2* lastPoint = graphPoints;
+	Vector2* lastPoint = graphPoints.data();
 	
 	for (size_t i = 1; i < refsCount; i++) {
 		if (refs[i].x > lastPoint->x)
-			*(++lastPoint) = {refs[i].x, refs[i].y};
+			*(++lastPoint) = refs[i];
 	}
-	graphPointsCount = lastPoint - graphPoints + 1;
+	graphPoints.resize(lastPoint - graphPoints.data() + 1);
 }
 
-void Graph::loadBezier(Vector2* refs, size_t refsCount, size_t samplesPerSegment) {
+void Graph::loadBezier(const Vector2* refs, size_t refsCount, size_t samplesPerSegment) {
+	saveInitData(GraphType::BEZIER, refs, refsCount);
 	lastAccess = {INFINITY, 0};
 	
 	float sampleInterval = 1 / (float) samplesPerSegment;
 	size_t segmentsCount = ((refsCount - 1) / 3);
 	
 	size_t newGraphPointsCount = samplesPerSegment * segmentsCount;
-	if (newGraphPointsCount > graphPointsCount) {
-		deletePoints();
-		graphPoints = new Vector2[newGraphPointsCount];
-	}
+	graphPoints.clear();
+	graphPoints.resize(newGraphPointsCount);
 	
 	size_t iPoint = 0;
 	for (size_t segment = 0; segment < refsCount - 1; segment += 3) {
@@ -76,12 +90,16 @@ void Graph::loadBezier(Vector2* refs, size_t refsCount, size_t samplesPerSegment
 			t += sampleInterval;
 		}
 	}
-	graphPointsCount = iPoint;
+	graphPoints.resize(iPoint);
 }
 
-Vector2* Graph::getPoints(size_t* pointsCount) const {
-	*pointsCount = graphPointsCount;
-	return graphPoints;
+const GraphInitData* Graph::getInitData() const {
+	return initData;
+}
+
+const Vector2* Graph::getPoints(size_t* pointsCount) const {
+	*pointsCount = graphPoints.size();
+	return graphPoints.data();
 }
 
 float Graph::getY(float x) const {
@@ -89,7 +107,7 @@ float Graph::getY(float x) const {
 		return lastAccess.y;
 	
 	size_t min = 0;
-	size_t max = graphPointsCount - 1;
+	size_t max = graphPoints.size() - 1;
 	
 	if (x < graphPoints[min].x)
 		return graphPoints[min].y;
@@ -102,8 +120,8 @@ float Graph::getY(float x) const {
 		(graphPoints[half].x > x ? max : min) = half;
 	}
 	
-	Vector2* p1 = graphPoints + min;
-	Vector2* p2 = p1 + 1;
+	const Vector2* p1 = graphPoints.data() + min;
+	const Vector2* p2 = p1 + 1;
 	
 	float m = (p2->y - p1->y) / (p2->x - p1->x);
 	lastAccess = {x, (x - p1->x) * m + p1->y};
