@@ -148,7 +148,8 @@ void loadLinearGraph(Graph* graph, const Vector2* refs, size_t refsCount) {
 }
 
 void loadBezierGraph(Graph* graph, const Vector2* refs, size_t refsCount, size_t samplesPerSegment) {
-	graph->loadBezier(refs, refsCount, samplesPerSegment);
+	graph->loadBezier(refs, refsCount,
+		samplesPerSegment == 0 ? Graph::defaultBezierSamples : samplesPerSegment);
 }
 
 const Vector2* getGraphInitData(const Graph* graph, char* isBezier, size_t* pointsCount) {

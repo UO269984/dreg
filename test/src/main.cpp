@@ -58,7 +58,7 @@ void testVehicle(Vehicle* vehicle, int iters) {
 
 void testConfigManager(ConfigManager* configManager) {
 	char* serialized = serializeConfig(getVehicleConfig(configManager));
-	cout << "Serialized config:" << endl << serialized << endl;
+	cout << "Serialized config:" << endl << serialized << "\n\n";
 	
 	ConfigManager* configManager2 = createConfigManager(1);
 	loadSerializedConfig(getVehicleConfig(configManager2), serialized);

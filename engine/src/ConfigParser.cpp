@@ -162,6 +162,8 @@ char* ConfigParser::serializeConfig(const VehicleConfig* config) {
 		serializeProp(config, prop.second, str);
 		str.append(1, '\n');
 	}
+	str.erase(str.size() - 1); //Delete \n at the end
+	
 	char* retStr = new char[str.size() + 1];
 	str.copy(retStr, str.size());
 	retStr[str.size()] = 0;
@@ -185,6 +187,7 @@ void ConfigParser::serializeProp(const VehicleConfig* config, ConfigPropData pro
 				snprintf(aux, 30, "%f,", elem);
 				str.append(aux);
 			}
+			str.erase(str.size() - 1); //Delete , at the end
 			break;
 		}
 		
