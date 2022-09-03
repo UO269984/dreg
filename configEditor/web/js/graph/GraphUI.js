@@ -40,15 +40,17 @@ export class BasicGraphUI extends GraphUI {
 }
 
 export class EditableGraphUI extends GraphUI {
-	constructor(linearRefsToGraphFunc, bezierRefsToGraphFunc, updateGraphCallback) {
+	static defaultRefsLinear = [[0, 0], [1, 1]]
+	static defaultRefsBezier = [[0, 0], [0.2, 0.2], [0.2, 0.4], [0.4, 0.6], [0.6, 0.8], [0.8, 0.8], [1, 1]]
+	
+	constructor(graphApi, updateGraphCallback) {
 		super()
-		this.linearRefsToGraphFunc = linearRefsToGraphFunc
-		this.bezierRefsToGraphFunc = bezierRefsToGraphFunc
+		this.graphApi = graphApi
 		this.updateGraphCallback = updateGraphCallback
-		
-		this.bezierMode = true
+		this.refsMapper = {getPoints: () => this.graphApi.getPoints()}
+			
 		this.#initControls()
-		this.#createGraph()
+		this.updateInitData()
 		this.toggleScale()
 	}
 	
@@ -79,23 +81,45 @@ export class EditableGraphUI extends GraphUI {
 		return TEMPLATES.editableGraph
 	}
 	
+	updateInitData() {
+		this.initData = this.graphApi.getInitData()
+		this.bezierMode = this.initData.isBezier
+		this.#updateBezierMode()
+		
+		this.#createGraph(this.initData.refs)
+	}
+	
 	switchGraphMode() {
 		this.bezierMode = ! this.bezierMode
-		
-		this.modeBt.innerText = this.bezierMode ? "Linear" : "Bezier"
-		this.refsAlignedBt.style.display = this.bezierMode ? "" : "none"
+		this.#updateBezierMode()
 		
 		this.resetGraph()
 	}
 	
 	resetGraph() {
-		this.#createGraph()
+		let refs = this.bezierMode == this.initData.isBezier ? this.initData.refs :
+			this.bezierMode ? EditableGraphUI.defaultRefsBezier : EditableGraphUI.defaultRefsLinear
+		
+		this.refsMapper.updateRefs(refs)
+		this.#createGraph(refs)
 		this.updateGraphCallback()
 	}
 	
-	#createGraph() {
+	#updateBezierMode() {
+		this.modeBt.innerText = this.bezierMode ? "Linear" : "Bezier"
+		this.refsAlignedBt.style.display = this.bezierMode ? "" : "none"
+		
+		this.refsMapper.updateRefs = this.bezierMode ?
+			(refs => this.graphApi.loadBezierGraph(refs, 0)) :
+			(refs => this.graphApi.loadLinearGraph(refs))
+	}
+	
+	#cloneRefs(refs) {
+		return refs.map(point => point.slice())
+	}
+	
+	#createGraph(refs) {
 		this.graph = new (this.bezierMode ? BezierGraph : EditableGraph)(this.canvas,
-			this.bezierMode ? this.bezierRefsToGraphFunc : this.linearRefsToGraphFunc,
-			this.updateGraphCallback, {min: 0, max: 1}, {min: 0, max: 1})
+			this.refsMapper, this.updateGraphCallback, {min: 0, max: 1}, {min: 0, max: 1}, this.#cloneRefs(refs))
 	}
 }

@@ -30,12 +30,12 @@ PTR getVehicleProps(PTR vehicle) {
 	return (PTR) dreg::getVehicleProps((dreg::Vehicle*) vehicle);
 }
 
-PTR getVehicleConfig(PTR vehicle) {
-	return (PTR) dreg::getVehicleConfig((dreg::Vehicle*) vehicle);
+PTR getConfigManager(PTR vehicle) {
+	return (PTR) dreg::getConfigManager((dreg::Vehicle*) vehicle);
 }
 
-void updateVehicleConfig(PTR vehicle) {
-	dreg::updateVehicleConfig((dreg::Vehicle*) vehicle);
+void setVehicleConfig(PTR vehicle, PTR configManager) {
+	dreg::setVehicleConfig((dreg::Vehicle*) vehicle, (dreg::ConfigManager*) configManager);
 }
 
 void updateVehicle(PTR vehicle, float delta) {
@@ -43,8 +43,46 @@ void updateVehicle(PTR vehicle, float delta) {
 }
 
 
+PTR createConfigManager(bool createObjects) {
+	return (PTR) dreg::createConfigManager(createObjects);
+}
+
+void deleteConfigManager(PTR configManager) {
+	dreg::deleteConfigManager((dreg::ConfigManager*) configManager);
+}
+
+PTR cloneConfig(PTR configManager, bool fullClone) {
+	return (PTR) dreg::cloneConfig((dreg::ConfigManager*) configManager, fullClone);
+}
+
+PTR getVehicleConfig(PTR configManager) {
+	return (PTR) dreg::getVehicleConfig((dreg::ConfigManager*) configManager);
+}
+
+void updateConfig(PTR configManager) {
+	dreg::updateConfig((dreg::ConfigManager*) configManager);
+}
+
+void loadDefaultConfig(PTR configManager) {
+	dreg::loadDefaultConfig((dreg::ConfigManager*) configManager);
+}
+
+bool loadSerializedConfig(PTR vehicleConfig, emscripten::val serializedConfig) {
+	return dreg::loadSerializedConfig((dreg::VehicleConfig*) vehicleConfig, serializedConfig.as<std::string>().c_str());
+}
+
+emscripten::val serializeConfig(PTR vehicleConfig) {
+	char* serializedPtr = dreg::serializeConfig((dreg::VehicleConfig*) vehicleConfig);
+	emscripten::val serializedStr = emscripten::val((const char*) serializedPtr);
+	dreg::deleteCharArray(serializedPtr);
+	
+	return serializedStr;
+}
+
+
 PTR createGraph() {return (PTR) dreg::createGraph();}
 void deleteGraph(PTR graph) {dreg::deleteGraph((dreg::Graph*) graph);}
+PTR cloneGraph(PTR graph) {return (PTR) dreg::cloneGraph((dreg::Graph*) graph);}
 
 static dreg::Vector2* refsToVector2Array(emscripten::val refs) {
 	size_t length = refs["length"].as<size_t>();
@@ -68,9 +106,29 @@ void loadBezierGraph(PTR graph, emscripten::val refs, size_t samplesPerSegment) 
 	delete[] refsArray;
 }
 
+emscripten::val getGraphInitData(PTR graph) {
+	char isBezier;
+	size_t pointsCount;
+	const dreg::Vector2* refs = dreg::getGraphInitData((dreg::Graph*) graph, &isBezier, &pointsCount);
+	
+	emscripten::val objRefs = emscripten::val::array();
+	emscripten::val ret = emscripten::val::object();
+	
+	for (size_t i = 0; i < pointsCount; i++) {
+		emscripten::val point = emscripten::val::array();
+		point.set(0, refs[i].x);
+		point.set(1, refs[i].y);
+		objRefs.set(i, point);
+	}
+	
+	ret.set("isBezier", emscripten::val((bool) isBezier));
+	ret.set("refs", objRefs);
+	return ret;
+}
+
 emscripten::val getGraphPoints(PTR graph) {
 	size_t pointsCount;
-	dreg::Vector2* pointsArray = dreg::getGraphPoints((dreg::Graph*) graph, &pointsCount);
+	const dreg::Vector2* pointsArray = dreg::getGraphPoints((dreg::Graph*) graph, &pointsCount);
 	
 	emscripten::val xValues = emscripten::val::array();
 	emscripten::val yValues = emscripten::val::array();
@@ -144,15 +202,28 @@ EMSCRIPTEN_BINDINGS(drivingEngine) {
 	emscripten::function("setVehicleInput", &setVehicleInput, emscripten::allow_raw_pointers());
 	emscripten::function("getVehicleState", &getVehicleState, emscripten::allow_raw_pointers());
 	emscripten::function("getVehicleProps", &getVehicleProps, emscripten::allow_raw_pointers());
-	emscripten::function("getVehicleConfig", &getVehicleConfig, emscripten::allow_raw_pointers());
-	emscripten::function("updateVehicleConfig", &updateVehicleConfig, emscripten::allow_raw_pointers());
+	emscripten::function("getConfigManager", &getConfigManager, emscripten::allow_raw_pointers());
+	emscripten::function("setVehicleConfig", &setVehicleConfig, emscripten::allow_raw_pointers());
 	emscripten::function("update", &updateVehicle, emscripten::allow_raw_pointers());
+	
+	emscripten::function("createConfigManager", &createConfigManager, emscripten::allow_raw_pointers());
+	emscripten::function("deleteConfigManager", &deleteConfigManager, emscripten::allow_raw_pointers());
+	emscripten::function("cloneConfig", &cloneConfig, emscripten::allow_raw_pointers());
+	emscripten::function("getVehicleConfig", &getVehicleConfig, emscripten::allow_raw_pointers());
+	emscripten::function("updateConfig", &updateConfig, emscripten::allow_raw_pointers());
+	emscripten::function("loadDefaultConfig", &loadDefaultConfig, emscripten::allow_raw_pointers());
+	emscripten::function("loadSerializedConfig", &loadSerializedConfig, emscripten::allow_raw_pointers());
+	emscripten::function("serializeConfig", &serializeConfig, emscripten::allow_raw_pointers());
+	
+	emscripten::function("setGraphSaveInitData", &dreg::setGraphSaveInitData, emscripten::allow_raw_pointers());
+	emscripten::function("setDefaultBezierSamples", &dreg::setDefaultBezierSamples, emscripten::allow_raw_pointers());
 	
 	emscripten::function("createGraph", &createGraph, emscripten::allow_raw_pointers());
 	emscripten::function("deleteGraph", &deleteGraph, emscripten::allow_raw_pointers());
-	
+	emscripten::function("cloneGraph", &cloneGraph, emscripten::allow_raw_pointers());
 	emscripten::function("loadLinearGraph", &loadLinearGraph, emscripten::allow_raw_pointers());
 	emscripten::function("loadBezierGraph", &loadBezierGraph, emscripten::allow_raw_pointers());
+	emscripten::function("getGraphInitData", &getGraphInitData, emscripten::allow_raw_pointers());
 	emscripten::function("getGraphPoints", &getGraphPoints, emscripten::allow_raw_pointers());
 	emscripten::function("getGraphY", &getGraphY, emscripten::allow_raw_pointers());
 }

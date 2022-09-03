@@ -43,6 +43,13 @@ body {
 	margin: 0.2em;
 }
 
+#config-textarea {
+	width: 20em;
+	height: 20em;
+	
+	white-space: nowrap;
+}
+
 #load-log-file {
 	margin: 1.5em;
 }

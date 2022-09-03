@@ -1,5 +1,5 @@
 import {TEMPLATES} from "./AppLoadManager.js"
-import {VehicleAPI} from "./drivingEngineAPI.js"
+import {VehicleAPI, GraphAPI} from "./drivingEngineAPI.js"
 import {BasicGraphUI} from "./graph/GraphUI.js"
 import {EditorConfigUI, VehicleConfigUI} from "./ConfigUI.js"
 
@@ -148,6 +148,15 @@ class EditorConfig {
 		this.simInterval = this.inputLogTime / samplesCount
 	}
 	
+	get graphSamples() {
+		return this._graphSamples
+	}
+	
+	set graphSamples(samplesCount) {
+		GraphAPI.setDefaultBezierSamples(samplesCount)
+		this._graphSamples = samplesCount
+	}
+	
 	getAttrib(path) {
 		return this[path[0]]
 	}
@@ -159,6 +168,8 @@ class EditorConfig {
 
 export class Editor {
 	constructor() {
+		GraphAPI.setGraphSaveInitData(true)
+		
 		this.config = new EditorConfig()
 		this.vehicle = new VehicleAPI()
 		
@@ -171,7 +182,7 @@ export class Editor {
 		document.getElementById("add-graph-bt").onclick = this.addSimGraph.bind(this)
 		
 		this.vehicleConfigUI = new VehicleConfigUI(this)
-		this.editorConfigUI = new EditorConfigUI(this, this.vehicleConfigUI.updateGraphs.bind(this.vehicleConfigUI))
+		this.editorConfigUI = new EditorConfigUI(this, this.vehicleConfigUI.resampleGraphs.bind(this.vehicleConfigUI))
 		this.configureSliders()
 	}
 	

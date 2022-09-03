@@ -37,12 +37,15 @@ class UpdatedVehicleStruct {
 
 export class VehicleAPI {
 	constructor() {
-		this.vehicle = Module.createVehicle()
+		this.ptr = Module.createVehicle()
 		
 		this.controlsPtr = new Module.VehicleControls(0, 0, 0, 0, 0)
-		this.statePtr = Module.getVehicleState(this.vehicle)
-		this.propsPtr = Module.getVehicleProps(this.vehicle)
-		this.configPtr = Module.getVehicleConfig(this.vehicle)
+		this.statePtr = Module.getVehicleState(this.ptr)
+		this.propsPtr = Module.getVehicleProps(this.ptr)
+		
+		this.configManager = new ConfigManagerAPI()
+		this.configManager.loadDefault()
+		Module.setVehicleConfig(this.ptr, this.configManager.ptr)
 		
 		//controls do not have struct type attributes, so it can be edited directly
 		this.controls = new UpdatedVehicleStruct(this.controlsPtr)
@@ -50,16 +53,21 @@ export class VehicleAPI {
 		this.props = new VehicleStruct({}, this.propsPtr, Module.updateVehiclePropsObj)
 		
 		this.configObj = {frontShaft: {}, rearShaft: {}, power: {}, wheels: {}}
-		Module.updateVehicleConfigObj(this.configPtr, this.configObj)
+		this.loadConfig()
 		this.config = new UpdatedVehicleStruct(this.configObj)
 	}
 	
 	delete() {
-		Module.deleteVehicle(this.vehicle)
+		Module.deleteVehicle(this.ptr)
+		this.configManager.delete()
 	}
 	
 	reset() {
-		Module.resetVehicle(this.vehicle)
+		Module.resetVehicle(this.ptr)
+	}
+	
+	loadConfig() {
+		Module.updateVehicleConfigObj(this.configManager.configPtr, this.configObj)
 	}
 	
 	setInput(input) {
@@ -68,17 +76,13 @@ export class VehicleAPI {
 		this.controlsPtr.steeringWheel = input.steeringWheel
 		this.controlsPtr.clutch = input.clutch
 		this.controlsPtr.gear = input.gear
-		Module.setVehicleInput(this.vehicle, this.controlsPtr)
-	}
-	
-	updateConfig() {
-		Module.updateVehicleConfig(this.vehicle)
+		Module.setVehicleInput(this.ptr, this.controlsPtr)
 	}
 	
 	update(delta) {
 		this.state.invalidate()
 		this.props.invalidate()
-		Module.update(this.vehicle, delta)
+		Module.update(this.ptr, delta)
 	}
 	
 	getAttrib(path) {
@@ -96,17 +100,60 @@ export class VehicleAPI {
 			obj = obj[path[i]]
 		
 		obj[path[path.length - 1]] = value
-		Module.updateVehicleConfigStruct(this.configPtr, this.configObj);
+		Module.updateVehicleConfigStruct(this.configManager.configPtr, this.configObj)
+	}
+}
+
+class ConfigManagerAPI {
+	constructor(configManagerPtr) {
+		this.ptr = configManagerPtr != null ? configManagerPtr : Module.createConfigManager(true)
+		this.configPtr = Module.getVehicleConfig(this.ptr)
+	}
+	
+	delete() {
+		Module.deleteConfigManager(this.ptr)
+	}
+	
+	clone() {
+		return new ConfigManagerAPI(Module.cloneConfig(this.ptr))
+	}
+	
+	update() {
+		Module.updateConfig(this.ptr)
+	}
+	
+	loadDefault() {
+		Module.loadDefaultConfig(this.ptr)
+	}
+	
+	loadSerialized(serializedConfig) {
+		return Module.loadSerializedConfig(this.configPtr, serializedConfig)
+	}
+	
+	serialize() {
+		return Module.serializeConfig(this.configPtr)
 	}
 }
 
 export class GraphAPI {
+	static setGraphSaveInitData(saveInitData) {
+		Module.setGraphSaveInitData(saveInitData)
+	}
+	
+	static setDefaultBezierSamples(samplesPerSegment) {
+		Module.setDefaultBezierSamples(samplesPerSegment)
+	}
+	
 	constructor(graph) {
 		this.graph = graph != null ? graph : Module.createGraph()
 	}
 	
 	delete() {
 		Module.deleteGraph(this.graph)
+	}
+	
+	clone() {
+		return new GraphAPI(Module.cloneGraph(this.graph))
 	}
 	
 	loadLinearGraph(refs) {
@@ -117,7 +164,11 @@ export class GraphAPI {
 		Module.loadBezierGraph(this.graph, refs, samplesPerSegment)
 	}
 	
-	getGraphPoints() {
+	getInitData() {
+		return Module.getGraphInitData(this.graph)
+	}
+	
+	getPoints() {
 		return Module.getGraphPoints(this.graph)
 	}
 	

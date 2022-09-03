@@ -2,13 +2,12 @@ import {INPUT_MANAGER} from "./CanvasManager.js"
 import {Graph} from "./Graph.js"
 
 export class EditableGraph extends Graph {
-	constructor(canvas, refsToGraphFunc, updateCallback,
-		axisX, axisY, defaultRefs = [[0, 0], [1, 1]]) {
+	constructor(canvas, refsMapper, updateCallback, axisX, axisY, refs) {
 		
 		super(canvas, axisX, axisY)
-		this.refsToGraphFunc = refsToGraphFunc
+		this.refsMapper = refsMapper
 		this.updateCallback = updateCallback
-		this.references = defaultRefs
+		this.references = refs
 		this.selectedRef = null
 		this.selectedRefPos = -1
 		
@@ -18,7 +17,7 @@ export class EditableGraph extends Graph {
 		})
 		INPUT_MANAGER.addCanvasAction(canvas, "mouseDownCallback", this.mouseDown.bind(this))
 		INPUT_MANAGER.addCanvasAction(canvas, "moveInteractCallback", this.mouseMove.bind(this))
-		this.updateRefValues()
+		this.updateValues(this.refsMapper.getPoints())
 	}
 	
 	mouseDown(e) {
@@ -95,7 +94,8 @@ export class EditableGraph extends Graph {
 	}
 	
 	updateRefValues() {
-		this.updateValues(this.refsToGraphFunc(this.references))
+		this.refsMapper.updateRefs(this.references)
+		this.updateValues(this.refsMapper.getPoints())
 	}
 	
 	drawGraph() {
@@ -113,10 +113,8 @@ export class EditableGraph extends Graph {
 }
 
 export class BezierGraph extends EditableGraph {
-	constructor(canvas, refsToGraphFunc, updateCallback, axisX, axisY,
-		defaultRefs = [[0, 0], [0.2, 0.2], [0.2, 0.4], [0.4, 0.6], [0.6, 0.8], [0.8, 0.8], [1, 1]]) {
-		
-		super(canvas, refsToGraphFunc, updateCallback, axisX, axisY, defaultRefs)
+	constructor(canvas, refsMapper, updateCallback, axisX, axisY, refs) {
+		super(canvas, refsMapper, updateCallback, axisX, axisY, refs)
 		this.refsAlignEnabled = true
 	}
 	

@@ -35,14 +35,22 @@ void updateVehiclePropsObj(PTR propsPtr, emscripten::val obj) {
 	obj.set("wheelTorque", emscripten::val(props->wheelTorque));
 }
 
-static void updateFloatArrayObj(float* array, emscripten::val obj, int length) {
-	for (int i = 0; i < length; i++)
-		obj.set(i, emscripten::val(array[i]));
+static void updateFloatListObj(const dreg::FloatList* floatList, emscripten::val objArray) {
+	size_t size;
+	const float* array = dreg::getFloatList(floatList, &size);
+	
+	for (size_t i = 0; i < size; i++)
+		objArray.set(i, emscripten::val(array[i]));
 }
 
-static void updateFloatArrayPtr(float* array, emscripten::val obj, int length) {
-	for (int i = 0; i < length; i++)
-		array[i] = obj[i].as<float>();
+static void updateFloatListPtr(dreg::FloatList* floatList, emscripten::val objArray) {
+	size_t size = objArray["length"].as<size_t>();
+	float array[size];
+	
+	for (size_t i = 0; i < size; i++)
+		array[i] = objArray[i].as<float>();
+	
+	dreg::setFloatList(floatList, array, size);
 }
 
 static void updatePowerConfigObj(dreg::PowerConfig* powerConfig, emscripten::val obj) {
@@ -54,10 +62,9 @@ static void updatePowerConfigObj(dreg::PowerConfig* powerConfig, emscripten::val
 	
 	obj.set("torqueToRpmAccel", emscripten::val(powerConfig->torqueToRpmAccel));
 	obj.set("driveRatio", emscripten::val(powerConfig->driveRatio));
-	obj.set("gearsCount", emscripten::val(powerConfig->gearsCount));
 	
 	emscripten::val gearsObj = emscripten::val::array();
-	updateFloatArrayObj(powerConfig->gearRatios, gearsObj, powerConfig->gearsCount);
+	updateFloatListObj(powerConfig->gearRatios, gearsObj);
 	obj.set("gearRatios", gearsObj);
 }
 
@@ -70,12 +77,8 @@ static void updatePowerConfigStruct(dreg::PowerConfig* powerConfig, emscripten::
 	
 	powerConfig->torqueToRpmAccel = obj["torqueToRpmAccel"].as<float>();
 	powerConfig->driveRatio = obj["driveRatio"].as<float>();
-	powerConfig->gearsCount = obj["gearsCount"].as<int>();
 	
-	dreg::deleteFloatArray(powerConfig->gearRatios);
-	powerConfig->gearsCount = obj["gearRatios"]["length"].as<int>();
-	powerConfig->gearRatios = dreg::createFloatArray(powerConfig->gearsCount);
-	updateFloatArrayPtr(powerConfig->gearRatios, obj["gearRatios"], powerConfig->gearsCount);
+	updateFloatListPtr(powerConfig->gearRatios, obj["gearRatios"]);
 }
 
 static void updateWheelConfigObj(dreg::WheelConfig* wheelConfig, emscripten::val obj) {

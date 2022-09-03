@@ -58,28 +58,21 @@ class ConfigInput {
 }
 
 class ConfigGraph {
-	constructor(attrib, vehicle, editorConfig, updateCallback) {
-		this.editorConfig = editorConfig
+	constructor(attrib, vehicle, updateCallback) {
 		this.updateCallback = updateCallback
 		this.graphApi = new GraphAPI(vehicle.getAttrib(attrib.path.split(".")))
 		
-		this.graphUI = new EditableGraphUI(this.#linearRefsToGraph.bind(this), this.#bezierRefsToGraph.bind(this), updateCallback)
+		this.graphUI = new EditableGraphUI(this.graphApi, updateCallback)
 		let container = document.getElementById(attrib.name)
 		container.parentNode.replaceChild(this.graphUI.container, container)
 	}
 	
-	update() {
+	updateGraph() {
+		this.graphUI.updateInitData()
+	}
+	
+	resample() {
 		this.graphUI.graph.updateRefValues()
-	}
-	
-	#linearRefsToGraph(refs) {
-		this.graphApi.loadLinearGraph(refs)
-		return this.graphApi.getGraphPoints()
-	}
-	
-	#bezierRefsToGraph(refs) {
-		this.graphApi.loadBezierGraph(refs, this.editorConfig.graphSamples)
-		return this.graphApi.getGraphPoints()
 	}
 }
 
@@ -99,7 +92,7 @@ class ConfigGears {
 			this.#deleteGear()
 			this.#updateGearsConfig()
 		}
-		this.updateGearsInputs(this.vehicle.getAttrib(this.gearRatiosPath))
+		this.updateGears()
 	}
 	
 	#updateGearsConfig() {
@@ -107,7 +100,11 @@ class ConfigGears {
 		this.updateCallback()
 	}
 	
-	updateGearsInputs(gearRatios) {
+	updateGears() {
+		this.#setGearsInputs(this.vehicle.getAttrib(this.gearRatiosPath))
+	}
+	
+	#setGearsInputs(gearRatios) {
 		while (this.gearInputs.length < gearRatios.length)
 			this.#addGear()
 		
@@ -147,8 +144,33 @@ class ConfigGears {
 	}
 }
 
+class ConfigImportExport {
+	constructor(vehicle, updateCallback) {
+		this.vehicle = vehicle
+		this.updateCallback = updateCallback
+		this.configTextarea = document.getElementById("config-textarea")
+		
+		document.getElementById("import-config-bt").onclick = this.importConfig.bind(this)
+		document.getElementById("export-config-bt").onclick = this.exportConfig.bind(this)
+	}
+	
+	importConfig() {
+		let loadSuccess = this.vehicle.configManager.loadSerialized(this.configTextarea.value)
+		this.configTextarea.style.background = loadSuccess ? "" : "red"
+		
+		if (loadSuccess) {
+			this.vehicle.loadConfig()
+			this.updateCallback()
+		}
+	}
+	
+	exportConfig() {
+		this.configTextarea.value = this.vehicle.configManager.serialize()
+	}
+}
+
 export class EditorConfigUI {
-	constructor(editor, updateGraphsCallback) {
+	constructor(editor, resampleGraphsCallback) {
 		this.editor = editor
 		
 		let configContainer = document.getElementById("editor-config")
@@ -165,7 +187,7 @@ export class EditorConfigUI {
 		this.configInputs.push(new ConfigInput(
 			{name: "graphSamples", path: "graphSamples", filter: val => val > 0},
 			configContainer, this.editor.config, () => {
-				updateGraphsCallback()
+				resampleGraphsCallback()
 				this.editor.runSimulation()
 			}))
 	}
@@ -186,18 +208,33 @@ export class VehicleConfigUI {
 		this.updateCallback = editor.runSimulation.bind(editor)
 		let configContainer = document.getElementById("vehicle-config")
 		
+		this.configInputs = new Array()
 		for (let configAttrib of VEHICLE_CONFIG_ATTRIBS)
-			new ConfigInput(configAttrib, configContainer, editor.vehicle, this.updateCallback)
+			this.configInputs.push(new ConfigInput(configAttrib, configContainer, editor.vehicle, this.updateCallback))
 		
 		this.configGraphs = new Array()
 		for (let configGraph of VEHICLE_CONFIG_GRAPHS)
-			this.configGraphs.push(new ConfigGraph(configGraph, editor.vehicle, editor.config, this.updateCallback))
+			this.configGraphs.push(new ConfigGraph(configGraph, editor.vehicle, this.updateCallback))
 		
-		new ConfigGears(editor.vehicle, this.updateCallback)
+		this.configGears = new ConfigGears(editor.vehicle, this.updateCallback)
+		new ConfigImportExport(editor.vehicle, () => {
+			this.updateInputs()
+			this.updateCallback()
+		})
 	}
 	
-	updateGraphs() {
+	updateInputs() {
+		this.configGears.updateGears()
+		
+		for (let configInput of this.configInputs)
+			configInput.updateInput()
+		
 		for (let configGraph of this.configGraphs)
-			configGraph.update()
+			configGraph.updateGraph()
+	}
+	
+	resampleGraphs() {
+		for (let configGraph of this.configGraphs)
+			configGraph.resample()
 	}
 }
