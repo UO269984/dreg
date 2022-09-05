@@ -53,7 +53,7 @@ endif
 
 .PHONY: wasm
 wasm:
-	emcc -I $(INCLUDE) -o $(BUILD)/$(LIBRARY_NAME).bc -std=c++11 -s WASM=1 -s EXPORTED_RUNTIME_METHODS='["cwrap"]' $(SRCS)
+	emcc -I $(INCLUDE) -o $(BUILD)/$(LIBRARY_NAME).bc -std=c++17 -s WASM=1 -s EXPORTED_RUNTIME_METHODS='["cwrap"]' $(SRCS)
 
 .PHONY: android
 android:

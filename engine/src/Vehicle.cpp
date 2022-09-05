@@ -49,7 +49,7 @@ void Vehicle::update(float delta) {
 	float prevSpeed = props.speed;
 	props.speed += props.acceleration * delta;
 	
-	if ((prevSpeed > 0) != (props.speed > 0) && abs(props.brakeTorque) > abs(props.powerTorque))
+	if ((prevSpeed > 0) != (props.speed > 0) && fabs(props.brakeTorque) > fabs(props.powerTorque))
 		props.speed = 0;
 	
 	props.wheelRpm = (props.speed / wheelPerimeter) * 60;
@@ -102,7 +102,7 @@ void Vehicle::updatePower(float delta) {
 		config->power.engineCurve->getY(props.engineRpm) * throttle;
 	
 	float clutchMaxTorque = config->power.clutchCurve->getY(controls.clutch);
-	props.clutchTorque = fmin(abs(props.engineTorque), clutchMaxTorque);
+	props.clutchTorque = fmin(fabs(props.engineTorque), clutchMaxTorque);
 	if (props.engineTorque < 0)
 		props.clutchTorque = -props.clutchTorque;
 	
@@ -119,7 +119,7 @@ void Vehicle::updateBreaks() {
 		frictionCoef * (config->wheels.brakeDiameter / 2);
 	
 	if (wheelStopped)
-		props.brakeTorque += fmin(brakeTorque, abs(props.powerTorque)) * (props.powerTorque < 0 ? 1 : -1);
+		props.brakeTorque += fmin(brakeTorque, fabs(props.powerTorque)) * (props.powerTorque < 0 ? 1 : -1);
 	
 	else
 		props.brakeTorque += props.wheelRpm > 0 ? -brakeTorque : brakeTorque;
