@@ -4,7 +4,6 @@
 #include "Graph.h"
 #include "Util.h"
 
-#include <cstring>
 #include <string>
 
 #define GET_STRUCT_ELEM(structPtr, offset, type) ((type*) (((uint8_t*) structPtr) + offset))

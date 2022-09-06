@@ -148,7 +148,6 @@ int main(int argc, char const *argv[]) {
 	
 	printTest("Input logger");
 	testInputLogger(vehicle);
-	deleteVehicle(vehicle);
 	deleteConfigManager(configManager);
 	
 	printTest("Graph");

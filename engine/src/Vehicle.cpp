@@ -5,13 +5,13 @@
 #include "Graph.h"
 
 Vehicle::Vehicle() {
+	printFunc("Creating Vehicle");
 	reset();
-	printFunc("Creating vehicle");
 }
 
 Vehicle::~Vehicle() {
+	printFunc("Destroying Vehicle");
 	removeVehicleFromConfig();
-	printFunc("Destroying vehicle");
 }
 
 void Vehicle::reset() {
@@ -33,10 +33,13 @@ void Vehicle::removeVehicleFromConfig() {
 
 void Vehicle::setConfig(ConfigManager* newConfigManager) {
 	removeVehicleFromConfig();
-	config = &newConfigManager->config;
-	configManager = newConfigManager;
 	
-	newConfigManager->addVehicle(this);
+	if (newConfigManager != NULL) {
+		config = &newConfigManager->config;
+		configManager = newConfigManager;
+		
+		newConfigManager->addVehicle(this);
+	}
 }
 
 void Vehicle::updateConfig() {
