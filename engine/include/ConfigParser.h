@@ -2,6 +2,7 @@
 
 #include "VehicleApi.h"
 
+#include <memory>
 #include <string_view>
 #include <map>
 
@@ -10,20 +11,21 @@ enum class PropType {
 };
 
 struct ConfigPropData {
+	const char* name;
 	long offset;
 	PropType type;
 };
 
 class ConfigParser {
-public:	
+public:
 	bool loadSerializedConfig(VehicleConfig* config, const char* serializedConfig);
 	char* serializeConfig(const VehicleConfig* config);
 
 private:
-	void setAttrib(VehicleConfig* config, ConfigPropData prop, std::string_view value);
+	void setAttrib(VehicleConfig* config, const ConfigPropData& prop, std::string_view value);
 	void parseFloatList(FloatList* arrayPtr, std::string_view value);
 	void parseGraph(Graph* graph, std::string_view value);
-	void serializeProp(const VehicleConfig* config, ConfigPropData prop, std::string& str);
+	void serializeProp(const VehicleConfig* config, const ConfigPropData& prop, std::string& str);
 	
 	void parsingError(const char* msg);
 	
@@ -31,5 +33,6 @@ private:
 	bool parsingSuccess;
 	
 	static void initConfigProps();
-	static std::map<std::string_view, ConfigPropData> configProps;
+	static std::unique_ptr<ConfigPropData[]> configProps;
+	static std::map<std::string_view, const ConfigPropData*> configPropsMap;
 };

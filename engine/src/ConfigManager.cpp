@@ -39,7 +39,7 @@ ConfigManager::ConfigManager(const ConfigManager& original, bool fullClone) :
 
 ConfigManager::~ConfigManager() {
 	char aux[50];
-	snprintf(aux, 50, "Destroying ConfigManager with %ld vehicles", vehicles.size());
+	snprintf(aux, 50, "Destroying ConfigManager with %zu vehicles", vehicles.size());
 	printFunc(aux);
 	
 	for (Vehicle* vehicle : vehicles)

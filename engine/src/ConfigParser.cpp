@@ -7,35 +7,42 @@
 #include <string>
 
 #define GET_STRUCT_ELEM(structPtr, offset, type) ((type*) (((uint8_t*) structPtr) + offset))
-#define CREATE_CONFIG_PROP(structPtr, propPtr, type) (ConfigPropData) {((uint8_t*) propPtr) - (uint8_t*) &structPtr, type}
+#define GET_OFFSET(structName, prop) ((uint8_t*) &prop) - (uint8_t*) &structName
 
-std::map<std::string_view, ConfigPropData> ConfigParser::configProps;
+std::unique_ptr<ConfigPropData[]> ConfigParser::configProps;
+std::map<std::string_view, const ConfigPropData*> ConfigParser::configPropsMap;
+
 void ConfigParser::initConfigProps() {
-	if (! configProps.empty())
+	if (configProps.get() != nullptr)
 		return;
 	
 	VehicleConfig config;
+	configProps = std::unique_ptr<ConfigPropData[]> (new ConfigPropData[18] {
+		{"torqueToRpmAccel", GET_OFFSET(config, config.power.torqueToRpmAccel), PropType::_FLOAT},
+		{"driveRatio", GET_OFFSET(config, config.power.driveRatio), PropType::_FLOAT},
+		{"wheelDiameter", GET_OFFSET(config, config.wheels.diameter), PropType::_FLOAT},
+		{"brakeDiameter", GET_OFFSET(config, config.wheels.brakeDiameter), PropType::_FLOAT},
+		{"brakeStaticFrictionCoef", GET_OFFSET(config, config.wheels.brakeStaticFrictionCoef), PropType::_FLOAT},
+		{"brakeKineticFrictionCoef", GET_OFFSET(config, config.wheels.brakeKineticFrictionCoef), PropType::_FLOAT},
+		{"maxSteeringAngle", GET_OFFSET(config, config.maxSteeringAngle), PropType::_FLOAT},
+		{"mass", GET_OFFSET(config, config.mass), PropType::_FLOAT},
+		
+		{"frontShaft", GET_OFFSET(config, config.frontShaft), PropType::VECTOR3},
+		{"rearShaft", GET_OFFSET(config, config.rearShaft), PropType::VECTOR3},
+		
+		{"gearRatios", GET_OFFSET(config, config.power.gearRatios), PropType::FLOAT_LIST},
+		
+		{"throttleCurve", GET_OFFSET(config, config.power.throttleCurve), PropType::GRAPH},
+		{"engineCurve", GET_OFFSET(config, config.power.engineCurve), PropType::GRAPH},
+		{"looseEngineRpmCurve", GET_OFFSET(config, config.power.looseEngineRpmCurve), PropType::GRAPH},
+		{"engineBrakeCurve", GET_OFFSET(config, config.power.engineBrakeCurve), PropType::GRAPH},
+		{"clutchCurve", GET_OFFSET(config, config.power.clutchCurve), PropType::GRAPH},
+		{"brakeCurve", GET_OFFSET(config, config.brakeCurve), PropType::GRAPH},
+		{NULL, 0, PropType::_FLOAT}
+	});
 	
-	configProps.emplace("torqueToRpmAccel", CREATE_CONFIG_PROP(config, &config.power.torqueToRpmAccel, PropType::_FLOAT));
-	configProps.emplace("driveRatio", CREATE_CONFIG_PROP(config, &config.power.driveRatio, PropType::_FLOAT));
-	configProps.emplace("wheelDiameter", CREATE_CONFIG_PROP(config, &config.wheels.diameter, PropType::_FLOAT));
-	configProps.emplace("brakeDiameter", CREATE_CONFIG_PROP(config, &config.wheels.brakeDiameter, PropType::_FLOAT));
-	configProps.emplace("brakeStaticFrictionCoef", CREATE_CONFIG_PROP(config, &config.wheels.brakeStaticFrictionCoef, PropType::_FLOAT));
-	configProps.emplace("brakeKineticFrictionCoef", CREATE_CONFIG_PROP(config, &config.wheels.brakeKineticFrictionCoef, PropType::_FLOAT));
-	configProps.emplace("maxSteeringAngle", CREATE_CONFIG_PROP(config, &config.maxSteeringAngle, PropType::_FLOAT));
-	configProps.emplace("mass", CREATE_CONFIG_PROP(config, &config.mass, PropType::_FLOAT));
-	
-	configProps.emplace("gearRatios", CREATE_CONFIG_PROP(config, &config.power.gearRatios, PropType::FLOAT_LIST));
-	
-	configProps.emplace("frontShaft", CREATE_CONFIG_PROP(config, &config.frontShaft, PropType::VECTOR3));
-	configProps.emplace("rearShaft", CREATE_CONFIG_PROP(config, &config.rearShaft, PropType::VECTOR3));
-	
-	configProps.emplace("throttleCurve", CREATE_CONFIG_PROP(config, &config.power.throttleCurve, PropType::GRAPH));
-	configProps.emplace("engineCurve", CREATE_CONFIG_PROP(config, &config.power.engineCurve, PropType::GRAPH));
-	configProps.emplace("looseEngineRpmCurve", CREATE_CONFIG_PROP(config, &config.power.looseEngineRpmCurve, PropType::GRAPH));
-	configProps.emplace("engineBrakeCurve", CREATE_CONFIG_PROP(config, &config.power.engineBrakeCurve, PropType::GRAPH));
-	configProps.emplace("clutchCurve", CREATE_CONFIG_PROP(config, &config.power.clutchCurve, PropType::GRAPH));
-	configProps.emplace("brakeCurve", CREATE_CONFIG_PROP(config, &config.brakeCurve, PropType::GRAPH));
+	for (const ConfigPropData* prop = configProps.get(); prop->name != NULL; prop++)
+		configPropsMap.emplace(prop->name, prop);
 }
 
 bool ConfigParser::loadSerializedConfig(VehicleConfig* config, const char* serializedConfig) {
@@ -53,10 +60,10 @@ bool ConfigParser::loadSerializedConfig(VehicleConfig* config, const char* seria
 			parsingError("'=' not found");
 		
 		std::string_view name = Util::removeBlankEnds(line.substr(0, equalPos));
-		std::map<std::string_view, ConfigPropData>::iterator prop = configProps.find(name);
+		std::map<std::string_view, const ConfigPropData*>::iterator prop = configPropsMap.find(name);
 		
-		if (prop != configProps.end())
-			setAttrib(config, prop->second, Util::removeBlankEnds(line.substr(equalPos + 1)));
+		if (prop != configPropsMap.end())
+			setAttrib(config, *(prop->second), Util::removeBlankEnds(line.substr(equalPos + 1)));
 		
 		else
 			parsingError("Invalid property");
@@ -68,7 +75,7 @@ bool ConfigParser::loadSerializedConfig(VehicleConfig* config, const char* seria
 	return parsingSuccess;
 }
 
-void ConfigParser::setAttrib(VehicleConfig* config, ConfigPropData prop, std::string_view value) {
+void ConfigParser::setAttrib(VehicleConfig* config, const ConfigPropData& prop, std::string_view value) {
 	switch (prop.type) {
 		case PropType::_FLOAT: {
 			float val;
@@ -155,10 +162,10 @@ char* ConfigParser::serializeConfig(const VehicleConfig* config) {
 	std::string str;
 	str.reserve(1000);
 	
-	for (const std::pair<std::string_view, ConfigPropData>& prop : configProps) {
-		str.append(prop.first);
+	for (const ConfigPropData* prop = configProps.get(); prop->name != NULL; prop++) {
+		str.append(prop->name);
 		str.append(" = ");
-		serializeProp(config, prop.second, str);
+		serializeProp(config, *prop, str);
 		str.append(1, '\n');
 	}
 	str.erase(str.size() - 1); //Delete \n at the end
@@ -170,7 +177,7 @@ char* ConfigParser::serializeConfig(const VehicleConfig* config) {
 	return retStr;
 }
 
-void ConfigParser::serializeProp(const VehicleConfig* config, ConfigPropData prop, std::string& str) {
+void ConfigParser::serializeProp(const VehicleConfig* config, const ConfigPropData& prop, std::string& str) {
 	char aux[30];
 	
 	switch (prop.type) {
