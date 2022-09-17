@@ -9,6 +9,7 @@ public:
 	
 	void reset();
 	void setConfig(ConfigManager* newConfigManager);
+	void clearConfig();
 	void updateConfig();
 	void update(float delta);
 	
@@ -18,8 +19,6 @@ public:
 	VehicleProps props;
 
 private:
-	void removeVehicleFromConfig();
-	
 	void updatePower(float delta);
 	void updateBreaks();
 	

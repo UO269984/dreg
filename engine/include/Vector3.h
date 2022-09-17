@@ -6,14 +6,16 @@ struct Vector3 {
 	float z;
 	
 	#ifdef __cplusplus
-	Vector3 operator +(Vector3 vec) const;
-	Vector3 operator -(Vector3 vec) const;
+	Vector3 operator +(const Vector3& vec) const;
+	Vector3 operator -(const Vector3& vec) const;
 	Vector3 operator *(float mul) const;
 	Vector3& operator +=(const Vector3& vector);
+	bool operator ==(const Vector3& vector) const;
+	bool operator !=(const Vector3& vector) const;
 	
 	float length() const;
 	Vector3 rotateEuler(float x, float y, float z) const;
-	Vector3 rotate(float* rotMatrix) const;
+	Vector3 rotate(const float* rotMatrix) const;
 	#endif
 };
 

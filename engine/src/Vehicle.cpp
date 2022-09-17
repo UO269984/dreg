@@ -11,7 +11,6 @@ Vehicle::Vehicle() {
 
 Vehicle::~Vehicle() {
 	printFunc("Destroying Vehicle");
-	removeVehicleFromConfig();
 }
 
 void Vehicle::reset() {
@@ -24,21 +23,21 @@ void Vehicle::reset() {
 		updateConfig();
 }
 
-void Vehicle::removeVehicleFromConfig() {
-	if (configManager != NULL) {
-		configManager->removeVehicle(this);
-		configManager = NULL;
-	}
-}
-
 void Vehicle::setConfig(ConfigManager* newConfigManager) {
-	removeVehicleFromConfig();
+	clearConfig();
 	
 	if (newConfigManager != NULL) {
 		config = &newConfigManager->config;
 		configManager = newConfigManager;
 		
 		newConfigManager->addVehicle(this);
+	}
+}
+
+void Vehicle::clearConfig() {
+	if (configManager != NULL) {
+		configManager->removeVehicle(this);
+		configManager = NULL;
 	}
 }
 

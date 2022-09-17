@@ -3,11 +3,11 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-Vector3 Vector3::operator +(Vector3 vec) const {
+Vector3 Vector3::operator +(const Vector3& vec) const {
 	return {x + vec.x, y + vec.y, z + vec.z};
 }
 
-Vector3 Vector3::operator -(Vector3 vec) const {
+Vector3 Vector3::operator -(const Vector3& vec) const {
 	return {x - vec.x, y - vec.y, z - vec.z};
 }
 
@@ -15,11 +15,19 @@ Vector3 Vector3::operator *(float mul) const {
 	return {x * mul, y * mul, z * mul};
 }
 
-Vector3& Vector3::operator +=(const Vector3& vector) {
-	x += vector.x;
-	y += vector.y;
-	z += vector.z;
+Vector3& Vector3::operator +=(const Vector3& vec) {
+	x += vec.x;
+	y += vec.y;
+	z += vec.z;
 	return *this;
+}
+
+bool Vector3::operator ==(const Vector3& vec) const {
+	return x == vec.x && y == vec.y && z == vec.z;
+}
+
+bool Vector3::operator !=(const Vector3& vec) const {
+	return x != vec.x || y != vec.y || z != vec.z;
 }
 
 float Vector3::length() const {
@@ -42,7 +50,7 @@ Vector3 Vector3::rotateEuler(float x, float y, float z) const {
 	return rotate(rotMatrix);
 }
 
-Vector3 Vector3::rotate(float* rotMatrix) const {
+Vector3 Vector3::rotate(const float* rotMatrix) const {
 	Vector3 rotated;
 	rotated.x = rotMatrix[0] * x + rotMatrix[1] * y + rotMatrix[2] * z;
 	rotated.y = rotMatrix[3] * x + rotMatrix[4] * y + rotMatrix[5] * z;

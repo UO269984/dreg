@@ -55,6 +55,7 @@ Vehicle* createVehicle() {
 }
 
 void deleteVehicle(Vehicle* vehicle) {
+	vehicle->clearConfig();
 	delete vehicle;
 }
 
