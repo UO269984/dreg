@@ -1,25 +1,22 @@
-CFLAGS = -Wall -std=c++17 -c -I include -o $@
-LDFLAGS := -lstdc++
+ROOT_PATH := ..
+include $(ROOT_PATH)/globalVars.make
 
+CFLAGS = -Wall -std=c++17 -c -I $(INCLUDE) -o $@
 CFLAGS += $(if $(filter-out $(OS),Windows_NT),-fPIC,)
-
-include ../globalVars.make
-LIBRARY_FILENAME := $(BUILD)/$(LIBRARY_NAME).$(LIB_EXT)
-STATIC_LIBRARY_FILENAME := $(BUILD)/$(LIBRARY_NAME).$(STATIC_LIB_EXT)
+LDFLAGS := -lstdc++
 
 include srcs.make
 OBJS := $(subst $(SRC),$(BIN), $(SRCS))
 OBJS := $(subst .cpp,.o, $(OBJS))
 WIN_OBJS := $(subst $(BIN),$(WIN_BIN), $(OBJS))
 
-$(LIBRARY_FILENAME): $(OBJS)
+$(BUILD)/$(DREG_LIBRARY): $(OBJS)
 	$(CXX) -shared -o $@ $^ $(LDFLAGS)
 
-$(STATIC_LIBRARY_FILENAME): $(OBJS)
+$(BUILD)/$(DREG_LIBRARY_STATIC): $(OBJS)
 	ar rcs $@ $^
 
-$(shell $(CXX) -c -I $(INCLUDE) -MM $(SRCS) | $(ADD_DEPEND_PATH) $(BIN)/ > $(DEPENDS_FILE))
-include $(DEPENDS_FILE)
+include $(ROOT_PATH)/addDepends.make
 
 $(BIN)/%.o: $(SRC)/%.cpp
 	$(CXX) $(CFLAGS) $<
@@ -28,37 +25,37 @@ $(BIN)/%.o: $(SRC)/%.cpp
 all: engine static windows static-win wasm android
 
 .PHONY: engine
-engine: $(LIBRARY_FILENAME)
+engine: $(BUILD)/$(DREG_LIBRARY)
 
 .PHONY: static
-static: $(STATIC_LIBRARY_FILENAME)
+static: $(BUILD)/$(DREG_LIBRARY_STATIC)
 
 ifneq ($(OS),Windows_NT)
 
-$(BUILD)/$(LIBRARY_NAME).dll: $(WIN_OBJS)
+$(BUILD)/$(DREG_LIBRARY_WIN): $(WIN_OBJS)
 	x86_64-w64-mingw32-gcc -shared -o $@ $^ $(LDFLAGS)
 
-$(BUILD)/$(LIBRARY_NAME).lib: $(WIN_OBJS)
+$(BUILD)/$(DREG_LIBRARY_WIN_STATIC): $(WIN_OBJS)
 	x86_64-w64-mingw32-ar rcs $@ $^
 
 $(WIN_BIN)/%.o: $(SRC)/%.cpp
 	x86_64-w64-mingw32-gcc $(CFLAGS) $<
 
 .PHONY: windows
-windows: $(BUILD)/$(LIBRARY_NAME).dll
+windows: $(BUILD)/$(DREG_LIBRARY_WIN)
 
 .PHONY: static-win
-static-win: $(BUILD)/$(LIBRARY_NAME).lib
+static-win: $(BUILD)/$(DREG_LIBRARY_WIN_STATIC)
 endif
 
 .PHONY: wasm
 wasm:
-	emcc -I $(INCLUDE) -o $(BUILD)/$(LIBRARY_NAME).bc -std=c++17 -s WASM=1 -s EXPORTED_RUNTIME_METHODS='["cwrap"]' $(SRCS)
+	emcc -I $(INCLUDE) -o $(BUILD)/$(DREG_LIBRARY_WASM) -std=c++17 -s WASM=1 -s EXPORTED_RUNTIME_METHODS='["cwrap"]' $(SRCS)
 
 .PHONY: android
 android:
 	ndk-build -C $(ANDROID)
-	cp $(ANDROID)/libs/armeabi-v7a/lib$(LIBRARY_NAME).so $(BUILD)
+	cp $(ANDROID)/libs/armeabi-v7a/$(DREG_LIBRARY_ANDROID) $(BUILD)
 
 .PHONY: clean
 clean:
