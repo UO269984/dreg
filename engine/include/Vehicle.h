@@ -2,6 +2,8 @@
 
 #include "VehicleApi.h"
 
+#include <cstddef>
+
 class Vehicle {
 public:
 	Vehicle();

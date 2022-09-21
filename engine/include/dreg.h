@@ -50,8 +50,8 @@ extern "C" {
 	Graph* createGraph();
 	void deleteGraph(Graph* graph);
 	Graph* cloneGraph(const Graph* graph);
-	void loadLinearGraph(Graph* graph, const Vector2* refs, size_t refsCount);
-	void loadBezierGraph(Graph* graph, const Vector2* refs, size_t refsCount, size_t samplesPerSegment);
+	char loadLinearGraph(Graph* graph, const Vector2* refs, size_t refsCount);
+	char loadBezierGraph(Graph* graph, const Vector2* refs, size_t refsCount, size_t samplesPerSegment);
 	const Vector2* getGraphInitData(const Graph* graph, char* isBezier, size_t* pointsCount);
 	const Vector2* getGraphPoints(const Graph* graph, size_t* pointsCount);
 	float getGraphY(const Graph* graph, float x);

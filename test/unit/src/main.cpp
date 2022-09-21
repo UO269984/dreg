@@ -3,6 +3,10 @@
 #include "cutest/CuTestCPP.h"
 #include "dreg/dreg.h"
 
+#include "TestVector3.h"
+#include "TestFloatList.h"
+#include "TestGraph.h"
+
 #include <cstring>
 
 int main(int argc, const char** argv) {
@@ -10,7 +14,13 @@ int main(int argc, const char** argv) {
 		setPrintFunc([](const char* msg) {});
 	
 	CuSuiteWrapper suite;
+	TestVector3 testVector3;
+	TestFloatList testFloatList;
+	TestGraph testGraph;
 	
+	suite.addTest(&testVector3);
+	suite.addTest(&testFloatList);
+	suite.addTest(&testGraph);
 	suite.run();
 	suite.printResult();
 	

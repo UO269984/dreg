@@ -21,8 +21,9 @@ public:
 	Graph(const Graph& original);
 	~Graph();
 	
-	void loadLinear(const Vector2* refs, size_t refsCount);
-	void loadBezier(const Vector2* refs, size_t refsCount, size_t samplesPerSegment);
+	bool loadLinear(const Vector2* refs, size_t refsCount);
+	bool loadBezier(const Vector2* refs, size_t refsCount);
+	bool loadBezier(const Vector2* refs, size_t refsCount, size_t samplesPerSegment);
 	
 	const GraphInitData* getInitData() const;
 	const Vector2* getPoints(size_t* pointsCount) const;

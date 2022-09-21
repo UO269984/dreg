@@ -144,12 +144,12 @@ Graph* cloneGraph(const Graph* graph) {
 	return new Graph(*graph);
 }
 
-void loadLinearGraph(Graph* graph, const Vector2* refs, size_t refsCount) {
-	graph->loadLinear(refs, refsCount);
+char loadLinearGraph(Graph* graph, const Vector2* refs, size_t refsCount) {
+	return graph->loadLinear(refs, refsCount);
 }
 
-void loadBezierGraph(Graph* graph, const Vector2* refs, size_t refsCount, size_t samplesPerSegment) {
-	graph->loadBezier(refs, refsCount,
+char loadBezierGraph(Graph* graph, const Vector2* refs, size_t refsCount, size_t samplesPerSegment) {
+	return graph->loadBezier(refs, refsCount,
 		samplesPerSegment == 0 ? Graph::defaultBezierSamples : samplesPerSegment);
 }
 

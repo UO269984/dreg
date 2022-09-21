@@ -1,5 +1,9 @@
 #include "Graph.h"
 
+#include "dreg.h"
+
+#include <cstdio>
+
 bool Graph::saveInitDataEnabled = false;
 size_t Graph::defaultBezierSamples = 25;
 
@@ -29,7 +33,12 @@ void Graph::saveInitData(GraphType graphType, const Vector2* refs, size_t refsCo
 	}
 }
 
-void Graph::loadLinear(const Vector2* refs, size_t refsCount) {
+bool Graph::loadLinear(const Vector2* refs, size_t refsCount) {
+	if (refsCount == 0) {
+		printFunc("Error loading linear graph, references count: 0");
+		return false;
+	}
+	
 	saveInitData(GraphType::LINEAR, refs, refsCount);
 	lastAccess = {INFINITY, 0};
 	
@@ -44,9 +53,22 @@ void Graph::loadLinear(const Vector2* refs, size_t refsCount) {
 			*(++lastPoint) = refs[i];
 	}
 	graphPoints.resize(lastPoint - graphPoints.data() + 1);
+	return true;
 }
 
-void Graph::loadBezier(const Vector2* refs, size_t refsCount, size_t samplesPerSegment) {
+bool Graph::loadBezier(const Vector2* refs, size_t refsCount) {
+	return loadBezier(refs, refsCount, Graph::defaultBezierSamples);
+}
+
+bool Graph::loadBezier(const Vector2* refs, size_t refsCount, size_t samplesPerSegment) {
+	if (refsCount < 4 || (refsCount - 4) % 3 != 0) {
+		char aux[60];
+		snprintf(aux, 60, "Error loading bezier graph, references count: %zu", refsCount);
+		printFunc(aux);
+		
+		return false;
+	}
+	
 	saveInitData(GraphType::BEZIER, refs, refsCount);
 	lastAccess = {INFINITY, 0};
 	
@@ -91,6 +113,7 @@ void Graph::loadBezier(const Vector2* refs, size_t refsCount, size_t samplesPerS
 		}
 	}
 	graphPoints.resize(iPoint);
+	return true;
 }
 
 const GraphInitData* Graph::getInitData() const {
