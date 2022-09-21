@@ -1,0 +1,34 @@
+ROOT_PATH := ../..
+include $(ROOT_PATH)/globalVars.make
+
+CUTEST_LIBRARY := cuTestCPP.$(STATIC_LIB_EXT)
+TARGET := testDreg$(EXEC_EXT)
+
+CFLAGS = -Wall -std=c++17 -c -I $(INCLUDE) -o $@
+LDFLAGS := $(DREG_LIBRARY) $(CUTEST_LIBRARY) -lstdc++
+
+ifneq ($(OS),Windows_NT)
+	LDFLAGS := -Wl,-rpath=./ $(LDFLAGS)
+endif
+
+include srcs.make
+OBJS := $(subst $(SRC),$(BIN), $(SRCS))
+OBJS := $(subst .cpp,.o, $(OBJS))
+
+$(TARGET): $(OBJS)
+	$(CXX) -o $@ $^ $(LDFLAGS)
+
+include $(ROOT_PATH)/addDepends.make
+
+$(BIN)/%.o: $(SRC)/%.cpp
+	$(CXX) $(CFLAGS) $<
+
+.PHONY: test
+test: $(TARGET)
+	./$(TARGET)
+
+.PHONY: clean
+clean:
+	rm -f $(BIN)/*.o
+	rm -f $(TARGET)
+	rm -f $(DEPENDS_FILE)

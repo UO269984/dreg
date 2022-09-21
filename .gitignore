@@ -1,7 +1,7 @@
 */build/
-*/bin/
+**/bin/
 */bin-win/
-*/depends
+**/depends
 
 engine/android/libs/
 engine/android/obj/
@@ -15,7 +15,13 @@ configEditor/wasmEngineApi/dreg.bc
 test/test
 test/test.exe
 test/dreg.so
+test/dreg.dll
 test/include/dreg
+
+test/unit/testDreg
+test/unit/dreg.so
+test/unit/dreg.dll
+test/unit/include/dreg
 
 tools/*.exe
 tools/rm

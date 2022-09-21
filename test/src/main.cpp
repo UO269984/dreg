@@ -153,4 +153,6 @@ int main(int argc, char const *argv[]) {
 	printTest("Graph");
 	testGraph();
 	cout << "End test" << endl;
+	
+	return 0;
 }

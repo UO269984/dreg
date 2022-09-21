@@ -1,0 +1,2 @@
+
+SRCS := $(SRC)/main.cpp

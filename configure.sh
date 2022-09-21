@@ -1,5 +1,7 @@
 ln -s ../engine/build/dreg.so test/
 ln -s ../../engine/include/ test/include/dreg
+ln -s ../../../engine/include/ test/unit/include/dreg
+ln -s ../../../engine/build/dreg.so test/unit
 ln -s ../../src/ engine/android/jni
 ln -s ../../include/ engine/android/jni
 
