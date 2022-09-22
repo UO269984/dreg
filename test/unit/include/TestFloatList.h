@@ -8,11 +8,7 @@ public:
 	TestFloatList() {
 		ADD_TEST(testFunctions, TestFloatList, test);
 	}
-	
-	void after() override;
 
 private:
 	void test();
-	
-	FloatList* floatList = NULL;
 };

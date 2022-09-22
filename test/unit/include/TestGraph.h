@@ -31,5 +31,4 @@ private:
 	void checkGraphValues(const Graph* graph, const Vector2* values, size_t valuesCount) const;
 	
 	Graph* graph;
-	Graph* dregApiGraph = NULL;
 };

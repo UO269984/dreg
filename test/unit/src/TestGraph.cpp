@@ -3,6 +3,8 @@
 
 #include "dreg/dreg.h"
 
+#include <memory>
+
 void TestGraph::testStart() {
 	graph = (Graph*) malloc(sizeof(Graph));
 }
@@ -10,9 +12,6 @@ void TestGraph::testStart() {
 void TestGraph::testEnd() {
 	setGraphSaveInitData(0);
 	free(graph);
-	
-	if (dregApiGraph != NULL)
-		deleteGraph(dregApiGraph);
 }
 
 void TestGraph::before() {
@@ -137,9 +136,12 @@ void TestGraph::clone() {
 	TestUtil::checkInitdata(tc, &cloned, GraphType::LINEAR, refs, 1);
 }
 
+typedef std::unique_ptr<Graph, std::function<void(Graph*)>> GraphUPtr;
+
 void TestGraph::dregApi() {
 	Vector2 refs[] = {{0.5, 1}, {1, 2}, {3, 6}, {4, 4}};
-	dregApiGraph = createGraph();
+	GraphUPtr dregApiGraphUPtr(createGraph(), deleteGraph);
+	Graph* dregApiGraph = dregApiGraphUPtr.get();
 	loadLinearGraph(dregApiGraph, refs, 4);
 	
 	//loadLinear / getGraphPoints, getGraphY
@@ -152,8 +154,8 @@ void TestGraph::dregApi() {
 	
 	//loadBezier / getGraphInitData
 	setGraphSaveInitData(1);
-	deleteGraph(dregApiGraph);
-	dregApiGraph = createGraph();
+	dregApiGraphUPtr.reset(createGraph());
+	dregApiGraph = dregApiGraphUPtr.get();
 	loadBezierGraph(dregApiGraph, refs, 4, 0);
 	
 	char isBezier;
@@ -166,7 +168,7 @@ void TestGraph::dregApi() {
 	
 	//cloneGraph
 	CuAssertTrue(graph->loadLinear(refs, 4));
-	deleteGraph(dregApiGraph);
-	dregApiGraph = cloneGraph(graph);
+	dregApiGraphUPtr.reset(cloneGraph(graph));
+	dregApiGraph = dregApiGraphUPtr.get();
 	TestUtil::checkGraphPoints(tc, dregApiGraph, refs, 4);
 }

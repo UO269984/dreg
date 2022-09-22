@@ -3,15 +3,14 @@
 
 #include "dreg/dreg.h"
 
-void TestFloatList::after() {
-	if (floatList != NULL) {
-		deleteFloatList(floatList);
-		floatList = NULL;
-	}
-}
+#include <memory>
+
+typedef std::unique_ptr<FloatList, std::function<void(FloatList*)>> FloatListUPtr;
 
 void TestFloatList::test() {
-	floatList = createFloatList();
+	FloatListUPtr floatListUPtr(createFloatList(), deleteFloatList);
+	FloatList* floatList = floatListUPtr.get();
+	
 	CuAssertPtrNotNull(floatList);
 	TestUtil::checkFloatList(tc, floatList, NULL, 0);
 	
