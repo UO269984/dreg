@@ -45,6 +45,13 @@ void ConfigParser::initConfigProps() {
 		configPropsMap.emplace(prop->name, prop);
 }
 
+void ConfigParser::clearConfigProps() {
+	if (configProps.get() != nullptr) {
+		configPropsMap.clear();
+		configProps.reset();
+	}
+}
+
 bool ConfigParser::loadSerializedConfig(VehicleConfig* config, const char* serializedConfig) {
 	initConfigProps();
 	lineNum = 1;
@@ -113,11 +120,12 @@ void ConfigParser::parseFloatList(FloatList* list, std::string_view value) {
 	
 	float parsed;
 	list->clear();
-	list->reserve(valuesSplitted.size());
+	list->resize(valuesSplitted.size());
 	
+	size_t i = 0;
 	for (const std::string_view& valueStr : valuesSplitted) {
 		if (Util::strToFloat(Util::removeBlankEnds(valueStr), &parsed))
-			list->push_back(parsed);
+			(*list)[i++] = parsed;
 		
 		else
 			parsingError("Invalid float");
@@ -138,7 +146,8 @@ void ConfigParser::parseGraph(Graph* graph, std::string_view value) {
 		pointStr = Util::removeBlankEnds(pointStr);
 		spacePos = pointStr.find(' ');
 		
-		if (! Util::strToFloat(Util::removeBlankEnds(pointStr.substr(0, spacePos)), &curPoint->x) ||
+		if (spacePos == pointStr.npos ||
+			! Util::strToFloat(Util::removeBlankEnds(pointStr.substr(0, spacePos)), &curPoint->x) ||
 			! Util::strToFloat(Util::removeBlankEnds(pointStr.substr(spacePos + 1)), &curPoint->y)) {
 			
 			parsingError("Invalid graph point");
@@ -146,14 +155,19 @@ void ConfigParser::parseGraph(Graph* graph, std::string_view value) {
 		curPoint++;
 	}
 	
+	bool loadSuccess;
 	if (type.compare("linear") == 0)
-		graph->loadLinear(points, pointsStrList.size());
+		loadSuccess = graph->loadLinear(points, pointsStrList.size());
 	
 	else if (type.compare("bezier") == 0)
-		graph->loadBezier(points, pointsStrList.size(), Graph::defaultBezierSamples);
+		loadSuccess = graph->loadBezier(points, pointsStrList.size());
 	
-	else
+	else {
 		parsingError("Invalid graph type");
+		return;
+	}
+	if (! loadSuccess)
+		parsingError("Invalid number of references");
 }
 
 char* ConfigParser::serializeConfig(const VehicleConfig* config) {

@@ -20,6 +20,9 @@ class ConfigParser {
 public:
 	bool loadSerializedConfig(VehicleConfig* config, const char* serializedConfig);
 	char* serializeConfig(const VehicleConfig* config);
+	
+	static void initConfigProps();
+	static void clearConfigProps();
 
 private:
 	void setAttrib(VehicleConfig* config, const ConfigPropData& prop, std::string_view value);
@@ -32,7 +35,6 @@ private:
 	uint32_t lineNum;
 	bool parsingSuccess;
 	
-	static void initConfigProps();
 	static std::unique_ptr<ConfigPropData[]> configProps;
 	static std::map<std::string_view, const ConfigPropData*> configPropsMap;
 };

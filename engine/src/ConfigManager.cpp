@@ -19,6 +19,16 @@ ConfigManager::ConfigManager(bool createObjects) : isObjectsOwner(createObjects)
 		
 		config.power.gearRatios = new std::vector<float>();
 	}
+	else {
+		config.power.throttleCurve = NULL;
+		config.power.engineCurve = NULL;
+		config.power.looseEngineRpmCurve = NULL;
+		config.power.engineBrakeCurve = NULL;
+		config.power.clutchCurve = NULL;
+		config.brakeCurve = NULL;
+		
+		config.power.gearRatios = NULL;
+	}
 }
 
 ConfigManager::ConfigManager(const ConfigManager& original, bool fullClone) :
