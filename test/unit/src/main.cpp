@@ -6,6 +6,7 @@
 #include "TestVector3.h"
 #include "TestFloatList.h"
 #include "TestGraph.h"
+#include "TestInputLogger.h"
 
 #include <cstring>
 
@@ -17,10 +18,12 @@ int main(int argc, const char** argv) {
 	TestVector3 testVector3;
 	TestFloatList testFloatList;
 	TestGraph testGraph;
+	TestInputLogger testInputLogger;
 	
 	suite.addTest(&testVector3);
 	suite.addTest(&testFloatList);
 	suite.addTest(&testGraph);
+	suite.addTest(&testInputLogger);
 	suite.run();
 	suite.printResult();
 	
