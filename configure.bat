@@ -1,9 +1,9 @@
 mkdir test\include
 
-mklink test\dreg.dll ..\engine\build\dreg.dll
+mklink test\dreg-debug.dll ..\engine\build\dreg-debug.dll
 mklink /D test\include\dreg ..\..\engine\include
 mklink /D test\unit\include\dreg ..\..\..\engine\include
-mklink ..\..\engine\build\dreg.so test\unit\dreg.so
+mklink test\unit\dreg-debug.dll ..\..\engine\build\dreg-debug.dll
 mklink /D engine\android\jni\src ..\..\src
 mklink /D engine\android\jni\include ..\..\include
 
@@ -11,7 +11,9 @@ mklink /D configEditor\wasmEngineApi\include ..\..\engine\include
 mklink configEditor\wasmEngineApi\dreg.bc ..\..\engine\build\dreg.bc
 
 mkdir engine\build
-mkdir engine\bin
+mkdir engine\bin\debug
+mkdir engine\bin\release
+
 mkdir test\bin
 mkdir test\unit\bin
 mkdir configEditor\web\js\dreg

@@ -1,52 +1,76 @@
 ROOT_PATH := ..
 include $(ROOT_PATH)/globalVars.make
 
-CFLAGS = -Wall -std=c++17 -c -I $(INCLUDE) -o $@
-CFLAGS += $(if $(filter-out $(OS),Windows_NT),-fPIC,)
+override CFLAGS += -Wall -std=c++17 -c -I $(INCLUDE) -o $@
+override CFLAGS += $(if $(filter-out $(OS),Windows_NT),-fPIC,)
 LDFLAGS := -lstdc++
 
 include srcs.make
-OBJS := $(subst $(SRC),$(BIN), $(SRCS))
-OBJS := $(subst .cpp,.o, $(OBJS))
-WIN_OBJS := $(subst $(BIN),$(WIN_BIN), $(OBJS))
+OBJS := $(subst .cpp,.o, $(SRCS))
+OBJS_RELEASE := $(subst $(SRC),$(BIN_RELEASE), $(OBJS))
+OBJS_DEBUG := $(subst $(SRC),$(BIN_DEBUG), $(OBJS))
+WIN_OBJS_RELEASE := $(subst $(SRC),$(WIN_BIN_RELEASE), $(OBJS))
+WIN_OBJS_DEBUG := $(subst $(SRC),$(WIN_BIN_DEBUG), $(OBJS))
 
-$(BUILD)/$(DREG_LIBRARY): $(OBJS)
-	$(CXX) -shared -o $@ $^ $(LDFLAGS)
 
-$(BUILD)/$(DREG_LIBRARY_STATIC): $(OBJS)
-	ar rcs $@ $^
+.PHONY: debug
+debug: $(BUILD)/$(DREG_LIBRARY_DEBUG)
 
-include $(ROOT_PATH)/addDepends.make
-
-$(BIN)/%.o: $(SRC)/%.cpp
-	$(CXX) $(CFLAGS) $<
-
-.PHONY: all
-all: engine static windows static-win wasm android
-
-.PHONY: engine
-engine: $(BUILD)/$(DREG_LIBRARY)
+.PHONY: release
+release: $(BUILD)/$(DREG_LIBRARY_RELEASE)
 
 .PHONY: static
 static: $(BUILD)/$(DREG_LIBRARY_STATIC)
 
-ifneq ($(OS),Windows_NT)
+.PHONY: all
+all: debug release static win-debug win-release win-static wasm android
 
-$(BUILD)/$(DREG_LIBRARY_WIN): $(WIN_OBJS)
+
+$(BUILD)/$(DREG_LIBRARY_RELEASE): $(OBJS_RELEASE)
+	$(CXX) -shared $(RELEASE_OPTIMIZE) -o $@ $^ $(LDFLAGS)
+
+$(BUILD)/$(DREG_LIBRARY_DEBUG): $(OBJS_DEBUG)
+	$(CXX) -shared -o $@ $^ $(LDFLAGS)
+
+$(BUILD)/$(DREG_LIBRARY_STATIC): $(OBJS_RELEASE)
+	ar rcs $@ $^
+
+include $(ROOT_PATH)/addDepends.make
+
+$(BIN_RELEASE)/%.o: $(SRC)/%.cpp
+	$(CXX) $(RELEASE_OPTIMIZE) $(CFLAGS) $<
+
+$(BIN_DEBUG)/%.o: $(SRC)/%.cpp
+	$(CXX) $(CFLAGS) $<
+
+
+ifneq ($(OS),Windows_NT)
+.PHONY: win-debug
+win-debug: $(BUILD)/$(DREG_LIBRARY_WIN_DEBUG)
+
+.PHONY: win-release
+win-release: $(BUILD)/$(DREG_LIBRARY_WIN_RELEASE)
+
+.PHONY: win-static
+win-static: $(BUILD)/$(DREG_LIBRARY_WIN_STATIC)
+
+
+$(BUILD)/$(DREG_LIBRARY_WIN_RELEASE): $(WIN_OBJS_RELEASE)
+	x86_64-w64-mingw32-gcc $(RELEASE_OPTIMIZE) -shared -o $@ $^ $(LDFLAGS)
+
+$(BUILD)/$(DREG_LIBRARY_WIN_DEBUG): $(WIN_OBJS_DEBUG)
 	x86_64-w64-mingw32-gcc -shared -o $@ $^ $(LDFLAGS)
 
-$(BUILD)/$(DREG_LIBRARY_WIN_STATIC): $(WIN_OBJS)
+$(BUILD)/$(DREG_LIBRARY_WIN_STATIC): $(WIN_OBJS_RELEASE)
 	x86_64-w64-mingw32-ar rcs $@ $^
 
-$(WIN_BIN)/%.o: $(SRC)/%.cpp
+$(WIN_BIN_RELEASE)/%.o: $(SRC)/%.cpp
+	x86_64-w64-mingw32-gcc $(RELEASE_OPTIMIZE) $(CFLAGS) $<
+
+$(WIN_BIN_DEBUG)/%.o: $(SRC)/%.cpp
 	x86_64-w64-mingw32-gcc $(CFLAGS) $<
-
-.PHONY: windows
-windows: $(BUILD)/$(DREG_LIBRARY_WIN)
-
-.PHONY: static-win
-static-win: $(BUILD)/$(DREG_LIBRARY_WIN_STATIC)
 endif
+
 
 .PHONY: wasm
 wasm:
@@ -59,9 +83,8 @@ android:
 
 .PHONY: clean
 clean:
-	rm -f $(BIN)/*
-	rm -f $(WIN_BIN)/*
+	rm -f $(BIN_RELEASE)/* $(BIN_DEBUG)/*
+	rm -f $(WIN_BIN_RELEASE)/* $(WIN_BIN_DEBUG)/*
+	rm -rf $(ANDROID)/libs $(ANDROID)/obj
 	rm -f $(BUILD)/*
-	rm -rf $(ANDROID)/libs
-	rm -rf $(ANDROID)/obj
 	rm -f $(DEPENDS_FILE)

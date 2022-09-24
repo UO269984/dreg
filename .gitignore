@@ -14,13 +14,13 @@ configEditor/wasmEngineApi/dreg.bc
 
 test/test
 test/test.exe
-test/dreg.so
-test/dreg.dll
+test/dreg-debug.so
+test/dreg-debug.dll
 test/include/dreg
 
 test/unit/testDreg
-test/unit/dreg.so
-test/unit/dreg.dll
+test/unit/dreg-debug.so
+test/unit/dreg-debug.dll
 test/unit/include/dreg
 
 tools/*.exe
