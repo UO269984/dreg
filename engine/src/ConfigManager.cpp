@@ -53,7 +53,7 @@ ConfigManager::~ConfigManager() {
 	printFunc(aux);
 	
 	for (Vehicle* vehicle : vehicles)
-		delete vehicle;
+		vehicle->configManager = NULL;
 	
 	if (isObjectsOwner) {
 		delete config.power.throttleCurve;

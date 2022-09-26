@@ -64,12 +64,12 @@ void TestConfigManager::vehicles() {
 	CuAssertPtrNotNull(vehicle2.configManager);
 	configManager->updateVehiclesConfig();
 	
-	vehicle1.clearConfig();
+	vehicle1.setConfig(NULL);
 	CuAssertTrue(vehicle1.configManager == NULL);
 	CuAssertPtrNotNull(vehicle2.configManager);
 	configManager->updateVehiclesConfig();
 	
-	vehicle2.setConfig(NULL); //Equivalent to clearConfig
+	vehicle2.setConfig(NULL);
 	CuAssertTrue(vehicle1.configManager == NULL);
 	CuAssertTrue(vehicle2.configManager == NULL);
 	configManager->updateVehiclesConfig();

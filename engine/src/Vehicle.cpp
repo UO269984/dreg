@@ -11,6 +11,7 @@ Vehicle::Vehicle() {
 
 Vehicle::~Vehicle() {
 	printFunc("Destroying Vehicle");
+	clearConfig();
 }
 
 void Vehicle::reset() {

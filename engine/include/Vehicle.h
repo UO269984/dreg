@@ -6,12 +6,13 @@
 
 class Vehicle {
 public:
+	friend ConfigManager;
+	
 	Vehicle();
 	~Vehicle();
 	
 	void reset();
 	void setConfig(ConfigManager* newConfigManager);
-	void clearConfig();
 	void updateConfig();
 	void update(float delta);
 	
@@ -21,6 +22,7 @@ public:
 	VehicleProps props;
 
 private:
+	void clearConfig();
 	void updatePower(float delta);
 	void updateBreaks();
 	
