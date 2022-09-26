@@ -11,8 +11,9 @@ ifneq ($(OS),Windows_NT)
 endif
 
 SRCS := $(SRC)/main.cpp
-OBJS := $(subst $(SRC),$(BIN), $(SRCS))
-OBJS := $(subst .cpp,.o, $(OBJS))
+OBJS := $(subst .cpp,.o, $(SRCS))
+OBJS := $(subst $(SRC),$(BIN), $(OBJS))
+BIN_FOLDERS := $(BIN)
 
 .PHONY: all
 all: $(DREG_LIBRARY_DEBUG) $(TARGET)

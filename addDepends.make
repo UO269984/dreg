@@ -5,6 +5,6 @@ ifeq ($(OS),Windows_NT)
 	ADD_DEPEND_PATH := $(subst /,\\, $(ADD_DEPEND_PATH))
 endif
 
-$(shell $(CXX) -c -I $(INCLUDE) -MM $(SRCS) | $(ADD_DEPEND_PATH) $(BIN)/ > $(DEPENDS_FILE))
+$(shell $(CXX) -c -I $(INCLUDE) -MM $(SRCS) | $(ADD_DEPEND_PATH) $(BIN_FOLDERS) > $(DEPENDS_FILE))
 include $(DEPENDS_FILE)
 endif

@@ -12,8 +12,9 @@ ifneq ($(OS),Windows_NT)
 endif
 
 include srcs.make
-OBJS := $(subst $(SRC),$(BIN), $(SRCS))
-OBJS := $(subst .cpp,.o, $(OBJS))
+OBJS := $(subst .cpp,.o, $(SRCS))
+OBJS := $(subst $(SRC),$(BIN), $(OBJS))
+BIN_FOLDERS := $(BIN)
 
 $(TARGET): $(OBJS)
 	$(CXX) -o $@ $^ $(LDFLAGS)

@@ -1,55 +1,74 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
 
-#define BUF_SIZE 5000
+#define BUF_SIZE 7000
 #define LINE_BREAK '\n'
 
-char* insert(char* str, const char* replaceStr, size_t moveStrSize) {
-	size_t replaceLen = strlen(replaceStr);
+static char* insertDependsFolders(char* buffer, const char* dependsStr, const char* folderStr) {
+	char* newLinePos;
+	size_t folderStrLen = strlen(folderStr);
 	
-	memcpy(str + replaceLen, str, moveStrSize);
-	memcpy(str, replaceStr, replaceLen);
+	memcpy(buffer, folderStr, folderStrLen);
+	buffer += folderStrLen;
+	*(buffer++) = '/';
 	
-	return str + (replaceLen + moveStrSize);
+	while ((newLinePos = strchr(dependsStr, LINE_BREAK)) != NULL) {
+		newLinePos++; //Also copy the new line character
+		
+		memcpy(buffer, dependsStr, newLinePos - dependsStr);
+		buffer += newLinePos - dependsStr;
+		dependsStr = newLinePos;
+		
+		if (newLinePos[-2] != '\\') {
+			memcpy(buffer, folderStr, folderStrLen);
+			buffer += folderStrLen;
+			*(buffer++) = '/';
+		}
+	}
+	buffer -= folderStrLen + 1; //Delete the last added folderStr
+	*buffer = 0; //String end character
+	return buffer;
 }
 
-int main(int argc, char const *argv[]) {
+int readStdin(char* buffer, char* bufferEnd) {
+	char* curPosBuffer = buffer;
+	
+	ssize_t readSize;
+	while (curPosBuffer < bufferEnd && (readSize = read(STDIN_FILENO, curPosBuffer, bufferEnd - curPosBuffer)) > 0)
+		curPosBuffer += readSize;
+	
+	return curPosBuffer < bufferEnd ? curPosBuffer - buffer : -1;
+}
+
+int main(int argc, const char** argv) {
 	if (argc < 2) {
 		fprintf(stderr, "Build folder para required\n");
 		return -1;
 	}
 	
-	const char* replaceStr = argv[1];
-	size_t replaceStrLen = strlen(replaceStr);
-	
-	char buffer[BUF_SIZE] = {0};
-	char* curBufferPos = insert(buffer, replaceStr, 0);
-	ssize_t readSize;
-	
-	while ((readSize = read(STDIN_FILENO, curBufferPos, 50)) > 0 && curBufferPos < buffer + BUF_SIZE) {
-		char* newLinePos = curBufferPos;
-		
-		while ((newLinePos = strchr(newLinePos, LINE_BREAK)) != NULL) {
-			if (newLinePos[-1] != '\\') {
-				insert(newLinePos + 1, replaceStr, readSize - (newLinePos - curBufferPos + 1));
-				
-				newLinePos += replaceStrLen; //Search for new line after inserted str
-				readSize += replaceStrLen;
-			}
-			
-			else
-				newLinePos++;
-		}
-		curBufferPos += readSize;
-	}
-	
-	if (curBufferPos < buffer + BUF_SIZE) {
-		*(curBufferPos - strlen(replaceStr)) = 0;
-		printf("%s", buffer);
-		
-		return 0;
-	}
-	else
+	char stdinBuffer[BUF_SIZE];
+	int stdinSize = readStdin(stdinBuffer, stdinBuffer + BUF_SIZE);
+	if (stdinSize < 0) {
 		fprintf(stderr, "Buffer size exceeded\n");
+		return -1;
+	}
+	
+	size_t outputSize = (stdinSize + 2000) * (argc - 1) * sizeof(char);
+	char* output = malloc(outputSize);
+	char* curBufferPos = output;
+	
+	for (size_t i = 1; i < argc; i++) {
+		curBufferPos = insertDependsFolders(curBufferPos, stdinBuffer, argv[i]);
+		
+		if (curBufferPos > output + outputSize) {
+			fprintf(stderr, "Output buffer size exceeded\n");
+			return -1;
+		}
+	}
+	printf("%s", output);
+	
+	free(output);
+	return 0;
 }
