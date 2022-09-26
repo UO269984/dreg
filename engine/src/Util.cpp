@@ -28,7 +28,7 @@ namespace Util {
 	bool strToFloat(const std::string_view str, float* converted) {
 		char aux[30];
 		str.copy(aux, 29);
-		aux[str.size()] = 0;
+		aux[std::min(str.size(), (size_t) 29)] = 0;
 		
 		char* endptr;
 		*converted = strtof(aux, &endptr);
