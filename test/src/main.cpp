@@ -1,4 +1,5 @@
 #include "dreg/dreg.h"
+#include <dreg/ConfigParser.h>
 
 #include <functional>
 #include <iostream>
@@ -149,9 +150,12 @@ int main(int argc, char const *argv[]) {
 	printTest("Input logger");
 	testInputLogger(vehicle);
 	deleteConfigManager(configManager);
+	deleteVehicle(vehicle);
 	
 	printTest("Graph");
 	testGraph();
+	
+	ConfigParser::clearConfigProps();
 	cout << "End test" << endl;
 	
 	return 0;
