@@ -27,8 +27,13 @@ static char* insertDependsFolders(char* buffer, const char* dependsStr, const ch
 			*(buffer++) = '/';
 		}
 	}
-	buffer -= folderStrLen + 1; //Delete the last added folderStr
-	*buffer = 0; //String end character
+	if (*dependsStr == 0) //Last line is empty
+		buffer -= folderStrLen + 1; //Delete the last added folderStr
+	
+	size_t lastLineSize = strlen(dependsStr);
+	memcpy(buffer, dependsStr, lastLineSize + 1);
+	buffer += lastLineSize;
+	
 	return buffer;
 }
 
@@ -39,6 +44,7 @@ int readStdin(char* buffer, char* bufferEnd) {
 	while (curPosBuffer < bufferEnd && (readSize = read(STDIN_FILENO, curPosBuffer, bufferEnd - curPosBuffer)) > 0)
 		curPosBuffer += readSize;
 	
+	*curPosBuffer = 0;
 	return curPosBuffer < bufferEnd ? curPosBuffer - buffer : -1;
 }
 

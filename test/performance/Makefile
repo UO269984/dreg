@@ -35,7 +35,7 @@ all: $(TARGET) windows wasm
 windows: $(WIN_TARGET)
 
 ifneq ($(OS),Windows_NT)
-WIN_TARGET := test.exe
+WIN_TARGET := testPerformance.exe
 
 .PHONY: windows
 windows: $(WIN_TARGET)
