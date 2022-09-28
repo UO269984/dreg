@@ -1,4 +1,4 @@
-import {TEMPLATES} from "../AppLoadManager.js"
+import {TEMPLATES} from "../Templates.js"
 import {Graph} from "./Graph.js"
 import {EditableGraph, BezierGraph} from "./editableGraphs.js"
 

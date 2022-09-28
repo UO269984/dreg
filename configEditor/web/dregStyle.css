@@ -1,0 +1,62 @@
+
+@font-face {
+	font-family: 'Bitstream';
+	font-weight: 400;
+	src: url('/fonts/ttf-bitstream-vera/Vera.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Bitstream';
+	font-weight: 600;
+	src: url('/fonts/ttf-bitstream-vera/VeraBd.ttf') format('truetype');
+}
+
+body {
+	font-family: 'Bitstream';
+	font-weight: 400;
+	background: #111111;
+	color: white;
+}
+
+h1 {
+	margin: 0.6em 1em;
+}
+
+textarea {
+	white-space: pre;
+	tab-size: 4;
+}
+
+button {
+	font-family: inherit;
+}
+
+button, summary {
+	cursor: pointer;
+	-webkit-user-select: none;
+}
+
+details {
+	margin: 0.8em 0em;
+}
+
+summary {
+	font-size: 1em;
+}
+
+input[type=number] {
+	background: #222222;
+	color: white;
+	text-align: left;
+	
+	display: inline-block;
+	width: 4em;
+	
+	padding: 4px 7px;
+	border-width: 0px;
+	margin: 3px;
+}
+
+input[type=number].long-input {
+	width: 8em;
+}

@@ -76,7 +76,8 @@ endif
 
 .PHONY: wasm
 wasm:
-	emcc -I $(INCLUDE) -o $(BUILD)/$(DREG_LIBRARY_WASM) -std=c++17 -s WASM=1 -s EXPORTED_RUNTIME_METHODS='["cwrap"]' $(SRCS)
+	emcc -I $(INCLUDE) $(RELEASE_OPTIMIZE) -o $(BUILD)/$(DREG_LIBRARY_WASM) \
+	-std=c++17 -s WASM=1 -s EXPORTED_RUNTIME_METHODS='["cwrap"]' $(SRCS)
 
 .PHONY: android
 android:

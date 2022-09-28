@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Dreg test</title>
+	
+	<link rel="stylesheet" type="text/css" href="dregStyle.css" />
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	<script type="module" src="js/main.js"></script>
+</head>
+
+<body>
+	<h1>Dreg performance test</h1>
+	<main>
+		<div>
+			<textarea id="consoleContainer" disabled></textarea>
+			<button id="runTestBt">Run test</button>
+		</div>
+		
+		<div>
+			<div class="input-block">
+				<label for="bezierSamples">Bezier graph samples</label>
+				<input type="number" name="bezierSamples" />
+			</div>
+			
+			<div class="input-block">
+				<label for="singleVehicleIters">Single vehicle iters</label>
+				<input class="long-input" type="number" name="singleVehicleIters" />
+			</div>
+			
+			<div class="input-block">
+				<label for="multipleVehiclesIters">Multiple vehicles iters</label>
+				<input class="long-input" type="number" name="multipleVehiclesIters" />
+			</div>
+			
+			<div class="input-block">
+				<label for="multipleVehiclesCount">Multiple vehicles count</label>
+				<input class="long-input" type="number" name="multipleVehiclesCount" />
+			</div>
+			
+			<div class="input-block">
+				<label for="createVehiclesCount">Create vehicles count</label>
+				<input class="long-input" type="number" name="createVehiclesCount" />
+			</div>
+			
+			<div class="input-block">
+				<label for="loadConfigIters">Load config iters</label>
+				<input class="long-input" type="number" name="loadConfigIters" />
+			</div>
+			
+			<div class="config-block">
+				<span>Vehicle tests config</span>
+				<textarea id="vehicleConfigVehicle" class="config-textarea"></textarea>
+			</div>
+			
+			<div class="config-block">
+				<span>Load config test config</span>
+				<textarea id="vehicleConfigLoadConfig" class="config-textarea"></textarea>
+			</div>
+		</div>
+	</main>
+</body>
+</html>

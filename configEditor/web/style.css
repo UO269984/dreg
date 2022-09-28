@@ -1,8 +1,3 @@
-body {
-	background: #111111;
-	color: white;
-}
-
 @media only screen and (max-width: 900px) {
 	#editor-config + div {
 		flex-direction: column !important;
@@ -46,8 +41,6 @@ body {
 #config-textarea {
 	width: 20em;
 	height: 20em;
-	
-	white-space: nowrap;
 }
 
 #load-log-file {
@@ -77,40 +70,10 @@ body {
 	display: block;
 }
 
-button, summary {
-	cursor: pointer;
-	-webkit-user-select: none;
-}
-
-input[type=number] {
-	background: #222222;
-	color: white;
-	text-align: left;
-	
-	display: inline-block;
-	width: 4em;
-	
-	padding: 4px 7px;
-	border-width: 0px;
-	margin: 3px;
-}
-
-input[type=number].long-input {
-	width: 8em;
-}
-
 canvas {
 	background: white;
 	padding: 0px;
 	margin: 0px;
-}
-
-details {
-	margin: 0.8em 0em;
-}
-
-summary {
-	font-size: 1em;
 }
 
 .editable-graph {

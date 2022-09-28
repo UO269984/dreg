@@ -19,6 +19,7 @@ test/dreg-debug.dll
 test/include/dreg
 
 test/unit/testDreg
+test/unit/testDreg.exe
 test/unit/dreg-debug.so
 test/unit/dreg-debug.dll
 test/unit/include/dreg
@@ -27,6 +28,11 @@ test/performance/dreg.so
 test/performance/dreg.dll
 test/performance/include/dreg
 test/performance/testPerformance
+test/performance/testPerformance.exe
+test/performance/wasm/web/fonts
+test/performance/wasm/web/dregStyle.css
+test/performance/wasm/web/js/dreg
+test/performance/wasm/web/js/AppLoadManager.js
 
 tools/*.exe
 tools/rm

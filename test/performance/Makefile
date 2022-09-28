@@ -29,7 +29,7 @@ test: $(TARGET)
 	./$(TARGET)
 
 .PHONY: all
-all: $(TARGET) windows
+all: $(TARGET) windows wasm
 
 .PHONY: windows
 windows: $(WIN_TARGET)
@@ -49,7 +49,9 @@ endif
 
 .PHONY: wasm
 wasm:
-	emcc $(RELEASE_OPTIMIZE) -I include/ -o wasm/js/dreg/dreg.js -std=c++11 -s WASM=1 -s EXPORT_ES6=1 -s MODULARIZE=1 ../../engine/build/dreg.bc src/performanceTest.cpp --bind wasmApi.cpp
+	emcc $(RELEASE_OPTIMIZE) -I include/ -o wasm/web/js/dreg/testPerformance.js \
+	-std=c++17 -s WASM=1 -s EXPORT_ES6=1 -s MODULARIZE=1 \
+	../../engine/build/$(DREG_LIBRARY_WASM) src/testPerformance.cpp --bind wasm/wasmApi.cpp
 
 .PHONY: clean
 clean:
@@ -57,4 +59,5 @@ clean:
 	rm -f $(WIN_BIN)/*.o
 	rm -f $(TARGET)
 	rm -f $(WIN_TARGET)
+	rm -f wasm/web/js/dreg/*
 	rm -f $(DEPENDS_FILE)

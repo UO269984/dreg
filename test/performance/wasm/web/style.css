@@ -1,0 +1,43 @@
+
+main {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+main > * {
+	margin-right: 1em;
+}
+
+#consoleContainer {
+	width: min(50em, 90vw);
+	height: min(35em, 60vh);
+}
+#consoleContainer:disabled {
+	background: field;
+	color: fieldtext;
+}
+#runTestBt {
+	font-size: min(2.5em, 5vh);
+	font-weight: 600;
+	display: none;
+	
+	padding: 0.2em 0.6em;
+	margin: 0.8em auto;
+}
+
+.config-block {
+	display: inline-block;
+}
+.config-block > * {
+	display: block;
+}
+.config-block > *:first-child {
+	font-size: 1.2em;
+	font-weight: 500;
+	margin: 0.8em 1em 0.5em;
+}
+
+.config-textarea {
+	width: 20em;
+	height: 22em;
+}

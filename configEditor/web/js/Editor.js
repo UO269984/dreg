@@ -1,4 +1,4 @@
-import {TEMPLATES} from "./AppLoadManager.js"
+import {TEMPLATES} from "./Templates.js"
 import {VehicleAPI, GraphAPI} from "./drivingEngineAPI.js"
 import {BasicGraphUI} from "./graph/GraphUI.js"
 import {EditorConfigUI, VehicleConfigUI} from "./ConfigUI.js"
