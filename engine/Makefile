@@ -14,6 +14,8 @@ WIN_OBJS_DEBUG := $(subst $(SRC),$(WIN_BIN_DEBUG), $(OBJS))
 
 BIN_FOLDERS := $(BIN_RELEASE) $(BIN_DEBUG) $(WIN_BIN_RELEASE) $(WIN_BIN_DEBUG)
 
+RELEASE_DEFINE := DREG_RESEASE
+DEBUG_DEFINE := DREG_DEBUG
 
 .PHONY: debug
 debug: $(BUILD)/$(DREG_LIBRARY_DEBUG)
@@ -40,10 +42,10 @@ $(BUILD)/$(DREG_LIBRARY_STATIC): $(OBJS_RELEASE)
 include $(ROOT_PATH)/addDepends.make
 
 $(BIN_RELEASE)/%.o: $(SRC)/%.cpp
-	$(CXX) $(RELEASE_OPTIMIZE) $(CFLAGS) $<
+	$(CXX) $(RELEASE_OPTIMIZE) -D $(RELEASE_DEFINE) $(CFLAGS) $<
 
 $(BIN_DEBUG)/%.o: $(SRC)/%.cpp
-	$(CXX) $(CFLAGS) $<
+	$(CXX) -D $(DEBUG_DEFINE) $(CFLAGS) $<
 
 
 ifneq ($(OS),Windows_NT)
@@ -67,16 +69,16 @@ $(BUILD)/$(DREG_LIBRARY_WIN_STATIC): $(WIN_OBJS_RELEASE)
 	x86_64-w64-mingw32-ar rcs $@ $^
 
 $(WIN_BIN_RELEASE)/%.o: $(SRC)/%.cpp
-	x86_64-w64-mingw32-gcc $(RELEASE_OPTIMIZE) $(CFLAGS) $<
+	x86_64-w64-mingw32-gcc $(RELEASE_OPTIMIZE) -D $(RELEASE_DEFINE) $(CFLAGS) $<
 
 $(WIN_BIN_DEBUG)/%.o: $(SRC)/%.cpp
-	x86_64-w64-mingw32-gcc $(CFLAGS) $<
+	x86_64-w64-mingw32-gcc -D $(DEBUG_DEFINE) $(CFLAGS) $<
 endif
 
 
 .PHONY: wasm
 wasm:
-	emcc -I $(INCLUDE) $(RELEASE_OPTIMIZE) -o $(BUILD)/$(DREG_LIBRARY_WASM) \
+	emcc -I $(INCLUDE) $(RELEASE_OPTIMIZE) -D $(RELEASE_DEFINE) -o $(BUILD)/$(DREG_LIBRARY_WASM) \
 	-std=c++17 -s WASM=1 -s EXPORTED_RUNTIME_METHODS='["cwrap"]' $(SRCS)
 
 .PHONY: android

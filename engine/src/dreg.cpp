@@ -7,6 +7,65 @@
 
 #include <fstream>
 
+#ifdef DREG_DEBUG
+#define CHECK_RANGE_I(VALUE, MIN, MAX, NAME) checkInRange<int>(VALUE, MIN, MAX, NAME, "Error: %s (%d) is out of range [%d, %d]")
+#define CHECK_RANGE_F(VALUE, MIN, MAX, NAME) checkInRange<float>(VALUE, MIN, MAX, NAME, "Error: %s (%f) is out of range [%f, %f]")
+#define CHECK_POSITIVE_F(VALUE, NAME) checkPositive<float>(VALUE, NAME, "Error: %s (%f) is negative")
+#define CHECK_NOT_NULL(PTR, NAME) checkNotNull(PTR, NAME)
+#define CHECK_CONFIG(CONFIG_MANAGER) checkConfig(CONFIG_MANAGER)
+
+template<typename T>
+static void checkInRange(T value, T min, T max, const char* name, const char* msg) {
+	
+	if (value < min || value > max) {
+		char aux[90];
+		snprintf(aux, 90, msg, name, value, min, max);
+		printFunc(aux);
+	}
+}
+
+template<typename T>
+static void checkPositive(T value, const char* name, const char* msg) {
+	if (value < 0) {
+		char aux[90];
+		snprintf(aux, 90, msg, name, value);
+		printFunc(aux);
+	}
+}
+
+static void checkNotNull(void* ptr, const char* name) {
+	if (ptr == NULL) {
+		char aux[90];
+		snprintf(aux, 90, "Error: %s is NULL", name);
+		printFunc(aux);
+	}
+}
+
+static void checkConfig(const ConfigManager* configManager) {
+	const VehicleConfig* config = &configManager->config;
+	
+	CHECK_RANGE_F(config->maxSteeringAngle, 0, 180, "maxSteeringAngle");
+	CHECK_POSITIVE_F(config->mass, "mass");
+	CHECK_POSITIVE_F(config->wheels.diameter, "wheel diameter");
+	CHECK_POSITIVE_F(config->wheels.brakeDiameter, "brake diameter");
+	CHECK_POSITIVE_F(config->wheels.brakeStaticFrictionCoef, "brake static friction coef");
+	CHECK_POSITIVE_F(config->wheels.brakeKineticFrictionCoef, "brake kinetic friction coef");
+	checkNotNull(config->brakeCurve, "brake curve");
+	checkNotNull(config->power.throttleCurve, "throttle curve");
+	checkNotNull(config->power.engineCurve, "engine curve");
+	checkNotNull(config->power.looseEngineRpmCurve, "loose engine rpm curve");
+	checkNotNull(config->power.engineBrakeCurve, "engine brakeCcurve");
+	checkNotNull(config->power.clutchCurve, "clutch curve");
+	checkNotNull(config->power.gearRatios, "gear ratios");
+}
+#else
+#define CHECK_RANGE_I(VALUE, MIN, MAX, NAME)
+#define CHECK_RANGE_F(VALUE, MIN, MAX, NAME)
+#define CHECK_POSITIVE_F(VALUE, NAME)
+#define CHECK_NOT_NULL(PTR, NAME)
+#define CHECK_CONFIG(CONFIG_MANAGER)
+#endif
+
 PrintFunc printFunc = [](const char* toPrint) {printf("- %s\n", toPrint);};
 SaveFileFunc saveFileFunc = [](const char* filename, const char* data) {
 	std::ofstream f;
@@ -63,6 +122,12 @@ void resetVehicle(Vehicle* vehicle) {
 }
 
 void setVehicleInput(Vehicle* vehicle, const VehicleControls* input) {
+	CHECK_RANGE_F(input->throttle, 0, 1, "throttle");
+	CHECK_RANGE_F(input->brake, 0, 1, "brake");
+	CHECK_RANGE_F(input->steeringWheel, -1, 1, "steeringWheel");
+	CHECK_RANGE_F(input->clutch, 0, 1, "clutch");
+	CHECK_RANGE_I(input->gear, 0, vehicle->configManager->config.power.gearRatios->size() - 1, "gear");
+	
 	vehicle->controls = *input;
 }
 
@@ -79,10 +144,16 @@ ConfigManager* getConfigManager(Vehicle* vehicle) {
 }
 
 void setVehicleConfig(Vehicle* vehicle, ConfigManager* configManager) {
+	#ifdef DREG_DEBUG
+	if (configManager != NULL)
+		CHECK_CONFIG(configManager);
+	#endif
+	
 	vehicle->setConfig(configManager);
 }
 
 void update(Vehicle* vehicle, float delta) {
+	CHECK_NOT_NULL(vehicle->configManager, "vehicle configManager");
 	vehicle->update(delta);
 }
 
@@ -104,6 +175,7 @@ VehicleConfig* getVehicleConfig(ConfigManager* configManager) {
 }
 
 void updateConfig(ConfigManager* configManager) {
+	CHECK_CONFIG(configManager);
 	configManager->updateVehiclesConfig();
 }
 
@@ -169,6 +241,14 @@ const Vector2* getGraphPoints(const Graph* graph, size_t* pointsCount) {
 }
 
 float getGraphY(const Graph* graph, float x) {
+	#ifdef DREG_DEBUG
+	size_t pointsCount;
+	graph->getPoints(&pointsCount);
+	
+	if (pointsCount == 0)
+		printFunc("Trying to get a value on a not loaded graph");
+	#endif
+	
 	return graph->getY(x);
 }
 
@@ -178,6 +258,7 @@ InputLogger* createInputLogger(Vehicle* vehicle) {
 }
 
 void logInput(InputLogger* inputLogger, float delta) {
+	CHECK_POSITIVE_F(delta, "inputLogger delta");
 	inputLogger->log(delta);
 }
 
