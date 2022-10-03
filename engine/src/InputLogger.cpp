@@ -1,11 +1,12 @@
 #include "InputLogger.h"
 
 #include "dreg.h"
+#include "logger.h"
 
 #include <string>
 
 InputLogger::InputLogger(Vehicle* vehicle) : vehicle(vehicle) {
-	printFunc("Starting input logging");
+	DREG_LOG("Starting input logging");
 }
 
 void InputLogger::log(float delta) {
@@ -40,7 +41,7 @@ void InputLogger::save(const char* filename) {
 		inputsIt++;
 	}
 	saveFileFunc(filename, str.c_str());
-	printFunc(("Input logging saved: " + std::string(filename)).c_str());
+	DREG_LOG_FORMAT(120, "Input logging saved: %s", filename);
 }
 
 bool InputLogger::sameInput(VehicleControls& c1, VehicleControls& c2) const {

@@ -1,6 +1,6 @@
 #include "Graph.h"
 
-#include "dreg.h"
+#include "logger.h"
 
 #include <cstdio>
 
@@ -35,7 +35,7 @@ void Graph::saveInitData(GraphType graphType, const Vector2* refs, size_t refsCo
 
 bool Graph::loadLinear(const Vector2* refs, size_t refsCount) {
 	if (refsCount == 0) {
-		printFunc("Error loading linear graph, references count: 0");
+		DREG_ERROR("Error loading linear graph, references count: 0");
 		return false;
 	}
 	
@@ -62,10 +62,7 @@ bool Graph::loadBezier(const Vector2* refs, size_t refsCount) {
 
 bool Graph::loadBezier(const Vector2* refs, size_t refsCount, size_t samplesPerSegment) {
 	if (refsCount < 4 || (refsCount - 4) % 3 != 0) {
-		char aux[60];
-		snprintf(aux, 60, "Error loading bezier graph, references count: %zu", refsCount);
-		printFunc(aux);
-		
+		DREG_ERROR_FORMAT(60, "Error loading bezier graph, references count: %zu", refsCount);
 		return false;
 	}
 	

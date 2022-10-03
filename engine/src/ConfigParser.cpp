@@ -1,6 +1,6 @@
 #include "ConfigParser.h"
 
-#include "dreg.h"
+#include "logger.h"
 #include "Graph.h"
 #include "Util.h"
 
@@ -223,7 +223,7 @@ void ConfigParser::serializeProp(const VehicleConfig* config, const ConfigPropDa
 			const GraphInitData* initData = graph->getInitData();
 			
 			if (initData == NULL) {
-				printFunc("Error serializing config, Graph init data not found");
+				DREG_ERROR("Serializing config, Graph init data not found");
 				return;
 			}
 			str.append(initData->type == GraphType::LINEAR ? "linear " : "bezier ");
@@ -240,8 +240,5 @@ void ConfigParser::serializeProp(const VehicleConfig* config, const ConfigPropDa
 
 void ConfigParser::parsingError(const char* msg) {
 	parsingSuccess = false;
-	
-	char errorMsg[150];
-	snprintf(errorMsg, 150, "Error loading config, line %d, %s", lineNum, msg);
-	printFunc(errorMsg);
+	DREG_ERROR_FORMAT(150, "Loading config, in line %d: %s", lineNum, msg);
 }

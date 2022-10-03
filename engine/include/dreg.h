@@ -12,7 +12,6 @@ extern "C" {
 	typedef void (*PrintFunc)(const char* toPrint);
 	typedef void (*SaveFileFunc)(const char* filename, const char* data);
 	
-	extern PrintFunc printFunc;
 	void setPrintFunc(PrintFunc newPrintFunc);
 	
 	extern SaveFileFunc saveFileFunc;

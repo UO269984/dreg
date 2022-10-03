@@ -1,5 +1,6 @@
 #include "dreg.h"
 
+#include "logger.h"
 #include "Graph.h"
 #include "ConfigManager.h"
 #include "ConfigParser.h"
@@ -8,9 +9,9 @@
 #include <fstream>
 
 #ifdef DREG_DEBUG
-#define CHECK_RANGE_I(VALUE, MIN, MAX, NAME) checkInRange<int>(VALUE, MIN, MAX, NAME, "Error: %s (%d) is out of range [%d, %d]")
-#define CHECK_RANGE_F(VALUE, MIN, MAX, NAME) checkInRange<float>(VALUE, MIN, MAX, NAME, "Error: %s (%f) is out of range [%f, %f]")
-#define CHECK_POSITIVE_F(VALUE, NAME) checkPositive<float>(VALUE, NAME, "Error: %s (%f) is negative")
+#define CHECK_RANGE_I(VALUE, MIN, MAX, NAME) checkInRange<int>(VALUE, MIN, MAX, NAME, "%s (%d) is out of range [%d, %d]")
+#define CHECK_RANGE_F(VALUE, MIN, MAX, NAME) checkInRange<float>(VALUE, MIN, MAX, NAME, "%s (%f) is out of range [%f, %f]")
+#define CHECK_POSITIVE_F(VALUE, NAME) checkPositive<float>(VALUE, NAME, "%s (%f) is negative")
 #define CHECK_NOT_NULL(PTR, NAME) checkNotNull(PTR, NAME)
 #define CHECK_CONFIG(CONFIG_MANAGER) checkConfig(CONFIG_MANAGER)
 
@@ -18,26 +19,20 @@ template<typename T>
 static void checkInRange(T value, T min, T max, const char* name, const char* msg) {
 	
 	if (value < min || value > max) {
-		char aux[90];
-		snprintf(aux, 90, msg, name, value, min, max);
-		printFunc(aux);
+		DREG_WARN_FORMAT(90, msg, name, value, min, max);
 	}
 }
 
 template<typename T>
 static void checkPositive(T value, const char* name, const char* msg) {
 	if (value < 0) {
-		char aux[90];
-		snprintf(aux, 90, msg, name, value);
-		printFunc(aux);
+		DREG_WARN_FORMAT(90, msg, name, value);
 	}
 }
 
 static void checkNotNull(void* ptr, const char* name) {
 	if (ptr == NULL) {
-		char aux[90];
-		snprintf(aux, 90, "Error: %s is NULL", name);
-		printFunc(aux);
+		DREG_ERROR_FORMAT(90, "%s is NULL", name);
 	}
 }
 
@@ -66,7 +61,6 @@ static void checkConfig(const ConfigManager* configManager) {
 #define CHECK_CONFIG(CONFIG_MANAGER)
 #endif
 
-PrintFunc printFunc = [](const char* toPrint) {printf("- %s\n", toPrint);};
 SaveFileFunc saveFileFunc = [](const char* filename, const char* data) {
 	std::ofstream f;
 	f.open(filename);
@@ -74,6 +68,7 @@ SaveFileFunc saveFileFunc = [](const char* filename, const char* data) {
 	f.close();
 };
 
+extern PrintFunc printFunc;
 void setPrintFunc(PrintFunc newPrintFunc) {
 	printFunc = newPrintFunc;
 }
@@ -246,7 +241,7 @@ float getGraphY(const Graph* graph, float x) {
 	graph->getPoints(&pointsCount);
 	
 	if (pointsCount == 0)
-		printFunc("Trying to get a value on a not loaded graph");
+		DREG_ERROR("Trying to get a value on a not loaded graph");
 	#endif
 	
 	return graph->getY(x);

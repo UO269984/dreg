@@ -1,16 +1,16 @@
 #include "Vehicle.h"
 
-#include "dreg.h"
+#include "logger.h"
 #include "ConfigManager.h"
 #include "Graph.h"
 
 Vehicle::Vehicle() {
-	printFunc("Creating Vehicle");
+	DREG_LOG("Creating Vehicle");
 	reset();
 }
 
 Vehicle::~Vehicle() {
-	printFunc("Destroying Vehicle");
+	DREG_LOG("Destroying Vehicle");
 	clearConfig();
 }
 

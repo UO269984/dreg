@@ -1,13 +1,13 @@
 #include "ConfigManager.h"
 
-#include "dreg.h"
+#include "logger.h"
 #include "Vehicle.h"
 #include "Graph.h"
 
 #include <cstdio>
 
 ConfigManager::ConfigManager(bool createObjects) : isObjectsOwner(createObjects) {
-	printFunc("Creating ConfigManager");
+	DREG_LOG("Creating ConfigManager");
 	
 	if (isObjectsOwner) {
 		config.power.throttleCurve = new Graph();
@@ -34,7 +34,7 @@ ConfigManager::ConfigManager(bool createObjects) : isObjectsOwner(createObjects)
 ConfigManager::ConfigManager(const ConfigManager& original, bool fullClone) :
 	config(original.config), isObjectsOwner(fullClone) {
 	
-	printFunc("Cloning ConfigManager");
+	DREG_LOG("Cloning ConfigManager");
 	if (fullClone) {
 		config.power.throttleCurve = new Graph(*config.power.throttleCurve);
 		config.power.engineCurve = new Graph(*config.power.engineCurve);
@@ -48,9 +48,7 @@ ConfigManager::ConfigManager(const ConfigManager& original, bool fullClone) :
 }
 
 ConfigManager::~ConfigManager() {
-	char aux[50];
-	snprintf(aux, 50, "Destroying ConfigManager with %zu vehicles", vehicles.size());
-	printFunc(aux);
+	DREG_LOG_FORMAT(50, "Destroying ConfigManager with %zu vehicles", vehicles.size());
 	
 	for (Vehicle* vehicle : vehicles)
 		vehicle->configManager = NULL;
