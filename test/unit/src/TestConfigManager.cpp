@@ -54,8 +54,8 @@ void TestConfigManager::checkPointersLoaded(const VehicleConfig* config, bool ex
 
 void TestConfigManager::vehicles() {
 	Vehicle vehicle1, vehicle2;
-	CuAssertTrue(vehicle1.configManager == NULL);
-	CuAssertTrue(vehicle2.configManager == NULL);
+	CuAssertPtrEquals(NULL, vehicle1.configManager);
+	CuAssertPtrEquals(NULL, vehicle2.configManager);
 	configManager->updateVehiclesConfig();
 	
 	vehicle1.setConfig(configManager);
@@ -65,13 +65,13 @@ void TestConfigManager::vehicles() {
 	configManager->updateVehiclesConfig();
 	
 	vehicle1.setConfig(NULL);
-	CuAssertTrue(vehicle1.configManager == NULL);
+	CuAssertPtrEquals(NULL, vehicle1.configManager);
 	CuAssertPtrNotNull(vehicle2.configManager);
 	configManager->updateVehiclesConfig();
 	
 	vehicle2.setConfig(NULL);
-	CuAssertTrue(vehicle1.configManager == NULL);
-	CuAssertTrue(vehicle2.configManager == NULL);
+	CuAssertPtrEquals(NULL, vehicle1.configManager);
+	CuAssertPtrEquals(NULL, vehicle2.configManager);
 	configManager->updateVehiclesConfig();
 }
 
@@ -103,7 +103,7 @@ void TestConfigManager::dregApi() {
 	ConfigManager* dregApiConfigManager = dregApiConfigManagerUptr.get();
 	loadDefaultConfig(dregApiConfigManager);
 	
-	CuAssertTrue(getVehicleConfig(dregApiConfigManager) == &dregApiConfigManager->config);
+	CuAssertPtrEquals(&dregApiConfigManager->config, getVehicleConfig(dregApiConfigManager));
 	setVehicleConfig(&vehicle1, dregApiConfigManager);
 	updateConfig(dregApiConfigManager);
 	

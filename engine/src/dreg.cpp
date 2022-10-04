@@ -17,7 +17,6 @@
 
 template<typename T>
 static void checkInRange(T value, T min, T max, const char* name, const char* msg) {
-	
 	if (value < min || value > max) {
 		DREG_WARN_FORMAT(90, msg, name, value, min, max);
 	}
@@ -149,6 +148,7 @@ void setVehicleConfig(Vehicle* vehicle, ConfigManager* configManager) {
 
 void update(Vehicle* vehicle, float delta) {
 	CHECK_NOT_NULL(vehicle->configManager, "vehicle configManager");
+	CHECK_POSITIVE_F(delta, "update vehicle delta");
 	vehicle->update(delta);
 }
 

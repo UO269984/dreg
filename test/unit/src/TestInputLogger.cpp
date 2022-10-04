@@ -1,4 +1,5 @@
 #include "TestInputLogger.h"
+#include "DregLogManager.h"
 
 #include "dreg/dreg.h"
 
@@ -81,6 +82,7 @@ void TestInputLogger::dregApi() {
 	
 	vehicle->controls = {0, 1, 0, 0, 2};
 	logInput(inputLogger2, 1);
+	CHECK_LOG("WARNING", logInput(inputLogger2, -0.1))
 	
 	saveInputLogger(inputLogger2, "File4");
 	const char* expectedInputLog = LINE1_INPUT_LOG

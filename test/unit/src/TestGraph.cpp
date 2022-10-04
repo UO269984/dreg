@@ -1,4 +1,5 @@
 #include "TestGraph.h"
+#include "DregLogManager.h"
 #include "TestUtil.h"
 
 #include "dreg/dreg.h"
@@ -70,25 +71,25 @@ void TestGraph::checkGraphValues(const Graph* graph, const Vector2* values, size
 
 void TestGraph::invalidGraph() {
 	Vector2 refs[] = {{0, 0}, {1, 1}};
-	CuAssertTrue(! graph->loadLinear(refs, 0));
+	CHECK_LOG("ERROR", CuAssertTrue(! graph->loadLinear(refs, 0)))
 	
-	CuAssertTrue(! graph->loadBezier(refs, 0));
-	CuAssertTrue(! graph->loadBezier(refs, 1));
-	CuAssertTrue(! graph->loadBezier(refs, 3));
-	CuAssertTrue(! graph->loadBezier(refs, 5));
-	CuAssertTrue(! graph->loadBezier(refs, 6));
+	CHECK_LOG("ERROR", CuAssertTrue(! graph->loadBezier(refs, 0)))
+	CHECK_LOG("ERROR", CuAssertTrue(! graph->loadBezier(refs, 1)))
+	CHECK_LOG("ERROR", CuAssertTrue(! graph->loadBezier(refs, 3)))
+	CHECK_LOG("ERROR", CuAssertTrue(! graph->loadBezier(refs, 5)))
+	CHECK_LOG("ERROR", CuAssertTrue(! graph->loadBezier(refs, 6)))
 }
 
 void TestGraph::initData() {
 	//Save init data disabled
-	CuAssertTrue(graph->getInitData() == NULL);
+	CuAssertPtrEquals(NULL, graph->getInitData());
 	
 	Vector2 refs[] = {{0, 0}, {0.2, 0.2}, {0.8, 0.8}, {1, 1}};
 	CuAssertTrue(graph->loadLinear(refs, 2));
-	CuAssertTrue(graph->getInitData() == NULL);
+	CuAssertPtrEquals(NULL, graph->getInitData());
 	
 	CuAssertTrue(graph->loadBezier(refs, 4));
-	CuAssertTrue(graph->getInitData() == NULL);
+	CuAssertPtrEquals(NULL, graph->getInitData());
 	
 	//Save init data enabled
 	setGraphSaveInitData(1);
@@ -114,14 +115,14 @@ void TestGraph::clone() {
 	cloned.~Graph();
 	new(&cloned) Graph(*graph);
 	TestUtil::checkGraphPoints(tc, &cloned, refs, 3);
-	CuAssertTrue(cloned.getInitData() == NULL);
+	CuAssertPtrEquals(NULL, cloned.getInitData());
 	
 	setGraphSaveInitData(1);
 	graph->~Graph(); //Recreate original graph
 	new(graph) Graph();
 	CuAssertTrue(graph->loadLinear(refs, 3));
 	
-	CuAssertTrue(cloned.getInitData() == NULL);
+	CuAssertPtrEquals(NULL, cloned.getInitData());
 	
 	cloned.~Graph();
 	new(&cloned) Graph(*graph);
@@ -150,7 +151,7 @@ void TestGraph::dregApi() {
 	CuAssertIntEquals(4, pointsCount);
 	CuAssertTrue(memcmp(refs, points, sizeof(Vector2) * pointsCount) == 0);
 	CuAssertDblEquals(2, getGraphY(dregApiGraph, 1), 0.00001);
-	CuAssertTrue(getGraphInitData(dregApiGraph, NULL, NULL) == NULL);
+	CuAssertPtrEquals(NULL, getGraphInitData(dregApiGraph, NULL, NULL));
 	
 	//loadBezier / getGraphInitData
 	setGraphSaveInitData(1);

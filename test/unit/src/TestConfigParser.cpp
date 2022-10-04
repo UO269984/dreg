@@ -1,4 +1,5 @@
 #include "TestConfigParser.h"
+#include "DregLogManager.h"
 #include "TestUtil.h"
 
 #include "dreg/dreg.h"
@@ -82,25 +83,25 @@ void TestConfigParser::after() {
 }
 
 void TestConfigParser::invalidConfig() {
-	CuAssertTrue(! configParser->loadSerializedConfig(config, "invalidProp = 44"));
-	CuAssertTrue(! configParser->loadSerializedConfig(config, "mass = 44,43"));
-	CuAssertTrue(! configParser->loadSerializedConfig(config, "mass = 44a3"));
-	CuAssertTrue(! configParser->loadSerializedConfig(config, "frontShaft = 3,2"));
-	CuAssertTrue(! configParser->loadSerializedConfig(config, "frontShaft = 3,2aa,4"));
-	CuAssertTrue(! configParser->loadSerializedConfig(config, "gearRatios = 1 6"));
-	CuAssertTrue(! configParser->loadSerializedConfig(config, "gearRatios = 1,6a"));
+	CHECK_LOG("ERROR", CuAssertTrue(! configParser->loadSerializedConfig(config, "invalidProp = 44")))
+	CHECK_LOG("ERROR", CuAssertTrue(! configParser->loadSerializedConfig(config, "mass = 44,43")))
+	CHECK_LOG("ERROR", CuAssertTrue(! configParser->loadSerializedConfig(config, "mass = 44a3")))
+	CHECK_LOG("ERROR", CuAssertTrue(! configParser->loadSerializedConfig(config, "frontShaft = 3,2")))
+	CHECK_LOG("ERROR", CuAssertTrue(! configParser->loadSerializedConfig(config, "frontShaft = 3,2aa,4")))
+	CHECK_LOG("ERROR", CuAssertTrue(! configParser->loadSerializedConfig(config, "gearRatios = 1 6")))
+	CHECK_LOG("ERROR", CuAssertTrue(! configParser->loadSerializedConfig(config, "gearRatios = 1,6a")))
 	
-	CuAssertTrue(! configParser->loadSerializedConfig(config, "throttleCurve = invalidGraph 0 0; 1 1"));
-	CuAssertTrue(! configParser->loadSerializedConfig(config, "throttleCurve = linear 0 4a0; 1 1"));
-	CuAssertTrue(! configParser->loadSerializedConfig(config, "throttleCurve = linear 0 0 1; 1 1"));
-	CuAssertTrue(! configParser->loadSerializedConfig(config, "throttleCurve = linear 0; 1 1"));
-	CuAssertTrue(! configParser->loadSerializedConfig(config, "throttleCurve = linear "));
-	CuAssertTrue(! configParser->loadSerializedConfig(config, "throttleCurve = bezier 0 0; 1 1"));
+	CHECK_LOG("ERROR", CuAssertTrue(! configParser->loadSerializedConfig(config, "throttleCurve = invalidGraph 0 0; 1 1")))
+	CHECK_LOG("ERROR", CuAssertTrue(! configParser->loadSerializedConfig(config, "throttleCurve = linear 0 4a0; 1 1")))
+	CHECK_LOG("ERROR", CuAssertTrue(! configParser->loadSerializedConfig(config, "throttleCurve = linear 0 0 1; 1 1")))
+	CHECK_LOG("ERROR", CuAssertTrue(! configParser->loadSerializedConfig(config, "throttleCurve = linear 0; 1 1")))
+	CHECK_LOG("ERROR", CuAssertTrue(! configParser->loadSerializedConfig(config, "throttleCurve = linear ")))
+	CHECK_LOG("ERROR", CuAssertTrue(! configParser->loadSerializedConfig(config, "throttleCurve = bezier 0 0; 1 1")))
 }
 
 void TestConfigParser::emptyConfig() {
 	ConfigManager prevConfigManager(*configManager, true);
-	CuAssertTrue(configParser->loadSerializedConfig(config, ""));
+	CHECK_LOG("", CuAssertTrue(configParser->loadSerializedConfig(config, "")))
 	TestUtil::checkSameConfigs(tc, config, &prevConfigManager.config, true);
 }
 
@@ -108,7 +109,7 @@ void TestConfigParser::oneVariableConfig() {
 	ConfigManager prevConfigManager(*configManager, true);
 	
 	CuAssertTrue(config->mass > 400);
-	CuAssertTrue(configParser->loadSerializedConfig(config, "mass = 360.1"));
+	CHECK_LOG("", CuAssertTrue(configParser->loadSerializedConfig(config, "mass = 360.1")))
 	CuAssertDblEquals(360.1, config->mass, 0.00001); //Check the mass has changed
 	config->mass = prevConfigManager.config.mass;
 	
@@ -117,11 +118,12 @@ void TestConfigParser::oneVariableConfig() {
 }
 
 void TestConfigParser::completeConfig() {
-	CuAssertTrue(configParser->loadSerializedConfig(config, TEST_CONFIG_STR));
+	CHECK_LOG("", CuAssertTrue(configParser->loadSerializedConfig(config, TEST_CONFIG_STR)))
 	TestUtil::checkSameConfigs(tc, config, loadedConfig, true);
 }
 
 typedef std::unique_ptr<char, std::function<void(char*)>> CharArrayUPtr;
+typedef std::unique_ptr<ConfigManager, std::function<void(ConfigManager*)>> ConfigManagerUPtr;
 
 void TestConfigParser::serializeConfigTest() {
 	CharArrayUPtr serialized(configParser->serializeConfig(loadedConfig), deleteCharArray);
@@ -129,8 +131,14 @@ void TestConfigParser::serializeConfigTest() {
 }
 
 void TestConfigParser::dregApi() {
-	CuAssertTrue(loadSerializedConfig(config, TEST_CONFIG_STR));
+	CHECK_LOG("", CuAssertTrue(loadSerializedConfig(config, TEST_CONFIG_STR)))
 	
 	CharArrayUPtr serialized(serializeConfig(config), deleteCharArray);
 	CuAssertStrEquals(TEST_CONFIG_STR, serialized.get());
+	
+	setGraphSaveInitData(0); //Init data not saved
+	ConfigManagerUPtr configManagerUPtr(createConfigManager(1), deleteConfigManager);
+	const VehicleConfig* dregApiConfig = getVehicleConfig(configManagerUPtr.get());
+	
+	CHECK_LOG("ERROR", serialized.reset(serializeConfig(dregApiConfig)))
 }
