@@ -11,6 +11,9 @@ mklink test\performance\dreg.dll ..\..\engine\build\dreg.dll
 mklink test\performance\wasm\web\dregStyle.css ..\..\..\..\configEditor\web\dregStyle.css
 mklink /D test\performance\wasm\web\fonts ..\..\..\..\configEditor\web\fonts\
 mklink test\performance\wasm\web\js\AppLoadManager.js ..\..\..\..\..\configEditor\web\js\AppLoadManager.js
+mklink /D test\performance\android\app\src\main\cpp\include ..\..\..\..\..\include
+mklink  test\performance\android\app\src\main\cpp\testPerformance.cpp ..\..\..\..\..\src\testPerformance.cpp
+mklink /D test\performance\android\app\src\main\cpp\dregLibs ..\..\..\..\..\..\..\engine\build\androidLibs
 
 mklink /D configEditor\wasmEngineApi\include ..\..\engine\include
 mklink configEditor\wasmEngineApi\dreg.bc ..\..\engine\build\dreg.bc

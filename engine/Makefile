@@ -14,9 +14,6 @@ WIN_OBJS_DEBUG := $(subst $(SRC),$(WIN_BIN_DEBUG), $(OBJS))
 
 BIN_FOLDERS := $(BIN_RELEASE) $(BIN_DEBUG) $(WIN_BIN_RELEASE) $(WIN_BIN_DEBUG)
 
-RELEASE_DEFINE := DREG_RESEASE
-DEBUG_DEFINE := DREG_DEBUG
-
 .PHONY: debug
 debug: $(BUILD)/$(DREG_LIBRARY_DEBUG)
 
@@ -84,12 +81,13 @@ wasm:
 .PHONY: android
 android:
 	ndk-build -C $(ANDROID)
-	cp $(ANDROID)/libs/armeabi-v7a/$(DREG_LIBRARY_ANDROID) $(BUILD)
+	rm -rf $(BUILD)/androidLibs
+	cp -r $(ANDROID)/libs $(BUILD)/androidLibs
 
 .PHONY: clean
 clean:
 	rm -f $(BIN_RELEASE)/* $(BIN_DEBUG)/*
 	rm -f $(WIN_BIN_RELEASE)/* $(WIN_BIN_DEBUG)/*
 	rm -rf $(ANDROID)/libs $(ANDROID)/obj
-	rm -f $(BUILD)/*
+	rm -rf $(BUILD)/*
 	rm -f $(DEPENDS_FILE)

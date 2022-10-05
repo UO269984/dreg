@@ -1,0 +1,14 @@
+*.iml
+.gradle
+/local.properties
+/.idea/
+/captures
+.externalNativeBuild
+local.properties
+
+/app/build
+/app/.cxx
+
+/app/src/main/cpp/include
+/app/src/main/cpp/dregLibs
+/app/src/main/cpp/testPerformance.cpp

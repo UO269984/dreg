@@ -10,6 +10,9 @@ ln -s ../../engine/build/dreg.dll test/performance
 ln -s ../../../../configEditor/web/dregStyle.css test/performance/wasm/web
 ln -s ../../../../configEditor/web/fonts/ test/performance/wasm/web
 ln -s ../../../../../configEditor/web/js/AppLoadManager.js test/performance/wasm/web/js
+ln -s ../../../../../include test/performance/android/app/src/main/cpp
+ln -s ../../../../../src/testPerformance.cpp test/performance/android/app/src/main/cpp
+ln -s ../../../../../../../engine/build/androidLibs test/performance/android/app/src/main/cpp/dregLibs
 
 ln -s ../../src/ engine/android/jni
 ln -s ../../include/ engine/android/jni
