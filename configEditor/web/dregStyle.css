@@ -60,3 +60,13 @@ input[type=number] {
 input[type=number].long-input {
 	width: 8em;
 }
+
+::-webkit-scrollbar {
+	background: #555555;
+	width: 6px;
+	height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: white;
+}

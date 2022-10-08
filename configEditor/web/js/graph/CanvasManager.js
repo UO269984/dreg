@@ -23,7 +23,6 @@ class MouseInputManager extends InputManager {
 		
 		this.interactActive = false
 		this.scaleActive = false
-		this.htmlElem = document.children[0]
 		
 		document.onmousemove = this.#mouseMoveHandler.bind(this)
 		document.onkeydown = e => {
@@ -38,7 +37,7 @@ class MouseInputManager extends InputManager {
 			let isInteractBt = e.button == 0
 			if ((isInteractBt || e.button == 1) && this.mouseOverCanvasFuncs != null) {
 				this.activeCanvasFuncs = this.mouseOverCanvasFuncs
-				this.setSelectActive(false)
+				setWindowSelect(false)
 				
 				this.interactActive = isInteractBt
 				if (isInteractBt)
@@ -49,13 +48,9 @@ class MouseInputManager extends InputManager {
 			if ((e.button == 0 || e.button == 1) && this.activeCanvasFuncs != null) {
 				this.activeCanvasFuncs.mouseUpCallback(e)
 				this.activeCanvasFuncs = null
-				this.setSelectActive(true)
+				setWindowSelect(true)
 			}
 		}
-	}
-	
-	setSelectActive(active) {
-		this.htmlElem.style["-webkit-user-select"] = active ? "" : "none"
 	}
 	
 	addCanvas(canvas, funcsObj) {
@@ -158,7 +153,8 @@ class TouchInputManager extends InputManager {
 	}
 }
 
-const isTouchScreen = () => "ontouchstart" in window || navigator.maxTouchPoints > 0
+export const setWindowSelect = isEnabled => document.children[0].style["-webkit-user-select"] = isEnabled ? "" : "none"
+export const isTouchScreen = () => "ontouchstart" in window || navigator.maxTouchPoints > 0
 export const INPUT_MANAGER = isTouchScreen() ? new TouchInputManager() : new MouseInputManager()
 
 export class CanvasManager {

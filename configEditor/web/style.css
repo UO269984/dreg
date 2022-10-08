@@ -1,32 +1,36 @@
-@media only screen and (max-width: 900px) {
-	#editor-config + div {
-		flex-direction: column !important;
-	}
-}
 
-#vehicle-config, #simulation {
-	padding: 0.5em 0.5em 0.5em 1.5em;
-	margin: 1.5em 0px;
-}
-
-#editor-config + div {
-	display: flex;
-	flex-direction: row;
-}
-
-#vehicle-config h2, #simulation h2 {
+body {
 	padding: 0px;
-	margin: 0px 0px 0.8em;
+	margin: 0px;
+	display: flex;
+	flex-wrap: nowrap;
 }
 
-#vehicle-config {
-	min-width: 400px;
+canvas {
+	background: white;
+	padding: 0px;
+	margin: 0px;
+}
+
+#splitter {
+	cursor: col-resize;
+	width: 20px;
+}
+
+#splitter > div {
+	margin: auto;
+	width: 1px;
+	height: 100vh;
+	background: #666666;
 }
 
 #simulation {
-	border-style: solid;
-	border-width: 0px 0px 0px 1px;
-	border-color: #666666;
+	flex-grow: 1;
+}
+
+#simulation, main {
+	height: 100vh;
+	overflow-y: scroll;
 }
 
 #simulation-graphs {
@@ -43,8 +47,8 @@
 	height: 20em;
 }
 
-#load-log-file {
-	margin: 1.5em;
+#load-log-file, #editor-config, #vehicle-config, #simulation > div:first-child {
+	margin-left: 1.5em;
 }
 
 #load-log-file > div:first-child {
@@ -64,21 +68,4 @@
 
 #vehicleInputLog-input {
 	display: none;
-}
-
-.input-block {
-	display: block;
-}
-
-canvas {
-	background: white;
-	padding: 0px;
-	margin: 0px;
-}
-
-.editable-graph {
-	color: white;
-	
-	border-style: none;
-	margin: 0em;
 }

@@ -10,38 +10,38 @@
 	<script type="module" src="js/main.js"></script>
 </head>
 <body>
-	<h1>Vehicle configuration editor</h1>
-	<div id="load-log-file">
-		<div>
-			<span>Loaded input file</span>
-			<span id="loaded-log-filename">-</span>
-		</div>
-		
-		<button id="vehicleInputLog-bt">Load vehicle input log</button>
-		<input id="vehicleInputLog-input" type="file" accept=".csv" name="inputLogFile" />
-	</div>
-	
-	<div id="editor-config">
-		<h2>Editor settings</h2>
-		<div class="input-block">
-			<label for="simInterval">Simulation interval (s)</label>
-			<input class="long-input" type="number" name="simInterval" />
-		</div>
-		
-		<div class="input-block">
-			<label for="simSamples">Simulation samples</label>
-			<input type="number" name="simSamples" />
-		</div>
-		
-		<div class="input-block">
-			<label for="graphSamples">Graph samples per segment</label>
-			<input type="range" min="1" max="80" name="graphSamples-slider" />
-			<input type="number" name="graphSamples" />
+	<main>
+		<h1>Vehicle config editor</h1>
+		<div id="load-log-file">
+			<div>
+				<span>Loaded input file</span>
+				<span id="loaded-log-filename">-</span>
+			</div>
 			
+			<button id="vehicleInputLog-bt">Load vehicle input log</button>
+			<input id="vehicleInputLog-input" type="file" accept=".csv" name="inputLogFile" />
 		</div>
-	</div>
-	
-	<div>
+		
+		<div id="editor-config">
+			<h2>Editor settings</h2>
+			<div class="input-block">
+				<label for="simInterval">Simulation interval (s)</label>
+				<input id="simInterval" class="long-input" type="number" name="simInterval" />
+			</div>
+			
+			<div class="input-block">
+				<label for="simSamples">Simulation samples</label>
+				<input id="simSamples" type="number" name="simSamples" />
+			</div>
+			
+			<div class="input-block">
+				<label for="graphSamples">Graph samples per segment</label>
+				<input type="range" min="1" max="80" name="graphSamples-slider" />
+				<input id="graphSamples" type="number" name="graphSamples" />
+				
+			</div>
+		</div>
+		
 		<div id="vehicle-config">
 			<h2>Vehicle configuration</h2>
 			<div>
@@ -53,12 +53,12 @@
 			<div class="input-block">
 				<label for="maxSteeringAngle">Max steering angle (º)</label>
 				<input type="range" min="0" max="180" step="0.1" name="maxSteeringAngle-slider" />
-				<input type="number" name="maxSteeringAngle" />
+				<input id="maxSteeringAngle" type="number" name="maxSteeringAngle" />
 			</div>
 			
 			<div class="input-block">
 				<label for="mass">Vehicle mass (Kg)</label>
-				<input type="number" name="mass" />
+				<input id="mass" type="number" name="mass" />
 			</div>
 			
 			<div class="input-block">
@@ -78,11 +78,11 @@
 			<h3>Power</h3>
 				<div class="input-block">
 					<label for="torqueToRpmAccel">Torque to rpm accel</label>
-					<input type="number" name="torqueToRpmAccel" />
+					<input id="torqueToRpmAccel" type="number" name="torqueToRpmAccel" />
 				</div>
 				<div class="input-block">
 					<label for="driveRatio">Drive ratio</label>
-					<input type="number" name="driveRatio" />
+					<input id="driveRatio" type="number" name="driveRatio" />
 				</div>
 				
 				<details open>
@@ -120,17 +120,17 @@
 			<h3>Brakes</h3>
 				<div class="input-block">
 					<label for="brakeDiameter">Brake diameter</label>
-					<input type="number" name="brakeDiameter" />
+					<input id="brakeDiameter" type="number" name="brakeDiameter" />
 				</div>
 				
 				<div class="input-block">
 					<label for="brakeStaticFrictionCoef">Brake static friction coefficient</label>
-					<input type="number" name="brakeStaticFrictionCoef" />
+					<input id="brakeStaticFrictionCoef" type="number" name="brakeStaticFrictionCoef" />
 				</div>
 				
 				<div class="input-block">
 					<label for="brakeKineticFrictionCoef">Brake kinetic friction coefficient</label>
-					<input type="number" name="brakeKineticFrictionCoef" />
+					<input id="brakeKineticFrictionCoef" type="number" name="brakeKineticFrictionCoef" />
 				</div>
 				
 				<details>
@@ -141,15 +141,18 @@
 			<h3>Wheels</h3>
 				<div class="input-block">
 					<label for="wheelDiameter">Diameter (m)</label>
-					<input type="number" name="wheelDiameter" />
+					<input id="wheelDiameter" type="number" name="wheelDiameter" />
 				</div>
 		</div>
-		
-		<div id="simulation">
+	</main>
+	<div id="splitter"><div></div></div>
+	
+	<div id="simulation">
+		<div>
 			<h2>Simulation</h2>
 			<button id="add-graph-bt">Add graph</button>
-			<div id="simulation-graphs"></div>
 		</div>
+		<div id="simulation-graphs"></div>
 	</div>
 </body>
 </html>

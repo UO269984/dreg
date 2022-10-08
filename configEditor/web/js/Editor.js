@@ -1,5 +1,6 @@
 import {TEMPLATES} from "./Templates.js"
 import {VehicleAPI, GraphAPI} from "./drivingEngineAPI.js"
+import {MobileSplitter} from "./MobileSplitter.js"
 import {BasicGraphUI} from "./graph/GraphUI.js"
 import {EditorConfigUI, VehicleConfigUI} from "./ConfigUI.js"
 
@@ -169,6 +170,8 @@ class EditorConfig {
 export class Editor {
 	constructor() {
 		GraphAPI.setGraphSaveInitData(true)
+		new MobileSplitter(document.getElementById("splitter"),
+			document.querySelector("main"), document.getElementById("simulation"))
 		
 		this.config = new EditorConfig()
 		this.vehicle = new VehicleAPI()
