@@ -2,7 +2,7 @@ CC := gcc
 CXX := gcc
 
 CFLAGS := -Wall
-BINARIES := addDependPath rm
+BINARIES := addDependPath
 
 all: $(BINARIES)
 

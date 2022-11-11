@@ -31,9 +31,6 @@ test: $(TARGET)
 .PHONY: all
 all: $(TARGET) windows wasm
 
-.PHONY: windows
-windows: $(WIN_TARGET)
-
 ifneq ($(OS),Windows_NT)
 WIN_TARGET := testPerformance.exe
 
