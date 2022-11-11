@@ -53,6 +53,11 @@ bool Graph::loadLinear(const Vector2* refs, size_t refsCount) {
 			*(++lastPoint) = refs[i];
 	}
 	graphPoints.resize(lastPoint - graphPoints.data() + 1);
+	
+	#ifdef DREG_DEBUG
+	if (graphPoints.size() < refsCount)
+		DREG_WARN_FORMAT(50, "%zu ignored linear graph refs", refsCount - graphPoints.size());
+	#endif
 	return true;
 }
 
@@ -110,6 +115,11 @@ bool Graph::loadBezier(const Vector2* refs, size_t refsCount, size_t samplesPerS
 		}
 	}
 	graphPoints.resize(iPoint);
+	
+	#ifdef DREG_DEBUG
+	if (graphPoints.size() < refsCount)
+		DREG_WARN_FORMAT(50, "%zu ignored bezier graph refs", refsCount - graphPoints.size());
+	#endif
 	return true;
 }
 
@@ -123,8 +133,10 @@ const Vector2* Graph::getPoints(size_t* pointsCount) const {
 }
 
 float Graph::getY(float x) const {
+	#ifdef DREG_RELEASE
 	if (lastAccess.x == x)
 		return lastAccess.y;
+	#endif
 	
 	size_t min = 0;
 	size_t max = graphPoints.size() - 1;

@@ -34,10 +34,10 @@ int main(int argc, const char** argv) {
 	suite.addTest(&testConfigParser);
 	suite.addTest(&testVehicle);
 	suite.addTest(&testInputLogger);
-	suite.run();
+	bool success = suite.run();
 	suite.printResult();
 	
 	dregLogManager.freeMemory();
 	ConfigParser::clearConfigProps();
-	return 0;
+	return success ? 0 : 1;
 }

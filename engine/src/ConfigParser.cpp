@@ -151,6 +151,7 @@ void ConfigParser::parseGraph(Graph* graph, std::string_view value) {
 			! Util::strToFloat(Util::removeBlankEnds(pointStr.substr(spacePos + 1)), &curPoint->y)) {
 			
 			parsingError("Invalid graph point");
+			return;
 		}
 		curPoint++;
 	}
