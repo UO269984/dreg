@@ -42,6 +42,8 @@ class MouseInputManager extends InputManager {
 				this.interactActive = isInteractBt
 				if (isInteractBt)
 					this.activeCanvasFuncs.mouseDownCallback(e)
+				
+				return false
 			}
 		}
 		document.onmouseup = e => {
