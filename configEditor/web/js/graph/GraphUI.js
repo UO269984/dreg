@@ -55,10 +55,14 @@ export class EditableGraphUI extends GraphUI {
 	}
 	
 	#initControls() {
-		this.modeBt = this.container.getElementsByClassName("graph-mode")[0]
+		let modeBt = this.container.getElementsByClassName("graph-mode")[0]
+		this.modeBtImg = modeBt.querySelector("img")
 		this.refsAlignedBt = this.container.getElementsByClassName("refs-align-bt")[0]
-		this.modeBt.onclick = this.switchGraphMode.bind(this)
-		this.refsAlignedBt.onclick = () => this.graph.toggleRefsAlign()
+		modeBt.onclick = this.switchGraphMode.bind(this)
+		this.refsAlignedBt.onclick = () => {
+			this.graph.toggleRefsAlign()
+			this.#updateAlignedRefsBt()
+		}
 		
 		this.container.getElementsByClassName("add-node-bt")[0].onclick = () => this.graph.addRef()
 		this.container.getElementsByClassName("delete-node-bt")[0].onclick = () => this.graph.deleteRef()
@@ -81,6 +85,10 @@ export class EditableGraphUI extends GraphUI {
 		return TEMPLATES.editableGraph
 	}
 	
+	#updateAlignedRefsBt() {
+		this.refsAlignedBt.style.background = ! this.bezierMode || this.graph.refsAlignEnabled ? "" : "#50d94f"
+	}
+	
 	updateInitData() {
 		this.initData = this.graphApi.getInitData()
 		this.bezierMode = this.initData.isBezier
@@ -94,6 +102,7 @@ export class EditableGraphUI extends GraphUI {
 		this.#updateBezierMode()
 		
 		this.resetGraph()
+		this.#updateAlignedRefsBt()
 	}
 	
 	resetGraph() {
@@ -106,7 +115,7 @@ export class EditableGraphUI extends GraphUI {
 	}
 	
 	#updateBezierMode() {
-		this.modeBt.innerText = this.bezierMode ? "Linear" : "Bezier"
+		this.modeBtImg.src = `/icons/${this.bezierMode ? "linear" : "bezier"}.png`
 		this.refsAlignedBt.style.display = this.bezierMode ? "" : "none"
 		
 		this.refsMapper.updateRefs = this.bezierMode ?

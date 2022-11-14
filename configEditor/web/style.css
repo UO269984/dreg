@@ -66,6 +66,52 @@ canvas {
 	margin: 0.5em;
 }
 
+.editable-graph {
+	display: inline-grid;
+}
+
+.graph-controls {
+	padding: 0.35em;
+	margin-top: 0.2em;
+	background: white;
+	color: black;
+}
+
+.graph-controls button {
+	background: white;
+	transition: background 0.1s ease;
+	vertical-align: text-top;
+	
+	border: 0px;
+	margin: 0px;
+	padding: 0px !important;
+	width: 47px;
+	height: 47px;
+}
+
+.graph-controls button:hover {
+	background: #DCDCDC;
+}
+
+.graph-controls button > img {
+	width: 40px;
+	vertical-align: middle;
+}
+
+.button-controls {
+	font-size: 0px;
+	display: flex;
+	flex-direction: row;
+}
+
+.basic-controls {
+	margin-left: auto;
+}
+
+.text-bt {
+	font-size: 25px;
+}
+
 #vehicleInputLog-input {
 	display: none;
 }
