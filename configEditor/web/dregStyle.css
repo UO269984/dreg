@@ -27,21 +27,36 @@ textarea {
 	tab-size: 4;
 }
 
-button {
+button, select, summary {
 	font-family: inherit;
-}
-
-button, summary {
+	font-size: 1em;
+	
 	cursor: pointer;
 	-webkit-user-select: none;
 }
 
-details {
-	margin: 0.8em 0em;
+button, select {
+	padding: 0.35em 0.6em;
+	border-style: none;
+	margin: 0.4em 0em;
+	
+	background: white;
 }
 
-summary {
-	font-size: 1em;
+button {
+	transition: background 0.1s ease;
+}
+
+button:hover {
+	background: #DCDCDC;
+}
+
+button:active {
+	background: #BBBBBB;
+}
+
+details {
+	margin: 0.8em 0em;
 }
 
 input[type=number] {
@@ -62,11 +77,11 @@ input[type=number].long-input {
 }
 
 ::-webkit-scrollbar {
-	background: #555555;
+	background: #222222;
 	width: 6px;
 	height: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-	background: white;
+	background: #CCCCCC;
 }
