@@ -57,19 +57,19 @@ win-static: $(BUILD)/$(DREG_LIBRARY_WIN_STATIC)
 
 
 $(BUILD)/$(DREG_LIBRARY_WIN_RELEASE): $(WIN_OBJS_RELEASE)
-	x86_64-w64-mingw32-gcc $(RELEASE_OPTIMIZE) -shared -o $@ $^ $(LDFLAGS)
+	$(CXX_WIN) $(RELEASE_OPTIMIZE) -shared -o $@ $^ $(LDFLAGS)
 
 $(BUILD)/$(DREG_LIBRARY_WIN_DEBUG): $(WIN_OBJS_DEBUG)
-	x86_64-w64-mingw32-gcc -shared -o $@ $^ $(LDFLAGS)
+	$(CXX_WIN) -shared -o $@ $^ $(LDFLAGS)
 
 $(BUILD)/$(DREG_LIBRARY_WIN_STATIC): $(WIN_OBJS_RELEASE)
 	x86_64-w64-mingw32-ar rcs $@ $^
 
 $(WIN_BIN_RELEASE)/%.o: $(SRC)/%.cpp
-	x86_64-w64-mingw32-gcc $(RELEASE_OPTIMIZE) -D $(RELEASE_DEFINE) $(CFLAGS) $<
+	$(CXX_WIN) $(RELEASE_OPTIMIZE) -D $(RELEASE_DEFINE) $(CFLAGS) $<
 
 $(WIN_BIN_DEBUG)/%.o: $(SRC)/%.cpp
-	x86_64-w64-mingw32-gcc -D $(DEBUG_DEFINE) $(CFLAGS) $<
+	$(CXX_WIN) -D $(DEBUG_DEFINE) $(CFLAGS) $<
 endif
 
 

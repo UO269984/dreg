@@ -38,10 +38,10 @@ WIN_TARGET := testPerformance.exe
 windows: $(WIN_TARGET)
 
 $(WIN_TARGET): $(WIN_OBJS)
-	x86_64-w64-mingw32-gcc $(RELEASE_OPTIMIZE) -o $@ $^ $(DREG_LIBRARY_WIN_RELEASE) -lstdc++
+	$(CXX_WIN) $(RELEASE_OPTIMIZE) -o $@ $^ $(DREG_LIBRARY_WIN_RELEASE) -lstdc++
 
 $(WIN_BIN)/%.o: $(SRC)/%.cpp
-	x86_64-w64-mingw32-gcc $(RELEASE_OPTIMIZE) $(CFLAGS) $<
+	$(CXX_WIN) $(RELEASE_OPTIMIZE) $(CFLAGS) $<
 endif
 
 .PHONY: wasm
