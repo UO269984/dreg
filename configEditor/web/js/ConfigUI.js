@@ -155,10 +155,9 @@ class ConfigImportExport {
 	}
 	
 	importConfig() {
-		if (this.vehicle.configManager.loadSerialized(this.configTextarea.value)) {
-			this.vehicle.loadConfig()
+		if (this.vehicle.configManager.loadSerialized(this.configTextarea.value))
 			this.updateCallback()
-		}
+		
 		else
 			alert("Invalid config\nSet a valid config and re-import");
 	}

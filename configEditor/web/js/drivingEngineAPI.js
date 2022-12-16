@@ -52,9 +52,7 @@ export class VehicleAPI {
 		this.state = new VehicleStruct({pos: {}, rotation: {}}, this.statePtr, Module.updateVehicleStateObj)
 		this.props = new VehicleStruct({}, this.propsPtr, Module.updateVehiclePropsObj)
 		
-		this.configObj = {frontShaft: {}, rearShaft: {}, power: {}, wheels: {}}
-		this.loadConfig()
-		this.config = new UpdatedVehicleStruct(this.configObj)
+		this.config = new UpdatedVehicleStruct(this.configManager.configObj)
 	}
 	
 	delete() {
@@ -64,10 +62,6 @@ export class VehicleAPI {
 	
 	reset() {
 		Module.resetVehicle(this.ptr)
-	}
-	
-	loadConfig() {
-		Module.updateVehicleConfigObj(this.configManager.configPtr, this.configObj)
 	}
 	
 	setInput(input) {
@@ -95,12 +89,7 @@ export class VehicleAPI {
 	}
 	
 	setConfigAttrib(path, value) {
-		let obj = this.configObj
-		for (let i = 1; i < path.length - 1; i++) //Skip the first element in path ("config")
-			obj = obj[path[i]]
-		
-		obj[path[path.length - 1]] = value
-		Module.updateVehicleConfigStruct(this.configManager.configPtr, this.configObj)
+		this.configManager.setConfigAttrib(path, value)
 	}
 }
 
@@ -108,6 +97,8 @@ class ConfigManagerAPI {
 	constructor(configManagerPtr) {
 		this.ptr = configManagerPtr != null ? configManagerPtr : Module.createConfigManager(true)
 		this.configPtr = Module.getVehicleConfig(this.ptr)
+		this.configObj = {frontShaft: {}, rearShaft: {}, power: {}, wheels: {}}
+		this.#loadConfigObj()
 	}
 	
 	delete() {
@@ -124,19 +115,35 @@ class ConfigManagerAPI {
 	
 	loadDefault() {
 		Module.loadDefaultConfig(this.ptr)
+		this.#loadConfigObj()
 	}
 	
 	loadSerialized(serializedConfig) {
-		return Module.loadSerializedConfig(this.configPtr, serializedConfig)
+		let success = Module.loadSerializedConfig(this.configPtr, serializedConfig)
+		this.#loadConfigObj()
+		return success
 	}
 	
 	serialize() {
 		return Module.serializeConfig(this.configPtr)
 	}
+	
+	#loadConfigObj() {
+		Module.updateVehicleConfigObj(this.configPtr, this.configObj)
+	}
+	
+	setConfigAttrib(path, value) {
+		let obj = this.configObj
+		for (let i = 1; i < path.length - 1; i++) //Skip the first element in path ("config")
+			obj = obj[path[i]]
+		
+		obj[path[path.length - 1]] = value
+		Module.updateVehicleConfigStruct(this.configPtr, this.configObj)
+	}
 }
 
 export class GraphAPI {
-	static setGraphSaveInitData(saveInitData) {
+	static setSaveInitData(saveInitData) {
 		Module.setGraphSaveInitData(saveInitData)
 	}
 	

@@ -135,7 +135,7 @@ class SimGraph {
 class EditorConfig {
 	constructor() {
 		this.simInterval = 0.01
-		this.graphSamples = 20
+		this._graphSamples = 20
 		
 		this.inputLog = null
 		this.inputLogTime = 1
@@ -169,7 +169,7 @@ class EditorConfig {
 
 export class Editor {
 	constructor() {
-		GraphAPI.setGraphSaveInitData(true)
+		GraphAPI.setSaveInitData(true)
 		new MobileSplitter(document.getElementById("splitter"),
 			document.querySelector("main"), document.getElementById("simulation"))
 		
@@ -186,10 +186,10 @@ export class Editor {
 		
 		this.vehicleConfigUI = new VehicleConfigUI(this)
 		this.editorConfigUI = new EditorConfigUI(this, this.vehicleConfigUI.resampleGraphs.bind(this.vehicleConfigUI))
-		this.configureSliders()
+		this.#configureSliders()
 	}
 	
-	configureSliders() {
+	#configureSliders() {
 		for (let slider of document.querySelectorAll("input[type=range]")) {
 			let valueTx = slider.nextElementSibling
 			slider.value = valueTx.value
