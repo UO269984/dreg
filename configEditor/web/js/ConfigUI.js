@@ -34,7 +34,7 @@ class ConfigInput {
 		this.path = attrib.path.split(".")
 		this.attribFilter = attrib.filter != null ? attrib.filter : val => true
 		
-		this.attribInput = configContainer.querySelector(`input[name=${attrib.name}]`)
+		this.attribInput = configContainer.querySelector(`input#${attrib.name}`)
 		this.attribInput.addEventListener("input", this.updateConfig.bind(this))
 		
 		this.updateInput()
@@ -128,8 +128,8 @@ class ConfigGears {
 		gearContainer.appendChild(gearLabel)
 		
 		let gearInput = document.createElement("input")
+		gearInput.id = gearId
 		gearInput.type = "number"
-		gearInput.name = gearId
 		gearInput.value = 0
 		gearInput.addEventListener("input", this.#updateGearsConfig.bind(this))
 		gearContainer.appendChild(gearInput)

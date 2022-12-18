@@ -115,7 +115,9 @@ export class EditableGraphUI extends GraphUI {
 	}
 	
 	#updateBezierMode() {
-		this.modeBtImg.src = `icons/${this.bezierMode ? "linear" : "bezier"}.png`
+		let graphType = this.bezierMode ? "linear" : "bezier"
+		this.modeBtImg.src = `icons/${graphType}.png`
+		this.modeBtImg.alt = `${graphType} graph icon`
 		this.refsAlignedBt.style.display = this.bezierMode ? "" : "none"
 		
 		this.refsMapper.updateRefs = this.bezierMode ?
