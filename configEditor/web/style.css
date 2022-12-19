@@ -12,6 +12,16 @@ canvas {
 	margin: 0px;
 }
 
+h1 {
+	font-size: 1.6em;
+	margin: 0.9em 0px 0.7em;
+}
+
+h2 {
+	font-size: 1.17em;
+	margin: 1.1em 0px 0.7em;
+}
+
 #splitter {
 	cursor: col-resize;
 	width: 20px;

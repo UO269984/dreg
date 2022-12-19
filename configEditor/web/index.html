@@ -25,7 +25,7 @@
 		</div>
 		
 		<div id="editor-config">
-			<h2>Editor settings</h2>
+			<h1>Editor settings</h1>
 			<div class="input-block">
 				<label for="simInterval">Simulation interval (s)</label>
 				<input id="simInterval" class="long-input" type="number" />
@@ -45,7 +45,7 @@
 		</div>
 		
 		<div id="vehicle-config">
-			<h2>Vehicle configuration</h2>
+			<h1>Vehicle configuration</h1>
 			<div>
 				<textarea id="config-textarea" aria-label="serialized config"></textarea>
 				<button id="export-config-bt">Export</button>
@@ -77,7 +77,7 @@
 				<input id="rearShaft-z" type="number" aria-labelledby="rearShaft-label" />
 			</div>
 			
-			<h3>Power</h3>
+			<h2>Power</h2>
 				<div class="input-block">
 					<label for="torqueToRpmAccel">Torque to rpm accel</label>
 					<input id="torqueToRpmAccel" type="number" />
@@ -119,7 +119,7 @@
 					<div id="clutchCurve"></div>
 				</details>
 			
-			<h3>Brakes</h3>
+			<h2>Brakes</h2>
 				<div class="input-block">
 					<label for="brakeDiameter">Brake diameter</label>
 					<input id="brakeDiameter" type="number" />
@@ -140,7 +140,7 @@
 					<div id="brakeCurve"></div>
 				</details>
 			
-			<h3>Wheels</h3>
+			<h2>Wheels</h2>
 				<div class="input-block">
 					<label for="wheelDiameter">Diameter (m)</label>
 					<input id="wheelDiameter" type="number" />
@@ -149,12 +149,12 @@
 	</main>
 	<div id="splitter"><div></div></div>
 	
-	<div id="simulation">
+	<aside id="simulation">
 		<div>
-			<h2>Simulation</h2>
+			<h1>Simulation</h1>
 			<button id="add-graph-bt">Add graph</button>
 		</div>
 		<div id="simulation-graphs"></div>
-	</div>
+	</aside>
 </body>
 </html>
