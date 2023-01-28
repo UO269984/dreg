@@ -61,6 +61,8 @@ export class VehicleAPI {
 	}
 	
 	reset() {
+		this.state.invalidate()
+		this.props.invalidate()
 		Module.resetVehicle(this.ptr)
 	}
 	

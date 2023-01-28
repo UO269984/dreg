@@ -258,16 +258,18 @@ export class Editor {
 		this.vehicle.reset()
 		let time = 0
 		
+		for (let simGraph of this.simGraphs)
+			simGraph.sample(time)
+		
 		for (let i = 0; i < this.config.inputLog.length - 1; i++) {
 			this.vehicle.setInput(this.config.inputLog[i])
 			
 			while (time < this.config.inputLog[i + 1].time) {
 				this.vehicle.update(this.config.simInterval)
+				time += this.config.simInterval
 				
 				for (let simGraph of this.simGraphs)
 					simGraph.sample(time)
-				
-				time += this.config.simInterval
 			}
 		}
 		
