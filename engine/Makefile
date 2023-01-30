@@ -57,7 +57,7 @@ win-static: $(BUILD)/$(DREG_LIBRARY_WIN_STATIC)
 
 
 $(BUILD)/$(DREG_LIBRARY_WIN_RELEASE): $(WIN_OBJS_RELEASE)
-	$(CXX_WIN) $(RELEASE_OPTIMIZE) -shared -o $@ $^ $(LDFLAGS)
+	$(CXX_WIN) $(RELEASE_OPTIMIZE) -shared -o $@ $^ -static $(LDFLAGS)
 
 $(BUILD)/$(DREG_LIBRARY_WIN_DEBUG): $(WIN_OBJS_DEBUG)
 	$(CXX_WIN) -shared -o $@ $^ $(LDFLAGS)

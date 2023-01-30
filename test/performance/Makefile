@@ -38,7 +38,7 @@ WIN_TARGET := testPerformance.exe
 windows: $(WIN_TARGET)
 
 $(WIN_TARGET): $(WIN_OBJS)
-	$(CXX_WIN) $(RELEASE_OPTIMIZE) -o $@ $^ $(DREG_LIBRARY_WIN_RELEASE) -lstdc++
+	$(CXX_WIN) $(RELEASE_OPTIMIZE) -o $@ $^ $(DREG_LIBRARY_WIN_RELEASE) -static -lstdc++
 
 $(WIN_BIN)/%.o: $(SRC)/%.cpp
 	$(CXX_WIN) $(RELEASE_OPTIMIZE) $(CFLAGS) $<
