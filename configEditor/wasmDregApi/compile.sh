@@ -1,0 +1,1 @@
+emcc -I include -o ../web/js/dreg/dreg.js -std=c++17 -s WASM=1 -s EXPORT_ES6=1 -s MODULARIZE=1 dreg.bc updateObj.cpp --bind dregApi.cpp

@@ -1,5 +1,5 @@
 import {TEMPLATES} from "./Templates.js"
-import {VehicleAPI, GraphAPI} from "./drivingEngineAPI.js"
+import {VehicleAPI, GraphAPI} from "./DregApi.js"
 import {MobileSplitter} from "./MobileSplitter.js"
 import {BasicGraphUI} from "./graph/GraphUI.js"
 import {EditorConfigUI, VehicleConfigUI} from "./ConfigUI.js"

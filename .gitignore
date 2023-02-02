@@ -9,8 +9,8 @@ engine/android/jni/src
 engine/android/jni/include
 
 configEditor/web/js/dreg/
-configEditor/wasmEngineApi/include
-configEditor/wasmEngineApi/dreg.bc
+configEditor/wasmDregApi/include
+configEditor/wasmDregApi/dreg.bc
 
 test/test
 test/test.exe

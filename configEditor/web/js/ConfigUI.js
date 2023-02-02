@@ -1,5 +1,5 @@
 import {EditableGraphUI} from "./graph/GraphUI.js"
-import {GraphAPI} from "./drivingEngineAPI.js"
+import {GraphAPI} from "./DregApi.js"
 
 const VEHICLE_CONFIG_ATTRIBS = [
 	{name: "frontShaft-x", path: "config.frontShaft.x"},
@@ -101,10 +101,10 @@ class ConfigGears {
 	}
 	
 	updateGears() {
-		this.#setGearsInputs(this.vehicle.getAttrib(this.gearRatiosPath))
+		this.#setGearInputs(this.vehicle.getAttrib(this.gearRatiosPath))
 	}
 	
-	#setGearsInputs(gearRatios) {
+	#setGearInputs(gearRatios) {
 		while (this.gearInputs.length < gearRatios.length)
 			this.#addGear()
 		

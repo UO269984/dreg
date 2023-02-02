@@ -1,6 +1,6 @@
 #pragma once
 
-#include "drivingEngineApi.h"
+#include "dregApi.h"
 
 void updateVehicleStateObj(PTR statePtr, emscripten::val obj);
 void updateVehiclePropsObj(PTR propsPtr, emscripten::val obj);

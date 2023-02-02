@@ -40,8 +40,8 @@ links:
 	cmd /C "mklink  test\performance\android\app\src\main\cpp\testPerformance.cpp ..\..\..\..\..\src\testPerformance.cpp"
 	cmd /C "mklink /D test\performance\android\app\src\main\cpp\dregLibs ..\..\..\..\..\..\..\engine\build\androidLibs"
 	
-	cmd /C "mklink /D configEditor\wasmEngineApi\include ..\..\engine\include"
-	cmd /C "mklink configEditor\wasmEngineApi\dreg.bc ..\..\engine\build\dreg.bc"
+	cmd /C "mklink /D configEditor\wasmDregApi\include ..\..\engine\include"
+	cmd /C "mklink configEditor\wasmDregApi\dreg.bc ..\..\engine\build\dreg.bc"
 
 else
 .PHONY: links
@@ -63,8 +63,8 @@ links:
 	ln -s ../../src/ engine/android/jni
 	ln -s ../../include/ engine/android/jni
 	
-	ln -s ../../engine/include/ configEditor/wasmEngineApi
-	ln -s ../../engine/build/dreg.bc configEditor/wasmEngineApi
+	ln -s ../../engine/include/ configEditor/wasmDregApi
+	ln -s ../../engine/build/dreg.bc configEditor/wasmDregApi
 endif
 
 .PHONY: clean-configure
@@ -100,8 +100,8 @@ clean-configure:
 	rm -f test/performance/android/app/src/main/cpp/dregLibs
 	rm -f engine/android/jni/src
 	rm -f engine/android/jni/include
-	rm -f configEditor/wasmEngineApi/include
-	rm -f configEditor/wasmEngineApi/dreg.bc
+	rm -f configEditor/wasmDregApi/include
+	rm -f configEditor/wasmDregApi/dreg.bc
 
 
 .PHONY: test
@@ -117,7 +117,7 @@ all:
 	@$(MAKE) --no-print-directory -C test
 	@$(MAKE) --no-print-directory -C test/unit
 	@$(MAKE) --no-print-directory -C test/performance all
-	cd configEditor/wasmEngineApi/; ./compile.sh; cd ../..
+	cd configEditor/wasmDregApi/; ./compile.sh; cd ../..
 
 .PHONY: clean
 clean:

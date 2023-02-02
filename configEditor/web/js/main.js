@@ -1,5 +1,5 @@
 import {APP_LOAD_MANAGER} from "./AppLoadManager.js"
-import {setModuleLoadFunc} from "./drivingEngineAPI.js"
+import {setModuleLoadFunc} from "./DregApi.js"
 import {Editor} from "./Editor.js"
 
 function main() {
