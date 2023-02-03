@@ -60,13 +60,13 @@ void TestConfigManager::vehicles() {
 	
 	vehicle1.setConfig(configManager);
 	vehicle2.setConfig(configManager);
-	CuAssertPtrNotNull(vehicle1.configManager);
-	CuAssertPtrNotNull(vehicle2.configManager);
+	CuAssertPtrEquals(configManager, vehicle1.configManager);
+	CuAssertPtrEquals(configManager, vehicle2.configManager);
 	configManager->updateVehiclesConfig();
 	
 	vehicle1.setConfig(NULL);
 	CuAssertPtrEquals(NULL, vehicle1.configManager);
-	CuAssertPtrNotNull(vehicle2.configManager);
+	CuAssertPtrEquals(configManager, vehicle2.configManager);
 	configManager->updateVehiclesConfig();
 	
 	vehicle2.setConfig(NULL);

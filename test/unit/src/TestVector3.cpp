@@ -59,8 +59,8 @@ void TestVector3::increment() {
 }
 
 void TestVector3::length() {
-	CuAssertTrue(zero1.length() == 0);
-	CuAssertTrue(zeroOne1.length() == 1);
+	CuAssertDblEquals(0, zero1.length(), 0.000001);
+	CuAssertDblEquals(1, zeroOne1.length(), 0.000001);
 	CuAssertDblEquals(0.502493781, (Vector3{0.45, 0.1, 0.2}.length()), 0.000001);
 	CuAssertDblEquals(3.741657387, v1a.length(), 0.000001);
 }

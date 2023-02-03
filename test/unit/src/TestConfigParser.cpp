@@ -111,9 +111,9 @@ void TestConfigParser::oneVariableConfig() {
 	CuAssertTrue(config->mass > 400);
 	CHECK_LOG("", CuAssertTrue(configParser->loadSerializedConfig(config, "mass = 360.1")))
 	CuAssertDblEquals(360.1, config->mass, 0.00001); //Check the mass has changed
-	config->mass = prevConfigManager.config.mass;
 	
 	//Check other variables have not changed
+	config->mass = prevConfigManager.config.mass;
 	TestUtil::checkSameConfigs(tc, config, &prevConfigManager.config, true);
 }
 
