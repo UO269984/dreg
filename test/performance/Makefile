@@ -3,7 +3,7 @@ include $(ROOT_PATH)/globalVars.make
 
 TARGET := testPerformance$(EXEC_EXT)
 
-override CFLAGS += -Wall -std=c++17 -c -I $(INCLUDE) -o $@
+override CFLAGS += -Wall -std=$(CPP_STD) -c -I $(INCLUDE) -o $@
 LDFLAGS := $(DREG_LIBRARY_RELEASE) -lstdc++
 
 ifneq ($(OS),Windows_NT)
@@ -47,7 +47,7 @@ endif
 .PHONY: wasm
 wasm:
 	emcc $(RELEASE_OPTIMIZE) -I include/ -o wasm/web/js/dreg/testPerformance.js \
-	-std=c++17 -s WASM=1 -s EXPORT_ES6=1 -s MODULARIZE=1 \
+	-std=$(CPP_STD) -s WASM=1 -s EXPORT_ES6=1 -s MODULARIZE=1 \
 	../../engine/build/$(DREG_LIBRARY_WASM) src/testPerformance.cpp --bind wasm/wasmApi.cpp
 
 .PHONY: clean

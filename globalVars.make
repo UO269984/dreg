@@ -1,5 +1,6 @@
 CXX := gcc
 CXX_WIN := x86_64-w64-mingw32-gcc-posix
+CPP_STD := c++17
 RELEASE_OPTIMIZE := -O3
 
 RELEASE_DEFINE := DREG_RELEASE

@@ -1,7 +1,7 @@
 ROOT_PATH := ..
 include $(ROOT_PATH)/globalVars.make
 
-override CFLAGS += -Wall -std=c++17 -c -I $(INCLUDE) -o $@
+override CFLAGS += -Wall -std=$(CPP_STD) -c -I $(INCLUDE) -o $@
 override CFLAGS += $(if $(filter-out $(OS),Windows_NT),-fPIC,)
 LDFLAGS := -lstdc++
 
@@ -76,7 +76,7 @@ endif
 .PHONY: wasm
 wasm:
 	emcc -I $(INCLUDE) $(RELEASE_OPTIMIZE) -D $(RELEASE_DEFINE) -o $(BUILD)/$(DREG_LIBRARY_WASM) \
-	-std=c++17 -s WASM=1 -s EXPORTED_RUNTIME_METHODS='["cwrap"]' $(SRCS)
+	-std=$(CPP_STD) -s WASM=1 -s EXPORTED_RUNTIME_METHODS='["cwrap"]' $(SRCS)
 
 .PHONY: android
 android:

@@ -3,7 +3,7 @@ include $(ROOT_PATH)/globalVars.make
 
 TARGET := test$(EXEC_EXT)
 
-override CFLAGS += -Wall -std=c++17 -c -I $(INCLUDE) -o $@
+override CFLAGS += -Wall -std=$(CPP_STD) -c -I $(INCLUDE) -o $@
 LDFLAGS := $(DREG_LIBRARY_DEBUG) -lstdc++
 
 ifneq ($(OS),Windows_NT)

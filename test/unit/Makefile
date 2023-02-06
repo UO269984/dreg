@@ -4,7 +4,7 @@ include $(ROOT_PATH)/globalVars.make
 CUTEST_LIBRARY := cuTestCPP.$(STATIC_LIB_EXT)
 TARGET := testDreg$(EXEC_EXT)
 
-override CFLAGS += -Wall -std=c++17 -c -I $(INCLUDE) -o $@
+override CFLAGS += -Wall -std=$(CPP_STD) -c -I $(INCLUDE) -o $@
 LDFLAGS := $(DREG_LIBRARY_DEBUG) $(CUTEST_LIBRARY) -lstdc++
 
 ifneq ($(OS),Windows_NT)
