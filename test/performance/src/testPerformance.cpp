@@ -153,17 +153,17 @@ bool allTests(const TestsConfig* config) {
 
 
 char* cloneCharArray(const char* str, size_t size) {
-	char* clone = new char[size];
-	memcpy(clone, str, size * sizeof(char));
+	char* clone = new char[size + 1];
+	memcpy(clone, str, (size + 1) * sizeof(char));
 	return clone;
 }
 
 void deleteTestsConfig(TestsConfig* config) {
 	if (config->vehicleConfigVehicle != NULL)
-		deleteCharArray(config->vehicleConfigVehicle);
+		delete[] config->vehicleConfigVehicle;
 	
 	if (config->vehicleConfigLoadConfig != NULL)
-		deleteCharArray(config->vehicleConfigLoadConfig);
+		delete[] config->vehicleConfigLoadConfig;
 	
 	config->vehicleConfigVehicle = NULL;
 	config->vehicleConfigLoadConfig = NULL;
